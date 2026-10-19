@@ -5,7 +5,7 @@
  * Override by copying to: yourtheme/sidcraft-commerce/quick-view.php
  *
  * @package SidcraftCommerce
- * @version 0.5.0
+ * @version 1.8.0
  *
  * @var \SidcraftCommerce\Data\Product $product
  */
@@ -18,7 +18,7 @@ $sidcraft_commerce_units = Plugin::instance()->units;
 $sidcraft_commerce_ctx   = array( 'product_id' => $product->get_id() );
 ?>
 <div class="sc-qv">
-	<div class="sc-qv__media sc-media-badged<?php echo $product->is_in_stock() ? '' : ' is-sold-out'; ?>">
+	<div class="sc-qv__media sc-media-badged<?php echo $product->is_in_stock() ? '' : ' is-sold-out'; ?>" data-sc-product-image>
 		<?php echo $product->get_image( 'large' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core image HTML. ?>
 		<?php echo $product->get_image_overlay_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in Product. ?>
 	</div>

@@ -392,6 +392,70 @@
 		total.hidden = false;
 	}
 
+	/* ---------------------------------------------------------------------
+	 * A chosen option's own image and SKU (like a variation's).
+	 * ------------------------------------------------------------------- */
+
+	function refreshChoiceMedia( form ) {
+		var picked = [];
+		form.querySelectorAll( '[data-sc-options] input:checked, [data-sc-options] select' ).forEach( function ( input ) {
+			var el = input.tagName === 'SELECT' ? input.selectedOptions[ 0 ] : input;
+			if ( el ) {
+				picked.push( el );
+			}
+		} );
+
+		// SKU: the picked choices' own SKUs, else the product's.
+		var sku = form.querySelector( '[data-sc-sku]' );
+		if ( sku ) {
+			var skus = picked.map( function ( el ) {
+				return el.dataset.sku || '';
+			} ).filter( Boolean );
+			sku.textContent = skus.length ? skus.join( ' / ' ) : ( sku.dataset.base || '—' );
+		}
+
+		// Image: the last picked choice with one, else the product image.
+		var root = form.closest( '.sc-qv' ) || document;
+		var img = root.querySelector( '[data-sc-product-image] img' );
+		if ( ! img ) {
+			return;
+		}
+		if ( ! img.dataset.scOriginalSrc ) {
+			img.dataset.scOriginalSrc = img.getAttribute( 'src' ) || '';
+			img.dataset.scOriginalSrcset = img.getAttribute( 'srcset' ) || '';
+		}
+		var source = null;
+		picked.forEach( function ( el ) {
+			if ( el.dataset.image ) {
+				source = el;
+			}
+		} );
+		var src = source ? source.dataset.image : img.dataset.scOriginalSrc;
+		var srcset = source ? ( source.dataset.imageSrcset || '' ) : img.dataset.scOriginalSrcset;
+		if ( img.getAttribute( 'src' ) !== src ) {
+			img.setAttribute( 'src', src );
+			if ( srcset ) {
+				img.setAttribute( 'srcset', srcset );
+			} else {
+				img.removeAttribute( 'srcset' );
+			}
+		}
+	}
+
+	// Required radio buttons start on a choice: show its image and SKU at once.
+	function initChoiceMedia() {
+		document.querySelectorAll( '[data-sc-atc-form]' ).forEach( function ( form ) {
+			if ( form.querySelector( '[data-sc-options] [data-image], [data-sc-options] [data-sku]' ) ) {
+				refreshChoiceMedia( form );
+			}
+		} );
+	}
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', initChoiceMedia );
+	} else {
+		initChoiceMedia();
+	}
+
 	// Mirrors SidcraftCommerce\format_price() with the store's settings.
 	function formatPrice( amount ) {
 		var p = config.price || {};
@@ -408,6 +472,7 @@
 		var form = e.target.closest && e.target.closest( '[data-sc-atc-form]' );
 		if ( form && e.target.closest( '[data-sc-options]' ) ) {
 			refreshOptionsTotal( form );
+			refreshChoiceMedia( form );
 			var notice = form.querySelector( '.sc-atc__notice.is-error' );
 			if ( notice ) {
 				notice.textContent = '';

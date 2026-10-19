@@ -149,6 +149,12 @@ class Admin {
 			<?php /* translators: %s: currency symbol. */ ?>
 			<p><label for="sc-coupon-min"><?php echo esc_html( sprintf( __( 'Minimum spend (%s)', 'sidcraft-commerce-for-sidcraft-page-builder' ), $sym ) ); ?></label>
 				<input type="text" inputmode="decimal" id="sc-coupon-min" name="sidccofo_coupon_min_spend" value="<?php echo esc_attr( $m( '_sidccofo_coupon_min_spend' ) ); ?>" placeholder="<?php esc_attr_e( 'No minimum', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>"></p>
+			<?php /* translators: %s: currency symbol. */ ?>
+			<p><label for="sc-coupon-max"><?php echo esc_html( sprintf( __( 'Maximum spend (%s)', 'sidcraft-commerce-for-sidcraft-page-builder' ), $sym ) ); ?></label>
+				<input type="text" inputmode="decimal" id="sc-coupon-max" name="sidccofo_coupon_max_spend" value="<?php echo esc_attr( $m( '_sidccofo_coupon_max_spend' ) ); ?>" placeholder="<?php esc_attr_e( 'No maximum', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>"></p>
+			<p class="sc-pd__wide"><label for="sc-coupon-emails"><?php esc_html_e( 'Allowed emails', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
+				<input type="text" id="sc-coupon-emails" class="large-text" name="sidccofo_coupon_emails" value="<?php echo esc_attr( implode( ', ', (array) $m( '_sidccofo_coupon_emails' ) ) ); ?>" placeholder="<?php esc_attr_e( 'Everyone', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>">
+				<span class="description"><?php esc_html_e( 'Separated by commas. Only customers with one of these emails (account or billing) can use it; *@example.com allows a whole domain.', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></span></p>
 			<p><label for="sc-coupon-starts"><?php esc_html_e( 'Start date', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
 				<input type="date" id="sc-coupon-starts" name="sidccofo_coupon_starts" value="<?php echo esc_attr( $m( '_sidccofo_coupon_starts' ) ); ?>">
 				<span class="description"><?php esc_html_e( 'Valid from the start of this day. Leave empty to start now.', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></span></p>
@@ -166,6 +172,8 @@ class Admin {
 		<?php
 		$product_ids = array_filter( array_map( 'absint', (array) $m( '_sidccofo_coupon_products' ) ) );
 		$cat_ids     = array_filter( array_map( 'absint', (array) $m( '_sidccofo_coupon_categories' ) ) );
+		$ex_products = array_filter( array_map( 'absint', (array) $m( '_sidccofo_coupon_exclude_products' ) ) );
+		$ex_cats     = array_filter( array_map( 'absint', (array) $m( '_sidccofo_coupon_exclude_categories' ) ) );
 		$names       = array();
 		foreach ( $product_ids as $pid ) {
 			$names[] = get_the_title( $pid ) . ' (#' . $pid . ')';
@@ -187,6 +195,20 @@ class Admin {
 					<legend><strong><?php esc_html_e( 'Categories (subcategories included)', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></strong></legend>
 					<?php foreach ( $terms as $term ) : ?>
 						<label class="sc-pd__check"><input type="checkbox" name="sidccofo_coupon_categories[]" value="<?php echo (int) $term->term_id; ?>" <?php checked( in_array( (int) $term->term_id, $cat_ids, true ) ); ?>> <?php echo esc_html( $term->name ); ?></label>
+					<?php endforeach; ?>
+				</fieldset>
+			<?php endif; ?>
+		</div>
+		<h4 class="sc-pd__heading"><?php esc_html_e( 'Never applies to', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></h4>
+		<div class="sc-pd">
+			<p class="sc-pd__wide"><label for="sc-coupon-ex-products"><?php esc_html_e( 'Excluded products', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
+				<input type="text" id="sc-coupon-ex-products" class="large-text" name="sidccofo_coupon_exclude_products" value="<?php echo esc_attr( implode( ', ', $ex_products ) ); ?>" placeholder="<?php esc_attr_e( 'Product IDs or SKUs, separated by commas', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>">
+				<span class="description"><?php echo esc_html( $ex_products ? implode( ', ', array_map( 'get_the_title', $ex_products ) ) : __( 'These never get the discount, even inside an included category.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ); ?></span></p>
+			<?php if ( $terms && ! is_wp_error( $terms ) ) : ?>
+				<fieldset class="sc-pd__wide sc-coupon-cats">
+					<legend><strong><?php esc_html_e( 'Excluded categories (subcategories included)', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></strong></legend>
+					<?php foreach ( $terms as $term ) : ?>
+						<label class="sc-pd__check"><input type="checkbox" name="sidccofo_coupon_exclude_categories[]" value="<?php echo (int) $term->term_id; ?>" <?php checked( in_array( (int) $term->term_id, $ex_cats, true ) ); ?>> <?php echo esc_html( $term->name ); ?></label>
 					<?php endforeach; ?>
 				</fieldset>
 			<?php endif; ?>
@@ -235,6 +257,18 @@ class Admin {
 		update_post_meta( $post_id, '_sidccofo_coupon_products', self::product_ids_from( sanitize_text_field( wp_unslash( $_POST['sidccofo_coupon_products'] ?? '' ) ) ) );
 		$cats = isset( $_POST['sidccofo_coupon_categories'] ) ? array_values( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['sidccofo_coupon_categories'] ) ) ) ) : array();
 		update_post_meta( $post_id, '_sidccofo_coupon_categories', $cats );
+		update_post_meta( $post_id, '_sidccofo_coupon_exclude_products', self::product_ids_from( sanitize_text_field( wp_unslash( $_POST['sidccofo_coupon_exclude_products'] ?? '' ) ) ) );
+		$ex_cats = isset( $_POST['sidccofo_coupon_exclude_categories'] ) ? array_values( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['sidccofo_coupon_exclude_categories'] ) ) ) ) : array();
+		update_post_meta( $post_id, '_sidccofo_coupon_exclude_categories', $ex_cats );
+		update_post_meta( $post_id, '_sidccofo_coupon_max_spend', $this->price( wp_unslash( $_POST['sidccofo_coupon_max_spend'] ?? '' ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parsed by price().
+		$emails = array();
+		foreach ( explode( ',', sanitize_text_field( wp_unslash( $_POST['sidccofo_coupon_emails'] ?? '' ) ) ) as $email ) {
+			$email = strtolower( trim( $email ) );
+			if ( is_email( $email ) || ( 0 === strpos( $email, '*@' ) && is_email( 'a' . substr( $email, 1 ) ) ) ) {
+				$emails[] = $email;
+			}
+		}
+		update_post_meta( $post_id, '_sidccofo_coupon_emails', array_values( array_unique( $emails ) ) );
 		if ( '' === get_post_meta( $post_id, '_sidccofo_coupon_usage_count', true ) ) {
 			update_post_meta( $post_id, '_sidccofo_coupon_usage_count', 0 );
 		}
@@ -395,6 +429,33 @@ class Admin {
 					<option value="outofstock" <?php selected( 'outofstock', $m( '_sidccofo_stock_status' ) ); ?>><?php esc_html_e( 'Out of stock', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></option>
 				</select></p>
 			<p><label class="sc-pd__check"><input type="checkbox" name="sidccofo_hide_buy_box" value="1" <?php checked( (bool) $m( '_sidccofo_hide_buy_box' ) ); ?>> <?php esc_html_e( 'Hide automatic buy box (layout built with Sidcraft)', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label></p>
+			<?php if ( \SidcraftCommerce\Tax::classes() ) : ?>
+				<p><label for="sc-tax-class"><?php esc_html_e( 'Tax class', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
+					<select id="sc-tax-class" name="sidccofo_tax_class">
+						<option value=""><?php esc_html_e( 'Standard rate', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></option>
+						<?php foreach ( \SidcraftCommerce\Tax::classes() as $sidccofo_class => $sidccofo_class_name ) : ?>
+							<option value="<?php echo esc_attr( $sidccofo_class ); ?>" <?php selected( sanitize_title( (string) $m( '_sidccofo_tax_class' ) ), $sidccofo_class ); ?>><?php echo esc_html( $sidccofo_class_name ); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<span class="description"><?php esc_html_e( 'Rates per class are set under Store → Settings → Shipping & tax.', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></span></p>
+			<?php endif; ?>
+		</div>
+		<h4 class="sc-pd__heading"><?php esc_html_e( 'Linked products and external link', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></h4>
+		<div class="sc-pd">
+			<?php foreach ( array( '_sidccofo_upsells' => array( 'sc-upsells', 'sidccofo_upsells', __( 'Upsells', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Shown as “You may also like” below this product.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ), '_sidccofo_cross_sells' => array( 'sc-cross-sells', 'sidccofo_cross_sells', __( 'Cross-sells', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Suggested in the cart when this product is in it.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ) ) as $sidccofo_key => $sidccofo_link ) : ?>
+				<?php $sidccofo_ids = array_filter( array_map( 'absint', (array) $m( $sidccofo_key ) ) ); ?>
+				<p class="sc-pd__wide"><label for="<?php echo esc_attr( $sidccofo_link[0] ); ?>"><?php echo esc_html( $sidccofo_link[2] ); ?></label>
+					<input type="text" id="<?php echo esc_attr( $sidccofo_link[0] ); ?>" class="large-text" name="<?php echo esc_attr( $sidccofo_link[1] ); ?>" value="<?php echo esc_attr( implode( ', ', $sidccofo_ids ) ); ?>" placeholder="<?php esc_attr_e( 'Product IDs or SKUs, separated by commas', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>">
+					<span class="description"><?php echo esc_html( $sidccofo_link[3] ); ?>
+					<?php if ( $sidccofo_ids ) : ?>
+						<?php echo esc_html( ' ' . implode( ', ', array_map( static function ( $id ) { return get_the_title( $id ); }, $sidccofo_ids ) ) ); ?>
+					<?php endif; ?></span></p>
+			<?php endforeach; ?>
+			<p class="sc-pd__wide"><label for="sc-product-url"><?php esc_html_e( 'External / affiliate product URL', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
+				<input type="url" id="sc-product-url" class="large-text" name="sidccofo_product_url" value="<?php echo esc_attr( (string) $m( '_sidccofo_product_url' ) ); ?>" placeholder="https://">
+				<span class="description"><?php esc_html_e( 'Leave empty for products sold here. With a link, the product is bought on that site: the Add to cart button becomes a button to it.', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></span></p>
+			<p><label for="sc-button-text"><?php esc_html_e( 'Button text', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
+				<input type="text" id="sc-button-text" name="sidccofo_button_text" value="<?php echo esc_attr( (string) $m( '_sidccofo_button_text' ) ); ?>" placeholder="<?php esc_attr_e( 'Buy product', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>"></p>
 		</div>
 		<?php
 		$sidccofo_wu = (string) \SidcraftCommerce\setting( 'weight_unit', 'kg' );
@@ -492,17 +553,28 @@ class Admin {
 		}
 		?>
 		<div class="sc-pd__wide sc-choice-stock">
-			<p><strong><?php esc_html_e( 'Stock per choice', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></strong>
-				<span class="description"><?php esc_html_e( 'Optional. Leave empty for no limit. A choice at 0 shows as sold out; orders take from these counts and cancellations or refunds put the units back. New choices appear here after saving.', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></span></p>
+			<p><strong><?php esc_html_e( 'Stock, SKU and image per choice', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></strong>
+				<span class="description"><?php esc_html_e( 'All optional. Stock: leave empty for no limit; a choice at 0 shows as sold out, orders take from these counts and cancellations or refunds put the units back. SKU and image: used when the choice is picked (the image replaces the product image). New choices appear here after saving.', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></span></p>
 			<table class="widefat striped">
-				<thead><tr><th><?php esc_html_e( 'Option', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th><th><?php esc_html_e( 'Choice', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th><th><?php esc_html_e( 'In stock', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th></tr></thead>
+				<thead><tr><th><?php esc_html_e( 'Option', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th><th><?php esc_html_e( 'Choice', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th><th><?php esc_html_e( 'In stock', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th><th><?php esc_html_e( 'SKU', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th><th><?php esc_html_e( 'Image', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th></tr></thead>
 				<tbody>
 					<?php foreach ( $rows as list( $group, $choice ) ) : ?>
-						<?php $left = \SidcraftCommerce\Data\Choice_Stock::get( $post->ID, $group['id'], $choice['id'] ); ?>
+						<?php
+						$left  = \SidcraftCommerce\Data\Choice_Stock::get( $post->ID, $group['id'], $choice['id'] );
+						$extra = Product::get( $post->ID ) ? Product::get( $post->ID )->get_choice_extra( $group['id'], $choice['id'] ) : array( 'sku' => '', 'image' => 0 );
+						$base  = 'sidccofo_choice_extra[' . $group['id'] . '][' . $choice['id'] . ']';
+						?>
 						<tr>
 							<td><?php echo esc_html( $group['label'] ); ?></td>
 							<td><?php echo esc_html( $choice['label'] ); ?></td>
 							<td><input type="number" min="0" step="1" class="small-text" name="sidccofo_choice_stock[<?php echo esc_attr( $group['id'] ); ?>][<?php echo esc_attr( $choice['id'] ); ?>]" value="<?php echo null === $left ? '' : esc_attr( (string) $left ); ?>" placeholder="∞" aria-label="<?php echo esc_attr( $group['label'] . ': ' . $choice['label'] ); ?>"></td>
+							<td><input type="text" class="regular-text sc-choice-sku" name="<?php echo esc_attr( $base . '[sku]' ); ?>" value="<?php echo esc_attr( $extra['sku'] ); ?>" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: choice. */ __( 'SKU of %s', 'sidcraft-commerce-for-sidcraft-page-builder' ), $choice['label'] ) ); ?>"></td>
+							<td class="sc-choice-image" data-sc-image-field>
+								<input type="hidden" name="<?php echo esc_attr( $base . '[image]' ); ?>" value="<?php echo esc_attr( (string) $extra['image'] ); ?>">
+								<span class="sc-image-field__preview"><?php echo $extra['image'] ? wp_get_attachment_image( $extra['image'], array( 40, 40 ) ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core image HTML. ?></span>
+								<button type="button" class="button button-small" data-sc-image-pick><?php esc_html_e( 'Choose', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></button>
+								<button type="button" class="button-link" data-sc-image-clear<?php echo $extra['image'] ? '' : ' hidden'; ?>><?php esc_html_e( 'Remove', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></button>
+							</td>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>
@@ -540,6 +612,29 @@ class Admin {
 				delete_post_meta( $post_id, $meta_key );
 			}
 		}
+
+		// A choice's own SKU and image, kept only for choices that still exist.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce checked in save_product(); values sanitized below.
+		$posted_extra = isset( $_POST['sidccofo_choice_extra'] ) && is_array( $_POST['sidccofo_choice_extra'] ) ? wp_unslash( $_POST['sidccofo_choice_extra'] ) : array();
+		$extras       = array();
+		foreach ( $groups as $group ) {
+			if ( 'text' === $group['type'] ) {
+				continue;
+			}
+			foreach ( $group['choices'] as $choice ) {
+				$row   = (array) ( $posted_extra[ $group['id'] ][ $choice['id'] ] ?? array() );
+				$sku   = sanitize_text_field( (string) ( $row['sku'] ?? '' ) );
+				$image = absint( $row['image'] ?? 0 );
+				$image = $image && wp_attachment_is_image( $image ) ? $image : 0;
+				if ( '' !== $sku || $image ) {
+					$extras[ $group['id'] . '|' . $choice['id'] ] = array(
+						'sku'   => $sku,
+						'image' => $image,
+					);
+				}
+			}
+		}
+		update_post_meta( $post_id, '_sidccofo_choice_extra', $extras );
 	}
 
 	/**
@@ -648,6 +743,16 @@ class Admin {
 		}
 		$attributes = array_slice( array_filter( array_map( 'trim', preg_split( '/\R/', sanitize_textarea_field( wp_unslash( $_POST['sidccofo_attributes'] ?? '' ) ) ) ), 'strlen' ), 0, 100 );
 		update_post_meta( $post_id, '_sidccofo_attributes', implode( "\n", $attributes ) );
+
+		// Linked products, external link and tax class.
+		update_post_meta( $post_id, '_sidccofo_upsells', array_values( array_diff( self::product_ids_from( sanitize_text_field( wp_unslash( $_POST['sidccofo_upsells'] ?? '' ) ) ), array( $post_id ) ) ) );
+		update_post_meta( $post_id, '_sidccofo_cross_sells', array_values( array_diff( self::product_ids_from( sanitize_text_field( wp_unslash( $_POST['sidccofo_cross_sells'] ?? '' ) ) ), array( $post_id ) ) ) );
+		update_post_meta( $post_id, '_sidccofo_product_url', esc_url_raw( wp_unslash( $_POST['sidccofo_product_url'] ?? '' ), array( 'http', 'https' ) ) );
+		update_post_meta( $post_id, '_sidccofo_button_text', sanitize_text_field( wp_unslash( $_POST['sidccofo_button_text'] ?? '' ) ) );
+		if ( isset( $_POST['sidccofo_tax_class'] ) ) {
+			$class = sanitize_title( wp_unslash( $_POST['sidccofo_tax_class'] ) );
+			update_post_meta( $post_id, '_sidccofo_tax_class', isset( \SidcraftCommerce\Tax::classes()[ $class ] ) ? $class : '' );
+		}
 
 		// Gift card product (its fields aren't shown, so are kept, while Gift cards are off).
 		if ( \SidcraftCommerce\Modules::enabled( 'giftcards' ) ) {

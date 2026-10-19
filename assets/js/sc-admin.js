@@ -1,10 +1,51 @@
 /**
  * Sidcraft Commerce — admin: add / remove rows in Store → Settings tables
- * (shipping zones, tax rates, carriers), and the custom-carrier fields in
- * the order screen's Shipment tracking box.
+ * (shipping zones, tax rates, carriers), the custom-carrier fields in the
+ * order screen's Shipment tracking box, and image fields (a choice's image,
+ * a category's image).
  */
 ( function () {
 	'use strict';
+
+	// Image fields (a choice's image on the product screen, a category's
+	// image): a hidden attachment id, a preview, Choose and Remove.
+	document.addEventListener( 'click', function ( e ) {
+		var pick = e.target.closest( '[data-sc-image-pick]' );
+		var clear = e.target.closest( '[data-sc-image-clear]' );
+		var field = ( pick || clear ) && ( pick || clear ).closest( '[data-sc-image-field]' );
+		if ( ! field ) {
+			return;
+		}
+		e.preventDefault();
+		var input = field.querySelector( 'input[type="hidden"]' );
+		var preview = field.querySelector( '.sc-image-field__preview' );
+		var remove = field.querySelector( '[data-sc-image-clear]' );
+		if ( clear ) {
+			input.value = '';
+			preview.innerHTML = '';
+			remove.hidden = true;
+			return;
+		}
+		if ( ! window.wp || ! window.wp.media ) {
+			return;
+		}
+		var frame = window.wp.media( { library: { type: 'image' }, multiple: false } );
+		frame.on( 'select', function () {
+			var image = frame.state().get( 'selection' ).first().toJSON();
+			var sizes = image.sizes || {};
+			var thumb = ( sizes.thumbnail || sizes.medium || image ).url;
+			input.value = image.id;
+			preview.innerHTML = '';
+			var img = document.createElement( 'img' );
+			img.src = thumb;
+			img.alt = '';
+			img.width = 40;
+			img.height = 40;
+			preview.appendChild( img );
+			remove.hidden = false;
+		} );
+		frame.open();
+	} );
 
 	document.addEventListener( 'click', function ( e ) {
 		var add = e.target.closest( '.sc-rows__add' );

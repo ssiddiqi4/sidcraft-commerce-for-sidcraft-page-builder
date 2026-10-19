@@ -5,7 +5,7 @@ Tags: e-commerce, shop, checkout, cart, digital-products
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.7.0
+Stable tag: 1.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -196,6 +196,18 @@ Settings, sessions and temporary data are removed. Products, orders, coupons and
 8. Sidcraft Commerce in action.
 
 == Changelog ==
+
+= 1.8.0 =
+* New: a choice can have its own SKU and image (Product data → Stock, SKU and image per choice). Picking it shows its image and SKU on the product page and in quick view; the cart, checkout and order use them.
+* New: upsells and cross-sells (Product data → Linked products). Upsells show as "You may also like" below the product; the cart page suggests the cross-sells of what's in the cart. Both can be turned off under Store → Settings.
+* New: product tags, with /product-tag/… pages, a Tags column, a "By tag" source in the Product Grid Unit and a Tags row in the specifications table.
+* New: coupon exclusions (products and categories that never get the discount), a maximum spend, and allowed emails (account or billing email; *@example.com allows a domain).
+* New: external / affiliate products. With a product URL, the Add to cart button becomes a "Buy at…" button to that site (opened in a new tab, marked sponsored).
+* New: category and brand images, shown on their pages and in the admin lists, and the Product Categories Unit ([sidccofo_product_categories]): a grid of category cards.
+* New: tax classes (Store → Settings → Tax classes), e.g. a reduced rate for food or books. Rate rows take a class; products pick one. Where a class has no row for a place, the standard rate applies.
+* New: a per-item rate for shipping zones (e.g. 5 plus 2 per item).
+* Fixed: items with options (size, extras) stayed in the cart after checkout.
+* Fixed: uninstalling with "delete data" left brands behind.
 
 = 1.7.0 =
 * New: Store → Settings → Modules. Turn Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates on or off. A module that is off loses its menus, settings tab, Units, blocks and cart / checkout fields, and its products (event tickets, subscription and gift card products) show as unavailable. Nothing is deleted: turning a module back on brings everything back.
@@ -391,6 +403,9 @@ Settings, sessions and temporary data are removed. Products, orders, coupons and
 * First build (WooCommerce-based, replaced by 0.2.0).
 
 == Upgrade Notice ==
+
+= 1.8.0 =
+Adds choice SKUs and images, upsells and cross-sells, product tags, coupon exclusions, external products, category images, tax classes and per-item shipping. Fixes items with options staying in the cart after checkout. Templates changed: units/item-options.php, units/add-to-cart.php, units/cart-panel.php, loop/product-card.php, quick-view.php; new units/product-categories.php. Compare theme overrides of those templates.
 
 = 1.7.0 =
 Adds Store → Settings → Modules to turn off Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates. Everything stays on as before. Templates changed: units/coupon-form.php and units/gift-card-redeem.php (hidden when their module is off); compare theme overrides of those templates.

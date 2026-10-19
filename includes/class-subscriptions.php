@@ -766,13 +766,13 @@ class Subscriptions {
 		$shipping = 0.0;
 		$zone     = '';
 		if ( $product && setting( 'collect_address', 1 ) && ! Downloads\Downloads::is_virtual( $product->get_id() ) && '' !== $location['country'] ) {
-			$quote = Shipping::quote( $total, $location['country'], $product->get_weight() * $qty );
+			$quote = Shipping::quote( $total, $location['country'], $product->get_weight() * $qty, $qty );
 			if ( $quote['available'] ) {
 				$shipping = round_amount( (float) $quote['cost'] );
 				$zone     = (string) $quote['zone'];
 			}
 		}
-		$tax       = Tax::calculate( array( $total ), $shipping, $location );
+		$tax       = Tax::calculate( array( $total ), $shipping, $location, array( $product ? $product->get_tax_class() : '' ) );
 		$inclusive = Tax::prices_include_tax();
 		// Created as the customer (also when the store clicks "renew now").
 		$admin = get_current_user_id();

@@ -41,7 +41,7 @@ function sidcraft_commerce_uninstall() {
 				wp_delete_post( (int) $id, true );
 			}
 		}
-		foreach ( array( 'sidccofo_product_cat', 'sidccofo_event_cat' ) as $taxonomy ) {
+		foreach ( array( 'sidccofo_product_cat', 'sidccofo_brand', 'sidccofo_product_tag', 'sidccofo_event_cat' ) as $taxonomy ) {
 			$terms = $wpdb->get_col( $wpdb->prepare( "SELECT term_id FROM {$wpdb->term_taxonomy} WHERE taxonomy = %s", $taxonomy ) );
 			foreach ( $terms as $term_id ) {
 				wp_delete_term( (int) $term_id, $taxonomy );

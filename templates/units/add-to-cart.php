@@ -5,13 +5,23 @@
  * Override by copying to: yourtheme/sidcraft-commerce/units/add-to-cart.php
  *
  * @package SidcraftCommerce
- * @version 0.9.0
+ * @version 1.8.0
  *
  * @var \SidcraftCommerce\Data\Product $product
  * @var array                          $settings
  */
 
 defined( 'ABSPATH' ) || exit;
+
+// External / affiliate products are bought on another site.
+if ( $product->is_external() ) {
+	printf(
+		'<p class="sc-atc sc-atc--external"><a class="sc-btn sc-btn--primary sc-btn--lg" href="%1$s" target="_blank" rel="nofollow noopener sponsored">%2$s</a></p>',
+		esc_url( $product->get_external_url() ),
+		esc_html( $product->get_button_text() )
+	);
+	return;
+}
 
 // Gift cards: amount, recipient and message instead of a quantity box.
 if ( $product->is_gift_card() && $product->is_purchasable() ) {

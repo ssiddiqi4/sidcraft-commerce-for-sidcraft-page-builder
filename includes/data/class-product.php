@@ -13,7 +13,12 @@
  *   _sidccofo_attributes ("Label: value" lines, "[Group]" lines start a group),
  *   _sidccofo_weight, _sidccofo_length, _sidccofo_width, _sidccofo_height (store units),
  *   _sidccofo_reward_points (points earned per unit; '' = the store's rate),
- *   _sidccofo_currency_prices ("EUR 18" lines: the regular price in another currency).
+ *   _sidccofo_currency_prices ("EUR 18" lines: the regular price in another currency),
+ *   _sidccofo_product_url, _sidccofo_button_text (external / affiliate product: bought elsewhere),
+ *   _sidccofo_upsells, _sidccofo_cross_sells (product ids: "You may also like" on the
+ *   product page, and suggestions in the cart),
+ *   _sidccofo_tax_class (tax class slug, '' = standard),
+ *   _sidccofo_choice_extra ("group|choice" => [ sku, image ]: a choice's own SKU and image).
  * Amounts are in the store currency; get_price() and the other shopper-facing
  * getters return them in the shopper's currency (see Currencies).
  * Derived meta kept in sync on save (for fast sorting / filtering):
@@ -709,6 +714,9 @@ class Product {
 	 * @return bool
 	 */
 	public function is_purchasable() {
+		if ( $this->is_external() ) {
+			return (bool) apply_filters( 'sidcraft_commerce_is_purchasable', false, $this ); // Bought on another site.
+		}
 		$priced = $this->is_gift_card() ? ( $this->get_gift_card_amounts() || $this->allows_custom_amount() ) : '' !== $this->get_regular_price();
 		$ok     = $this->is_published() && $priced;
 		return (bool) apply_filters( 'sidcraft_commerce_is_purchasable', $ok, $this );
@@ -1042,6 +1050,23 @@ class Product {
 				'value' => implode( ' × ', array_map( array( \SidcraftCommerce\Catalog::class, 'number' ), $this->get_dimensions() ) ) . ' ' . $unit,
 			);
 		}
+		$tags = $this->get_tags();
+		if ( $tags ) {
+			$links = array();
+			foreach ( $tags as $tag ) {
+				$link    = get_term_link( $tag );
+				$links[] = array(
+					'name' => $tag->name,
+					'url'  => is_wp_error( $link ) ? '' : (string) $link,
+				);
+			}
+			$rows[] = array(
+				'group'  => '',
+				'label'  => _n( 'Tag', 'Tags', count( $tags ), 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'value'  => implode( ', ', wp_list_pluck( $links, 'name' ) ),
+				'brands' => $links, // Linked names, shown like brands.
+			);
+		}
 		return (array) apply_filters( 'sidcraft_commerce_product_specs', $rows, $this );
 	}
 
@@ -1061,6 +1086,9 @@ class Product {
 	 * @return string
 	 */
 	public function add_to_cart_text() {
+		if ( $this->is_external() ) {
+			return $this->get_button_text();
+		}
 		if ( ! $this->is_purchasable() ) {
 			return __( 'View product', 'sidcraft-commerce-for-sidcraft-page-builder' );
 		}
@@ -1237,12 +1265,184 @@ class Product {
 		return (string) get_option( 'sidcraft_commerce_query_version', '1' );
 	}
 
+	/*
+	------------------------------------------------------------------
+	 * External / affiliate products
+	 * ----------------------------------------------------------------
+	 */
+
+	/**
+	 * Where an external product is bought ('' = sold here).
+	 *
+	 * @return string
+	 */
+	public function get_external_url() {
+		return esc_url_raw( (string) $this->meta( '_sidccofo_product_url' ) );
+	}
+
+	/**
+	 * Sold on another site (affiliate link)?
+	 *
+	 * @return bool
+	 */
+	public function is_external() {
+		return '' !== $this->get_external_url();
+	}
+
+	/**
+	 * Button text of an external product.
+	 *
+	 * @return string
+	 */
+	public function get_button_text() {
+		$text = trim( $this->display_meta( '_sidccofo_button_text' ) );
+		return '' !== $text ? $text : __( 'Buy product', 'sidcraft-commerce-for-sidcraft-page-builder' );
+	}
+
+	/*
+	------------------------------------------------------------------
+	 * Upsells, cross-sells, tags and tax class
+	 * ----------------------------------------------------------------
+	 */
+
+	/**
+	 * Published products from an id list meta.
+	 *
+	 * @param string $key Meta key.
+	 * @return int[]
+	 */
+	protected function linked_ids( $key ) {
+		$out = array();
+		foreach ( array_map( 'absint', (array) $this->meta( $key ) ) as $id ) {
+			if ( $id && $id !== $this->get_id() && 'publish' === get_post_status( $id ) && Post_Types::PRODUCT === get_post_type( $id ) ) {
+				$out[] = $id;
+			}
+		}
+		return array_values( array_unique( $out ) );
+	}
+
+	/**
+	 * Products suggested on this product's page ("You may also like").
+	 *
+	 * @return int[]
+	 */
+	public function get_upsell_ids() {
+		return $this->linked_ids( '_sidccofo_upsells' );
+	}
+
+	/**
+	 * Products suggested in the cart when this product is in it.
+	 *
+	 * @return int[]
+	 */
+	public function get_cross_sell_ids() {
+		return $this->linked_ids( '_sidccofo_cross_sells' );
+	}
+
+	/**
+	 * Tags (terms of sidccofo_product_tag).
+	 *
+	 * @return \WP_Term[]
+	 */
+	public function get_tags() {
+		$terms = get_the_terms( $this->post, Post_Types::TAG );
+		return ( $terms && ! is_wp_error( $terms ) ) ? $terms : array();
+	}
+
+	/**
+	 * Tax class slug ('' = standard rate).
+	 *
+	 * @return string
+	 */
+	public function get_tax_class() {
+		$class = sanitize_title( (string) $this->meta( '_sidccofo_tax_class' ) );
+		return isset( \SidcraftCommerce\Tax::classes()[ $class ] ) ? $class : '';
+	}
+
+	/*
+	------------------------------------------------------------------
+	 * A choice's own SKU and image (like a variation's)
+	 * ----------------------------------------------------------------
+	 */
+
+	/**
+	 * SKU and image of one choice.
+	 *
+	 * @param string $group  Group id.
+	 * @param string $choice Choice id.
+	 * @return array [ sku => string, image => int ].
+	 */
+	public function get_choice_extra( $group, $choice ) {
+		$all = (array) $this->meta( '_sidccofo_choice_extra' );
+		$row = (array) ( $all[ $group . '|' . $choice ] ?? array() );
+		return array(
+			'sku'   => (string) ( $row['sku'] ?? '' ),
+			'image' => (int) ( $row['image'] ?? 0 ),
+		);
+	}
+
+	/**
+	 * Choices of a selection, in option order: [ [ group id, choice id ], … ].
+	 *
+	 * @param array $selection Group id => choice id (or ids for checkboxes).
+	 * @return array[]
+	 */
+	protected function picked_choices( array $selection ) {
+		$out = array();
+		foreach ( $this->get_options() as $group ) {
+			if ( 'text' === $group['type'] || ! isset( $selection[ $group['id'] ] ) ) {
+				continue;
+			}
+			foreach ( (array) $selection[ $group['id'] ] as $cid ) {
+				$out[] = array( $group['id'], (string) $cid );
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * SKU for chosen options: the chosen choices' own SKUs (joined with
+	 * " / " when several have one), else the product's SKU.
+	 *
+	 * @param array $selection Group id => choice id(s).
+	 * @return string
+	 */
+	public function sku_for_selection( array $selection ) {
+		$skus = array();
+		foreach ( $this->picked_choices( $selection ) as list( $group, $choice ) ) {
+			$sku = $this->get_choice_extra( $group, $choice )['sku'];
+			if ( '' !== $sku ) {
+				$skus[] = $sku;
+			}
+		}
+		return $skus ? implode( ' / ', $skus ) : $this->get_sku();
+	}
+
+	/**
+	 * Image for chosen options: the last chosen choice with its own image,
+	 * else 0 (the product image).
+	 *
+	 * @param array $selection Group id => choice id(s).
+	 * @return int Attachment id.
+	 */
+	public function image_for_selection( array $selection ) {
+		$image = 0;
+		foreach ( $this->picked_choices( $selection ) as list( $group, $choice ) ) {
+			$own   = $this->get_choice_extra( $group, $choice )['image'];
+			$image = $own ? $own : $image;
+		}
+		return $image;
+	}
+
 	/**
 	 * Link that adds this product without JavaScript.
 	 *
 	 * @return string
 	 */
 	public function add_to_cart_url() {
+		if ( $this->is_external() ) {
+			return $this->get_external_url();
+		}
 		return $this->can_add_to_cart() ? add_query_arg( 'sidccofo-add-to-cart', $this->get_id(), page_url( 'cart' ) ) : $this->get_permalink();
 	}
 }

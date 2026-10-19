@@ -325,7 +325,7 @@ class Checkout {
 			$item = array(
 				'product_id' => $line['product_id'],
 				'name'       => $line['product']->get_name(),
-				'sku'        => $line['product']->get_sku(),
+				'sku'        => (string) ( $line['sku'] ?? $line['product']->get_sku() ),
 				'price'      => $line['price'],
 				'quantity'   => $line['quantity'],
 				'total'      => $line['total'],

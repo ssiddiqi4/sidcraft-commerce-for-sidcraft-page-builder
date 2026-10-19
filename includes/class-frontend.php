@@ -162,12 +162,13 @@ class Frontend {
 		$product = \SidcraftCommerce\Data\Product::get( $post_id );
 		$overlay = $product ? $product->get_image_overlay_html() : '';
 		if ( '' === $overlay ) {
-			return $html;
+			// Marked so a chosen option's own image can be swapped in.
+			return $product && $product->has_options() ? '<span class="sc-product-image" data-sc-product-image>' . $html . '</span>' : $html;
 		}
 
 		Plugin::instance()->assets->require_assets( array( 'styles' => array( 'sidccofo-commerce' ) ) );
 		return sprintf(
-			'<span class="sc-media-badged%1$s">%2$s%3$s</span>',
+			'<span class="sc-media-badged%1$s" data-sc-product-image>%2$s%3$s</span>',
 			$product->is_in_stock() ? '' : ' is-sold-out',
 			$html,
 			$overlay

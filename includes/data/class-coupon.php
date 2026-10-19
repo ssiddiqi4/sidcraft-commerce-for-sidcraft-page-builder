@@ -20,6 +20,12 @@
  *   _sidccofo_coupon_categories   Product category ids it applies to, children included ([] = all).
  *   _sidccofo_coupon_logged_in    0|1: only for customers who are logged in.
  *   _sidccofo_coupon_starts       Y-m-d, first valid day in the site's timezone ('' = now).
+ *   _sidccofo_coupon_max_spend    Highest cart subtotal it may be used on ('' = none).
+ *   _sidccofo_coupon_exclude_products   Product ids it never applies to.
+ *   _sidccofo_coupon_exclude_categories Category ids (children included) it never applies to.
+ *   _sidccofo_coupon_emails       Customer emails allowed to use it ([] = everyone);
+ *                           "*@example.com" allows a whole domain. Checked against
+ *                           the account email and the billing email.
  *
  * With products or categories set, the discount is worked out on those cart
  * lines only; the minimum spend still counts the whole cart.
@@ -189,6 +195,63 @@ class Coupon {
 	}
 
 	/**
+	 * Highest subtotal it may be used on (0 = none).
+	 *
+	 * @return float
+	 */
+	public function get_max_spend() {
+		return round_amount( \SidcraftCommerce\Currencies::to_active( max( 0.0, (float) $this->meta( '_sidccofo_coupon_max_spend' ) ) ) );
+	}
+
+	/**
+	 * Products it never applies to.
+	 *
+	 * @return int[]
+	 */
+	public function get_excluded_product_ids() {
+		return array_values( array_filter( array_map( 'absint', (array) $this->meta( '_sidccofo_coupon_exclude_products' ) ) ) );
+	}
+
+	/**
+	 * Categories it never applies to (children included).
+	 *
+	 * @return int[]
+	 */
+	public function get_excluded_category_ids() {
+		return array_values( array_filter( array_map( 'absint', (array) $this->meta( '_sidccofo_coupon_exclude_categories' ) ) ) );
+	}
+
+	/**
+	 * Emails allowed to use it ([] = everyone). Lower case; may hold "*@domain".
+	 *
+	 * @return string[]
+	 */
+	public function get_allowed_emails() {
+		return array_values( array_filter( array_map( 'strtolower', array_map( 'trim', (array) $this->meta( '_sidccofo_coupon_emails' ) ) ) ) );
+	}
+
+	/**
+	 * Is one of these emails allowed to use it?
+	 *
+	 * @param string[] $emails Account and billing emails.
+	 * @return bool
+	 */
+	public function allows_emails( array $emails ) {
+		$allowed = $this->get_allowed_emails();
+		if ( ! $allowed ) {
+			return true;
+		}
+		foreach ( array_filter( array_map( 'strtolower', array_map( 'trim', $emails ) ) ) as $email ) {
+			foreach ( $allowed as $rule ) {
+				if ( $rule === $email || ( 0 === strpos( $rule, '*@' ) && substr( $email, -strlen( $rule ) + 1 ) === substr( $rule, 1 ) ) ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Expiry date Y-m-d or ''.
 	 *
 	 * @return string
@@ -298,6 +361,10 @@ class Coupon {
 	 * @return true|\WP_Error
 	 */
 	public function validate_for_customer( $user_id, array $emails, $exclude = 0 ) {
+		if ( ! $this->allows_emails( $emails ) ) {
+			/* translators: %s: coupon code. */
+			return new \WP_Error( 'sidccofo_coupon_email', sprintf( __( 'Coupon “%s” isn’t valid for your email address.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $this->get_code() ) );
+		}
 		$limit = $this->get_per_customer_limit();
 		if ( $limit && $this->customer_usage( $user_id, $emails, $exclude ) >= $limit ) {
 			return new \WP_Error(
@@ -374,7 +441,28 @@ class Coupon {
 	 * @return bool
 	 */
 	public function is_restricted() {
-		return $this->get_product_ids() || $this->get_category_ids();
+		return $this->get_product_ids() || $this->get_category_ids() || $this->get_excluded_product_ids() || $this->get_excluded_category_ids();
+	}
+
+	/**
+	 * Is a product in one of these categories (or their children)?
+	 *
+	 * @param int   $product_id Product.
+	 * @param int[] $cats       Category ids.
+	 * @return bool
+	 */
+	protected static function in_categories( $product_id, array $cats ) {
+		if ( ! $cats ) {
+			return false;
+		}
+		$terms = get_the_terms( (int) $product_id, Post_Types::CATEGORY );
+		foreach ( ( $terms && ! is_wp_error( $terms ) ) ? $terms : array() as $term ) {
+			$ids = array_merge( array( (int) $term->term_id ), array_map( 'intval', get_ancestors( (int) $term->term_id, Post_Types::CATEGORY, 'taxonomy' ) ) );
+			if ( array_intersect( $ids, $cats ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -388,21 +476,14 @@ class Coupon {
 			return true;
 		}
 		$product_id = (int) $product_id;
-		if ( in_array( $product_id, $this->get_product_ids(), true ) ) {
-			return true;
-		}
-		$cats = $this->get_category_ids();
-		if ( ! $cats ) {
+		// Exclusions win over everything else.
+		if ( in_array( $product_id, $this->get_excluded_product_ids(), true ) || self::in_categories( $product_id, $this->get_excluded_category_ids() ) ) {
 			return false;
 		}
-		$terms = get_the_terms( $product_id, Post_Types::CATEGORY );
-		foreach ( ( $terms && ! is_wp_error( $terms ) ) ? $terms : array() as $term ) {
-			$ids = array_merge( array( (int) $term->term_id ), array_map( 'intval', get_ancestors( (int) $term->term_id, Post_Types::CATEGORY, 'taxonomy' ) ) );
-			if ( array_intersect( $ids, $cats ) ) {
-				return true;
-			}
+		if ( ! $this->get_product_ids() && ! $this->get_category_ids() ) {
+			return true; // Only exclusions set: everything else.
 		}
-		return false;
+		return in_array( $product_id, $this->get_product_ids(), true ) || self::in_categories( $product_id, $this->get_category_ids() );
 	}
 
 	/**
@@ -465,6 +546,12 @@ class Coupon {
 				/* translators: 1: coupon code, 2: minimum amount. */
 				sprintf( __( 'Coupon “%1$s” needs a subtotal of at least %2$s.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $this->get_code(), format_price( $this->get_min_spend() ) )
 			);
+		} elseif ( $this->get_max_spend() > 0 && (float) $subtotal > $this->get_max_spend() ) {
+			$error = new \WP_Error(
+				'sidccofo_coupon_max_spend',
+				/* translators: 1: coupon code, 2: maximum amount. */
+				sprintf( __( 'Coupon “%1$s” can be used on a subtotal of up to %2$s.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $this->get_code(), format_price( $this->get_max_spend() ) )
+			);
 		} elseif ( $this->get_amount() <= 0 && ! $this->gives_free_shipping() ) {
 			$error = new \WP_Error( 'sidccofo_coupon_invalid', __( 'This coupon code is not valid.', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
 		} else {
@@ -495,7 +582,7 @@ class Coupon {
 			$valid = new \WP_Error( 'sidccofo_coupon_not_applicable', sprintf( __( 'Coupon “%s” doesn’t apply to anything in your cart.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $this->get_code() ) );
 		}
 		// Logged-in shoppers learn at once; guests when checkout has their email.
-		if ( true === $valid && $this->get_per_customer_limit() && is_user_logged_in() ) {
+		if ( true === $valid && ( $this->get_per_customer_limit() || $this->get_allowed_emails() ) && is_user_logged_in() ) {
 			$user  = wp_get_current_user();
 			$valid = $this->validate_for_customer( $user->ID, array( $user->user_email ), (int) $cart->session()->get( 'order_awaiting_payment', 0 ) );
 		}

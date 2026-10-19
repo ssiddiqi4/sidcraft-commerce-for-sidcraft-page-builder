@@ -58,3 +58,12 @@
 .sc-pro-card .sc-pro-card__warn { color: #8a4b00; font-weight: 500; }
 .sc-pro-card__actions { display: flex; align-items: center; gap: 12px; margin: 0; }
 .sc-pro-card__dismiss { color: #50575e; }
+
+/* 1.8.0: image fields (a choice's image, a category's image). */
+[data-sc-image-field] { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sc-image-field__preview:empty { display: none; }
+.sc-image-field__preview img { display: block; width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+.sc-term-image-field .sc-image-field__preview img { width: 60px; height: 60px; }
+.sc-choice-stock .sc-choice-sku { width: 10em; }
+.column-sidccofo_image { width: 52px; }
+.column-sidccofo_image img { display: block; width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }

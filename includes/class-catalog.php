@@ -112,4 +112,20 @@ class Catalog {
 		}
 		return round( $sum, 3 );
 	}
+
+	/**
+	 * Items in the cart that ship (quantities added up), for per-item rates.
+	 *
+	 * @param \SidcraftCommerce\Cart\Cart $cart Cart.
+	 * @return int
+	 */
+	public static function cart_units( $cart ) {
+		$units = 0;
+		foreach ( $cart->get_items() as $line ) {
+			if ( empty( $line['gift_card'] ) && ! \SidcraftCommerce\Downloads\Downloads::is_virtual( (int) $line['product_id'] ) ) {
+				$units += max( 0, (int) $line['quantity'] );
+			}
+		}
+		return $units;
+	}
 }

@@ -125,6 +125,8 @@ class Settings_Page {
 					'builder_products'  => array( __( 'Design products with Sidcraft Page Builder', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Add New Product opens Sidcraft Page Builder, where a Product data panel sets the price and stock. Products also get "Edit with Sidcraft Page Builder". Turn off to use the WordPress editor.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 					'auto_buy_box'      => array( __( 'Auto-insert buy box on product pages', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Adds price, stock and Add to cart above the description. Turn off if your product layouts are built with Sidcraft Units.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 					'auto_reviews'      => array( __( 'Show reviews on product pages', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Adds star ratings and verified-customer reviews below the product description. Sidcraft layouts can place the Product Reviews Unit instead.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'auto_upsells'      => array( __( 'Show upsells on product pages', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'A product’s upsells (Product data → Linked products) show as “You may also like” below it.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'cart_cross_sells'  => array( __( 'Suggest cross-sells in the cart', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'The cart page suggests the cross-sells of the products in the cart.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 					'reviews_approve'   => array( __( 'Publish verified reviews immediately', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Reviews are only accepted from customers who enter a paid order number and its email. Turn off to approve each review under Comments first.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 				),
 			),
@@ -161,13 +163,14 @@ class Settings_Page {
 					'shipping_zones'     => array(
 						__( 'Shipping zones', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 						'table',
-						__( 'Countries: ISO codes separated by commas, e.g. US or GB, IE, or *. Per weight: optional, added for each unit of the order’s weight (products’ weights × quantities). Free over: leave empty to use the store-wide amount below.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						__( 'Countries: ISO codes separated by commas, e.g. US or GB, IE, or *. Per weight: optional, added for each unit of the order’s weight (products’ weights × quantities). Per item: optional, added for each item that ships (a flat rate of 5 with 2 per item charges 9 for two items). Free over: leave empty to use the store-wide amount below.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 						array(
 							'name'      => array( __( 'Zone name', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'United States', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 							'countries' => array( __( 'Countries', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'countries', 'US' ),
 							'rate'       => array( __( 'Flat rate', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'amount', '5.00' ),
 							/* translators: %s: weight unit, e.g. kg. */
 							'per_weight' => array( sprintf( __( 'Per %s', 'sidcraft-commerce-for-sidcraft-page-builder' ), (string) \SidcraftCommerce\setting( 'weight_unit', 'kg' ) ), 'amount', '' ),
+							'per_item'   => array( __( 'Per item', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'amount', '' ),
 							'free_over'  => array( __( 'Free over', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'amount', '' ),
 						),
 					),
@@ -196,7 +199,7 @@ class Settings_Page {
 			'tax'      => array(
 				'tab'    => 'shipping',
 				'title'  => __( 'Tax', 'sidcraft-commerce-for-sidcraft-page-builder' ),
-				'intro'  => __( 'The customer’s country and state pick the rate: a country + state row first, then the country, then *. No matching row means no tax.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'intro'  => __( 'The customer’s country and state pick the rate: a country + state row first, then the country, then *. No matching row means no tax. Rows with a class apply to products in that class; where a class has no row, the standard rate applies.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 				'fields' => array(
 					'tax_enabled'        => array( __( 'Charge tax', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox' ),
 					'tax_prices_include' => array(
@@ -208,15 +211,17 @@ class Settings_Page {
 					),
 					'tax_shipping'       => array( __( 'Tax shipping', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Apply the same rate to shipping.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 					'tax_label'          => array( __( 'Tax label', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Shown when a rate has no label of its own, e.g. Tax, VAT, GST.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'tax_classes'        => array( __( 'Tax classes', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'textarea', __( 'Optional, one per line, e.g. Reduced rate or Zero rate. Give a product a class under Product data, and add rows with that class below.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 					'tax_rates'          => array(
 						__( 'Tax rates', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 						'table',
-						__( 'Country: ISO code or *. State: optional code, e.g. CA, NY, ON. Rate in percent.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						__( 'Country: ISO code or *. State: optional code, e.g. CA, NY, ON. Rate in percent. Class: empty for the standard rate, or one of the tax classes above.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 						array(
 							'country' => array( __( 'Country', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'country', 'US' ),
 							'state'   => array( __( 'State', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'state', 'CA' ),
 							'rate'    => array( __( 'Rate %', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'amount', '7.25' ),
 							'label'   => array( __( 'Label', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Sales tax', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+							'class'   => array( __( 'Class', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Reduced rate', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 						),
 					),
 				),

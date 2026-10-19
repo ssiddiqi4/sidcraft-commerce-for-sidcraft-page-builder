@@ -19,6 +19,7 @@ class Post_Types {
 	const PRODUCT  = 'sidccofo_product';
 	const CATEGORY = 'sidccofo_product_cat';
 	const BRAND    = 'sidccofo_brand';
+	const TAG      = 'sidccofo_product_tag';
 	const ORDER    = 'sidccofo_order';
 	const COUPON   = 'sidccofo_coupon';
 	const GIFTCARD = 'sidccofo_giftcard';
@@ -286,6 +287,33 @@ class Post_Types {
 				'show_in_rest'      => true,
 				'rewrite'           => array(
 					'slug'       => 'brand',
+					'with_front' => false,
+				),
+			)
+		);
+
+		register_taxonomy(
+			self::TAG,
+			self::PRODUCT,
+			array(
+				'labels'                => array(
+					'name'                       => __( 'Product tags', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+					'singular_name'              => __( 'Tag', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+					'menu_name'                  => __( 'Tags', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+					'all_items'                  => __( 'All tags', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+					'edit_item'                  => __( 'Edit tag', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+					'add_new_item'               => __( 'Add tag', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+					'search_items'               => __( 'Search tags', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+					'not_found'                  => __( 'No tags yet.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+					'separate_items_with_commas' => __( 'Separate tags with commas', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+					'choose_from_most_used'      => __( 'Choose from the most used tags', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				),
+				'hierarchical'          => false, // Typed freely on the product screen.
+				'show_admin_column'     => true,
+				'show_in_rest'          => true,
+				'update_count_callback' => '_update_post_term_count',
+				'rewrite'               => array(
+					'slug'       => 'product-tag',
 					'with_front' => false,
 				),
 			)

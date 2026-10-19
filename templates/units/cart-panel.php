@@ -6,7 +6,7 @@
  * Override by copying to: yourtheme/sidcraft-commerce/units/cart-panel.php
  *
  * @package SidcraftCommerce
- * @version 1.6.0
+ * @version 1.8.0
  *
  * @var \SidcraftCommerce\Cart\Cart $cart
  * @var string                      $empty_text Optional.
@@ -42,7 +42,7 @@ $sidcraft_commerce_empty = isset( $empty_text ) && '' !== $empty_text ? $empty_t
 					$sidcraft_commerce_max = $sidcraft_commerce_p->get_max_purchase_quantity();
 					?>
 					<li class="sc-cart__item" data-product-id="<?php echo esc_attr( $sidcraft_commerce_line['product_id'] ); ?>" data-line-key="<?php echo esc_attr( $sidcraft_commerce_line['key'] ?? '' ); ?>">
-						<a class="sc-cart__thumb" href="<?php echo esc_url( $sidcraft_commerce_p->get_permalink() ); ?>" tabindex="-1" aria-hidden="true"><?php echo $sidcraft_commerce_p->get_image( 'thumbnail' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
+						<a class="sc-cart__thumb" href="<?php echo esc_url( $sidcraft_commerce_p->get_permalink() ); ?>" tabindex="-1" aria-hidden="true"><?php echo ! empty( $sidcraft_commerce_line['image_id'] ) ? wp_get_attachment_image( (int) $sidcraft_commerce_line['image_id'], 'thumbnail' ) : $sidcraft_commerce_p->get_image( 'thumbnail' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
 						<div class="sc-cart__info">
 							<a class="sc-cart__name" href="<?php echo esc_url( $sidcraft_commerce_p->get_permalink() ); ?>"><?php echo esc_html( $sidcraft_commerce_p->get_name() ); ?></a>
 							<?php if ( ! empty( $sidcraft_commerce_line['gift_card'] ) ) : ?>
@@ -85,5 +85,9 @@ $sidcraft_commerce_empty = isset( $empty_text ) && '' !== $empty_text ? $empty_t
 				<a class="sc-cart__continue" href="<?php echo esc_url( page_url( 'shop' ) ); ?>"><?php esc_html_e( '← Continue shopping', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></a>
 			</aside>
 		</div>
+		<?php
+		// Suggestions from the cross-sells of what's in the cart.
+		echo \SidcraftCommerce\Merchandising::products_section( \SidcraftCommerce\Merchandising::cart_cross_sells( $cart ), __( 'You may also like', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'cross-sells' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in the grid templates.
+		?>
 	<?php endif; ?>
 </div>

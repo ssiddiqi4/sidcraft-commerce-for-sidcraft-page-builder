@@ -618,7 +618,7 @@ class Multilingual {
 	 */
 	public function pll_taxonomies( $taxonomies, $is_settings ) {
 		if ( $is_settings ) {
-			foreach ( array( Post_Types::CATEGORY, Post_Types::BRAND, 'sidccofo_event_cat' ) as $tax ) {
+			foreach ( array( Post_Types::CATEGORY, Post_Types::BRAND, Post_Types::TAG, 'sidccofo_event_cat' ) as $tax ) {
 				$taxonomies[ $tax ] = $tax;
 			}
 		}

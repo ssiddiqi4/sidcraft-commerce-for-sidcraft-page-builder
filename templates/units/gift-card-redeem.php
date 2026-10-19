@@ -9,7 +9,7 @@
  * data-sc-redeem-remove and #sc-redeem-error.
  *
  * @package SidcraftCommerce
- * @version 0.7.3
+ * @version 1.7.0
  *
  * @var \SidcraftCommerce\Cart\Cart $cart
  */

@@ -28,7 +28,7 @@ class Shipping {
 	/**
 	 * Clean zone rows.
 	 *
-	 * @return array[] [ name, countries[], rate, per_weight, free_over|null ].
+	 * @return array[] [ name, countries[], rate, per_weight, per_item, free_over|null ].
 	 */
 	public static function zones() {
 		$zones = array();
@@ -43,6 +43,7 @@ class Shipping {
 				'countries' => array_values( $countries ),
 				'rate'       => max( 0.0, (float) ( $row['rate'] ?? 0 ) ),
 				'per_weight' => max( 0.0, (float) ( $row['per_weight'] ?? 0 ) ),
+				'per_item'   => max( 0.0, (float) ( $row['per_item'] ?? 0 ) ),
 				'free_over'  => is_numeric( $free ) ? max( 0.0, (float) $free ) : null,
 			);
 		}
@@ -69,6 +70,7 @@ class Shipping {
 				'countries' => array( '*' ),
 				'rate'       => max( 0.0, (float) setting( 'shipping_flat', 0 ) ),
 				'per_weight' => 0.0,
+				'per_item'   => 0.0,
 				'free_over'  => null,
 			);
 		}
@@ -111,9 +113,10 @@ class Shipping {
 	 * @param float  $subtotal Order subtotal (in the shopper's currency).
 	 * @param string $country  Country code.
 	 * @param float  $weight   Weight of what ships (store unit), for per-weight rates.
+	 * @param int    $units    Items that ship (quantities added up), for per-item rates.
 	 * @return array [ available, cost, zone, free, free_over, remaining ].
 	 */
-	public static function quote( $subtotal, $country, $weight = 0.0 ) {
+	public static function quote( $subtotal, $country, $weight = 0.0, $units = 0 ) {
 		$zone = self::zone_for( $country );
 		if ( ! $zone ) {
 			return array(
@@ -127,7 +130,7 @@ class Shipping {
 		}
 		$free_over = null !== $zone['free_over'] ? $zone['free_over'] : (float) setting( 'shipping_free_over', 0 );
 		$free_over = Currencies::to_active( (float) $free_over );
-		$cost      = Currencies::to_active( (float) $zone['rate'] + (float) ( $zone['per_weight'] ?? 0 ) * max( 0.0, (float) $weight ) );
+		$cost      = Currencies::to_active( (float) $zone['rate'] + (float) ( $zone['per_weight'] ?? 0 ) * max( 0.0, (float) $weight ) + (float) ( $zone['per_item'] ?? 0 ) * max( 0, (int) $units ) );
 		$free      = $cost <= 0 || ( $free_over > 0 && $subtotal >= $free_over );
 		return array(
 			'available' => true,

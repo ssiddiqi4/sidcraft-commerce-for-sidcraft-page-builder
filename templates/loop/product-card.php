@@ -5,7 +5,7 @@
  * Override by copying to: yourtheme/sidcraft-commerce/loop/product-card.php
  *
  * @package SidcraftCommerce
- * @version 0.5.0
+ * @version 1.8.0
  *
  * @var \SidcraftCommerce\Data\Product $product
  * @var array      $settings
@@ -65,7 +65,9 @@ $sidcraft_commerce_soldout = ! $product->is_in_stock();
 		<?php if ( $settings['show_add_to_cart'] || $settings['show_quick_view'] ) : ?>
 			<div class="sc-card__actions">
 				<?php if ( $settings['show_add_to_cart'] ) : ?>
-					<?php if ( $sidcraft_commerce_ajax ) : ?>
+					<?php if ( $product->is_external() ) : ?>
+						<a class="sc-btn sc-btn--primary" href="<?php echo esc_url( $product->get_external_url() ); ?>" target="_blank" rel="nofollow noopener sponsored"><?php echo esc_html( $product->get_button_text() ); ?></a>
+					<?php elseif ( $sidcraft_commerce_ajax ) : ?>
 						<a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" rel="nofollow" role="button" class="sc-btn sc-btn--primary" data-sc-add-to-cart data-product-id="<?php echo esc_attr( $product->get_id() ); ?>" data-quantity="1">
 							<?php echo esc_html( $product->add_to_cart_text() ); ?>
 						</a>

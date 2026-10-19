@@ -64,6 +64,7 @@ class Product_Grid extends Unit {
 					'best_selling' => __( 'Best selling', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					'top_rated'    => __( 'Top rated', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					'category'     => __( 'By category', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+					'tag'          => __( 'By tag', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					'ids'          => __( 'Hand-picked', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 				),
 			),
@@ -74,6 +75,14 @@ class Product_Grid extends Unit {
 				'section'   => 'query',
 				'default'   => '',
 				'condition' => array( 'source' => 'category' ),
+			),
+			'tag'              => array(
+				'type'      => 'terms',
+				'taxonomy'  => Post_Types::TAG,
+				'label'     => __( 'Tag slugs (comma-separated)', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'section'   => 'query',
+				'default'   => '',
+				'condition' => array( 'source' => 'tag' ),
 			),
 			'ids'              => array(
 				'type'      => 'text',
@@ -258,6 +267,18 @@ class Product_Grid extends Unit {
 				}
 				break;
 
+			case 'tag':
+				$slugs = array_filter( array_map( 'sanitize_title', explode( ',', (string) $settings['tag'] ) ) );
+				if ( $slugs ) {
+					$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+						array(
+							'taxonomy' => Post_Types::TAG,
+							'field'    => 'slug',
+							'terms'    => $slugs,
+						),
+					);
+				}
+				break;
 			case 'ids':
 				$ids              = array_filter( array_map( 'absint', explode( ',', (string) $settings['ids'] ) ) );
 				$args['post__in'] = $ids ? $ids : array( 0 );

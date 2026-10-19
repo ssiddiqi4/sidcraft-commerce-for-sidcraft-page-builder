@@ -9,10 +9,15 @@
  *   tax_shipping        Tax shipping at the same rate.
  *   tax_label           Default label ("Tax", "VAT", "GST").
  *   tax_rates           Rows: country (ISO code or *), state (optional
- *                       code), rate %, label (optional).
+ *                       code), rate %, label (optional), class (optional
+ *                       tax class name; empty = standard rate).
+ *   tax_classes         Extra classes, one name per line (e.g. Reduced rate,
+ *                       Zero rate). A product picks one under Product data.
  *
  * The buyer's country/state picks the row: country + state, then country,
- * then *. No match means no tax.
+ * then *. No match means no tax. A product in a tax class uses that class's
+ * rows; where the class has no row for the place, the standard rate applies
+ * (add a 0% row for a zero-rated class).
  *
  * @package SidcraftCommerce
  */
@@ -45,9 +50,30 @@ class Tax {
 	}
 
 	/**
+	 * Tax classes besides the standard rate: slug => name.
+	 *
+	 * @return array
+	 */
+	public static function classes() {
+		$out = array();
+		foreach ( preg_split( '/\r\n|\r|\n/', (string) setting( 'tax_classes', '' ) ) as $name ) {
+			$name = trim( sanitize_text_field( $name ) );
+			if ( '' !== $name && '' !== sanitize_title( $name ) ) {
+				$out[ sanitize_title( $name ) ] = $name;
+			}
+		}
+		/**
+		 * Filter the tax classes: slug => name.
+		 *
+		 * @param array $out Classes.
+		 */
+		return (array) apply_filters( 'sidcraft_commerce_tax_classes', $out );
+	}
+
+	/**
 	 * Clean rate rows.
 	 *
-	 * @return array[] [ country, state, rate (float %), label ].
+	 * @return array[] [ country, state, rate (float %), label, class (slug, '' = standard) ].
 	 */
 	public static function rates() {
 		$rows = array();
@@ -61,6 +87,7 @@ class Tax {
 				'state'   => strtoupper( trim( (string) ( $row['state'] ?? '' ) ) ),
 				'rate'    => max( 0.0, (float) $row['rate'] ),
 				'label'   => trim( (string) ( $row['label'] ?? '' ) ),
+				'class'   => sanitize_title( (string) ( $row['class'] ?? '' ) ),
 			);
 		}
 		/**
@@ -76,14 +103,20 @@ class Tax {
 	 *
 	 * @param string $country Country code.
 	 * @param string $state   State code.
+	 * @param string $class   Tax class slug ('' = standard). A class with no
+	 *                        row for the place falls back to the standard rate.
 	 * @return array [ 'rate' => float %, 'label' => string ].
 	 */
-	public static function rate_for( $country, $state = '' ) {
+	public static function rate_for( $country, $state = '', $class = '' ) {
 		$country = strtoupper( (string) $country );
 		$state   = strtoupper( (string) $state );
+		$class   = sanitize_title( (string) $class );
 		$best    = null;
 		$score   = -1;
 		foreach ( self::rates() as $row ) {
+			if ( ( $row['class'] ?? '' ) !== $class ) {
+				continue;
+			}
 			if ( $row['country'] === $country && '' !== $row['state'] && $row['state'] === $state ) {
 				$s = 3;
 			} elseif ( $row['country'] === $country && '' === $row['state'] ) {
@@ -97,6 +130,9 @@ class Tax {
 				$best  = $row;
 				$score = $s;
 			}
+		}
+		if ( ! $best && '' !== $class ) {
+			return self::rate_for( $country, $state );
 		}
 		$label = $best && '' !== $best['label'] ? $best['label'] : (string) setting( 'tax_label', '' );
 		return array(
@@ -124,12 +160,16 @@ class Tax {
 	/**
 	 * Tax for a set of line totals plus shipping.
 	 *
-	 * @param float[] $lines    Line totals.
-	 * @param float   $shipping Shipping amount.
-	 * @param array   $location [ country, state ].
+	 * Shipping is taxed at the standard rate. With lines in several classes
+	 * the result's rate is 0 (the label then shows no single percentage).
+	 *
+	 * @param float[]  $lines    Line totals.
+	 * @param float    $shipping Shipping amount.
+	 * @param array    $location [ country, state ].
+	 * @param string[] $classes  Tax class of each line (same keys as $lines; missing = standard).
 	 * @return array [ items, shipping, total, rate, label, inclusive ].
 	 */
-	public static function calculate( array $lines, $shipping, array $location ) {
+	public static function calculate( array $lines, $shipping, array $location, array $classes = array() ) {
 		$inclusive = self::prices_include_tax();
 		$out       = array(
 			'items'     => 0.0,
@@ -145,8 +185,18 @@ class Tax {
 		$found        = self::rate_for( $location['country'] ?? '', $location['state'] ?? '' );
 		$out['rate']  = $found['rate'];
 		$out['label'] = $found['label'];
-		foreach ( $lines as $line ) {
-			$out['items'] += self::portion( (float) $line, $found['rate'], $inclusive ); // Rounded per line.
+		$rates = array();
+		foreach ( $lines as $k => $line ) {
+			$rate = '' !== (string) ( $classes[ $k ] ?? '' ) ? self::rate_for( $location['country'] ?? '', $location['state'] ?? '', $classes[ $k ] )['rate'] : $found['rate'];
+			if ( (float) $line > 0 ) {
+				$rates[ (string) $rate ] = true;
+			}
+			$out['items'] += self::portion( (float) $line, $rate, $inclusive ); // Rounded per line.
+		}
+		if ( count( $rates ) > 1 ) {
+			$out['rate'] = 0.0; // Mixed rates: no single percentage to show.
+		} elseif ( 1 === count( $rates ) ) {
+			$out['rate'] = (float) key( $rates ); // Every taxed line at one rate (perhaps a class's).
 		}
 		if ( setting( 'tax_shipping', 0 ) ) {
 			$out['shipping'] = self::portion( (float) $shipping, $found['rate'], $inclusive );

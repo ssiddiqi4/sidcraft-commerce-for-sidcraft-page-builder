@@ -92,6 +92,7 @@ final class Plugin {
 		( new Gift_Cards() )->hooks();
 		( new Reviews() )->hooks();
 		( new Catalog() )->hooks();
+		( new Merchandising() )->hooks();
 		$this->rewards = new Rewards();
 		$this->rewards->hooks();
 		( new Affiliates() )->hooks();
@@ -147,6 +148,7 @@ final class Plugin {
 			'includes/class-tax.php',
 			'includes/class-shipping.php',
 			'includes/class-catalog.php',
+			'includes/class-merchandising.php',
 			'includes/data/class-post-types.php',
 			'includes/data/class-product-options.php',
 			'includes/data/class-price-rules.php',
@@ -192,6 +194,7 @@ final class Plugin {
 			'includes/units/class-unit-order-confirmation.php',
 			'includes/units/class-unit-downloads.php',
 			'includes/units/class-unit-product-specs.php',
+			'includes/units/class-unit-product-categories.php',
 			'includes/units/class-unit-currency-switcher.php',
 			'includes/units/class-unit-affiliate-dashboard.php',
 			'includes/units/class-unit-subscriptions.php',
@@ -254,6 +257,7 @@ final class Plugin {
 			new Units\Order_Confirmation(),
 			new Units\Downloads(),
 			new Units\Product_Specs(),
+			new Units\Product_Categories(),
 			new Units\Currency_Switcher(),
 			new Units\Affiliate_Dashboard(),
 			new Units\Subscriptions(),

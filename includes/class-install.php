@@ -134,8 +134,10 @@ final class Sidcraft_Commerce_Install {
 				// 1.6.0: subscriptions — setting defaults and the My subscriptions page.
 				add_action( 'init', array( __CLASS__, 'upgrade_subscriptions' ), 21 );
 			}
-			if ( version_compare( $version, '1.7.0', '<' ) ) {
-				// 1.7.0: module switches (Settings → Modules), on as before. Defaults only.
+			if ( version_compare( $version, '1.8.0', '<' ) ) {
+				// 1.7.0: module switches (Settings → Modules), on as before.
+				// 1.8.0: upsells / cross-sells switches and tax classes; /product-tag/ links.
+				// Defaults only (and a rewrite flush).
 				add_action( 'init', array( __CLASS__, 'upgrade_settings' ), 22 );
 			}
 		}
@@ -264,6 +266,9 @@ final class Sidcraft_Commerce_Install {
 			'module_subscriptions'       => 1,
 			'module_giftcards'           => 1,
 			'module_coupons'             => 1,
+			'tax_classes'                => '',
+			'auto_upsells'               => 1,
+			'cart_cross_sells'           => 1,
 		);
 		$current  = (array) get_option( 'sidcraft_commerce_settings', array() );
 		update_option( 'sidcraft_commerce_settings', array_merge( $defaults, $current ) );

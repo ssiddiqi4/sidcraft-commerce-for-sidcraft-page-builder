@@ -333,13 +333,14 @@ class Network {
 	protected static function export( \WP_Post $post ) {
 		$meta = array();
 		foreach ( get_post_meta( $post->ID ) as $key => $values ) {
-			if ( in_array( $key, array( '_edit_lock', '_edit_last', '_thumbnail_id', self::SOURCE, '_sidccofo_total_sales', '_sidccofo_rating_avg', '_sidccofo_rating_count', '_sidccofo_coupon_usage_count', '_sidccofo_download_log' ), true ) ) {
+			if ( in_array( $key, array( '_edit_lock', '_edit_last', '_thumbnail_id', self::SOURCE, '_sidccofo_total_sales', '_sidccofo_rating_avg', '_sidccofo_rating_count', '_sidccofo_coupon_usage_count', '_sidccofo_download_log', '_sidccofo_upsells', '_sidccofo_cross_sells' ), true ) ) {
+				// Store-specific: counts, and ids of products that differ per store.
 				continue;
 			}
 			$meta[ $key ] = maybe_unserialize( $values[0] );
 		}
 		$terms = array();
-		foreach ( array( Post_Types::CATEGORY, Post_Types::BRAND ) as $tax ) {
+		foreach ( array( Post_Types::CATEGORY, Post_Types::BRAND, Post_Types::TAG ) as $tax ) {
 			if ( ! taxonomy_exists( $tax ) ) {
 				continue;
 			}
@@ -373,16 +374,20 @@ class Network {
 		// A coupon's product and category limits hold this store's ids: send what finds them on another.
 		$limits = array();
 		if ( Post_Types::COUPON === $post->post_type ) {
-			foreach ( array_filter( array_map( 'absint', (array) ( $meta['_sidccofo_coupon_products'] ?? array() ) ) ) as $pid ) {
-				$limits['products'][] = array(
-					'source' => get_current_blog_id() . ':' . $pid,
-					'sku'    => (string) get_post_meta( $pid, '_sidccofo_sku', true ),
-				);
+			foreach ( array( 'products' => '_sidccofo_coupon_products', 'exclude_products' => '_sidccofo_coupon_exclude_products' ) as $limit => $key ) {
+				foreach ( array_filter( array_map( 'absint', (array) ( $meta[ $key ] ?? array() ) ) ) as $pid ) {
+					$limits[ $limit ][] = array(
+						'source' => get_current_blog_id() . ':' . $pid,
+						'sku'    => (string) get_post_meta( $pid, '_sidccofo_sku', true ),
+					);
+				}
 			}
-			foreach ( array_filter( array_map( 'absint', (array) ( $meta['_sidccofo_coupon_categories'] ?? array() ) ) ) as $tid ) {
-				$term = get_term( $tid, Post_Types::CATEGORY );
-				if ( $term instanceof \WP_Term ) {
-					$limits['categories'][] = $term->slug;
+			foreach ( array( 'categories' => '_sidccofo_coupon_categories', 'exclude_categories' => '_sidccofo_coupon_exclude_categories' ) as $limit => $key ) {
+				foreach ( array_filter( array_map( 'absint', (array) ( $meta[ $key ] ?? array() ) ) ) as $tid ) {
+					$term = get_term( $tid, Post_Types::CATEGORY );
+					if ( $term instanceof \WP_Term ) {
+						$limits[ $limit ][] = $term->slug;
+					}
 				}
 			}
 		}
@@ -437,6 +442,12 @@ class Network {
 		foreach ( $item['meta'] as $key => $value ) {
 			if ( '_sidccofo_download_files' === $key ) {
 				continue;
+			}
+			if ( '_sidccofo_choice_extra' === $key && is_array( $value ) ) {
+				// Choice SKUs travel; their images live in the source store's media library.
+				foreach ( $value as $choice => $extra ) {
+					$value[ $choice ]['image'] = 0;
+				}
 			}
 			update_post_meta( $id, $key, wp_slash( $value ) );
 		}
@@ -534,6 +545,30 @@ class Network {
 		}
 		update_post_meta( $id, '_sidccofo_coupon_products', $products );
 		update_post_meta( $id, '_sidccofo_coupon_categories', $categories );
+
+		// Exclusions: only what this store has (a missing one excludes nothing).
+		$ex_products = array();
+		foreach ( (array) ( $limits['exclude_products'] ?? array() ) as $ref ) {
+			$found = self::find_copy(
+				array(
+					'post'   => array( 'post_type' => Post_Types::PRODUCT ),
+					'source' => (string) $ref['source'],
+					'meta'   => array( '_sidccofo_sku' => (string) $ref['sku'] ),
+				)
+			);
+			if ( $found ) {
+				$ex_products[] = $found;
+			}
+		}
+		$ex_categories = array();
+		foreach ( (array) ( $limits['exclude_categories'] ?? array() ) as $slug ) {
+			$term = get_term_by( 'slug', (string) $slug, Post_Types::CATEGORY );
+			if ( $term ) {
+				$ex_categories[] = (int) $term->term_id;
+			}
+		}
+		update_post_meta( $id, '_sidccofo_coupon_exclude_products', $ex_products );
+		update_post_meta( $id, '_sidccofo_coupon_exclude_categories', $ex_categories );
 		if ( ( ! empty( $limits['products'] ) && ! $products ) || ( ! empty( $limits['categories'] ) && ! $categories ) ) {
 			wp_update_post(
 				array(

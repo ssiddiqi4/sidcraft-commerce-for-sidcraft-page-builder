@@ -399,6 +399,9 @@ class Cart {
 			);
 			if ( null !== $resolved ) {
 				$line['selection'] = $resolved['selection'];
+				// A chosen option can have its own SKU and image (like a variation).
+				$line['sku']      = $product->sku_for_selection( $resolved['selection'] );
+				$line['image_id'] = $product->image_for_selection( $resolved['selection'] );
 			}
 			if ( $product->is_subscription() ) {
 				$line = \SidcraftCommerce\Subscriptions::price_line( $line, $product );
@@ -578,6 +581,7 @@ class Cart {
 			$this->session->set( 'coupon', '' );
 			$this->session->set( 'gift_lines', array() );
 			$this->session->set( 'gift_cards', array() );
+			$this->session->set( 'option_lines', array() ); // Items with options (size, extras) too.
 		}
 		$this->store( array() );
 	}
@@ -799,8 +803,24 @@ class Cart {
 	}
 
 	/**
+	 * Tax class of each line, in the order of discounted_line_totals().
+	 *
+	 * @return string[]
+	 */
+	protected function line_tax_classes() {
+		$classes = array();
+		foreach ( $this->get_items() as $line ) {
+			if ( empty( $line['gift_card'] ) ) {
+				$classes[] = $line['product'] instanceof Product ? $line['product']->get_tax_class() : ''; // Same order as discounted_line_totals().
+			}
+		}
+		return $classes;
+	}
+
+	/**
 	 * Line totals with the discount spread across them in proportion (used
-	 * for tax, so tax is charged on what the customer actually pays).
+	 * for tax, so tax is charged on what the customer actually pays), in the
+	 * order of get_items() without gift cards.
 	 *
 	 * @return float[]
 	 */
@@ -922,7 +942,7 @@ class Cart {
 		$location = $this->get_location();
 		$subtotal = round_amount( $this->get_goods_subtotal() - $this->get_discount() ); // Free-shipping threshold uses what the customer pays.
 		if ( setting( 'collect_address', 1 ) && $this->needs_shipping() ) {
-			$quote = Shipping::quote( $subtotal, $location['country'], \SidcraftCommerce\Catalog::cart_weight( $this ) );
+			$quote = Shipping::quote( $subtotal, $location['country'], \SidcraftCommerce\Catalog::cart_weight( $this ), \SidcraftCommerce\Catalog::cart_units( $this ) );
 		} else {
 			$quote = array(
 				'available' => true,
@@ -953,7 +973,7 @@ class Cart {
 			'key'      => $key,
 			'location' => $location,
 			'shipping' => $quote,
-			'tax'      => Tax::calculate( $this->discounted_line_totals(), $quote['cost'], $location ),
+			'tax'      => Tax::calculate( $this->discounted_line_totals(), $quote['cost'], $location, $this->line_tax_classes() ),
 		);
 		return $this->totals;
 	}

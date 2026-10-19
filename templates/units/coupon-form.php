@@ -11,7 +11,7 @@
  * data-sc-coupon-remove and #sc-coupon-error.
  *
  * @package SidcraftCommerce
- * @version 0.5.0
+ * @version 1.7.0
  *
  * @var \SidcraftCommerce\Cart\Cart $cart
  */
