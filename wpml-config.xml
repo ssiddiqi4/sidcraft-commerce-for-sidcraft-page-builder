@@ -1,0 +1,71 @@
+<wpml-config>
+	<!--
+		Sidcraft Commerce reads prices, stock, rules, downloads and tickets from
+		the original-language product or event, so translations share them.
+		Only the labels below are translated per language.
+	-->
+	<custom-types>
+		<custom-type translate="1">sidccofo_product</custom-type>
+		<custom-type translate="1">sidccofo_event</custom-type>
+		<custom-type translate="0">sidccofo_order</custom-type>
+		<custom-type translate="0">sidccofo_coupon</custom-type>
+		<custom-type translate="0">sidccofo_giftcard</custom-type>
+		<custom-type translate="0">sidccofo_ticket</custom-type>
+		<custom-type translate="0">sidccofo_sub</custom-type>
+	</custom-types>
+	<taxonomies>
+		<taxonomy translate="1">sidccofo_product_cat</taxonomy>
+		<taxonomy translate="1">sidccofo_brand</taxonomy>
+		<taxonomy translate="1">sidccofo_event_cat</taxonomy>
+	</taxonomies>
+	<custom-fields>
+		<!-- Translated: option and attribute labels, venue text. -->
+		<custom-field action="translate">_sidccofo_options</custom-field>
+		<custom-field action="translate">_sidccofo_attributes</custom-field>
+		<custom-field action="translate">_sidccofo_ev_venue</custom-field>
+		<custom-field action="translate">_sidccofo_ev_address</custom-field>
+		<custom-field action="translate">_sidccofo_ev_organizer</custom-field>
+		<!-- Shared with the original. -->
+		<custom-field action="copy">_sidccofo_regular_price</custom-field>
+		<custom-field action="copy">_sidccofo_sale_price</custom-field>
+		<custom-field action="copy">_sidccofo_price_rules</custom-field>
+		<custom-field action="copy">_sidccofo_currency_prices</custom-field>
+		<custom-field action="copy">_sidccofo_sku</custom-field>
+		<custom-field action="copy">_sidccofo_manage_stock</custom-field>
+		<custom-field action="copy">_sidccofo_badge</custom-field>
+		<custom-field action="copy">_sidccofo_gift_card</custom-field>
+		<custom-field action="copy">_sidccofo_gc_amounts</custom-field>
+		<custom-field action="copy">_sidccofo_gc_custom</custom-field>
+		<custom-field action="copy">_sidccofo_gc_min</custom-field>
+		<custom-field action="copy">_sidccofo_gc_max</custom-field>
+		<custom-field action="copy">_sidccofo_weight</custom-field>
+		<custom-field action="copy">_sidccofo_length</custom-field>
+		<custom-field action="copy">_sidccofo_width</custom-field>
+		<custom-field action="copy">_sidccofo_height</custom-field>
+		<custom-field action="copy">_sidccofo_reward_points</custom-field>
+		<custom-field action="copy">_sidccofo_hide_buy_box</custom-field>
+		<custom-field action="copy">_sidccofo_downloadable</custom-field>
+		<custom-field action="copy">_sidccofo_virtual</custom-field>
+		<custom-field action="copy">_sidccofo_download_files</custom-field>
+		<custom-field action="copy">_sidccofo_download_limit</custom-field>
+		<custom-field action="copy">_sidccofo_download_expiry</custom-field>
+		<custom-field action="copy">_sidccofo_ev_start</custom-field>
+		<custom-field action="copy">_sidccofo_ev_end</custom-field>
+		<custom-field action="copy">_sidccofo_ev_all_day</custom-field>
+		<custom-field action="copy">_sidccofo_ev_lat</custom-field>
+		<custom-field action="copy">_sidccofo_ev_lng</custom-field>
+		<custom-field action="copy">_sidccofo_ev_capacity</custom-field>
+		<custom-field action="copy">_sidccofo_ev_tickets</custom-field>
+		<custom-field action="copy">_sidccofo_ev_fields</custom-field>
+		<!-- Kept in step by Sidcraft Commerce itself (counters and sort values). -->
+		<custom-field action="ignore">_sidccofo_stock</custom-field>
+		<custom-field action="ignore">_sidccofo_stock_status</custom-field>
+		<custom-field action="ignore">_sidccofo_price</custom-field>
+		<custom-field action="ignore">_sidccofo_on_sale</custom-field>
+		<custom-field action="ignore">_sidccofo_dated_rules</custom-field>
+		<custom-field action="ignore">_sidccofo_total_sales</custom-field>
+		<custom-field action="ignore">_sidccofo_rating_avg</custom-field>
+		<custom-field action="ignore">_sidccofo_rating_count</custom-field>
+		<custom-field action="ignore">_sidccofo_featured</custom-field>
+	</custom-fields>
+</wpml-config>

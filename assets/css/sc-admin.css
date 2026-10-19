@@ -1,0 +1,60 @@
+/**
+ * Sidcraft Commerce — admin screens (product data, coupon data, settings).
+ */
+.sc-pd { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px 20px; padding: 4px 0; }
+.sc-pd label { display: block; font-weight: 600; margin-bottom: 4px; }
+.sc-pd input[type="text"],
+.sc-pd input[type="number"],
+.sc-pd input[type="date"],
+.sc-pd select { width: 100%; }
+.sc-pd .description { display: block; margin-top: 4px; }
+.sc-pd .sc-pd__check { display: flex; align-items: center; gap: 6px; font-weight: 400; margin-top: 26px; }
+
+/* Shipment tracking box (order screen). */
+.sc-ship-table { margin-bottom: 12px; }
+.sc-ship-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 4px 20px; }
+.sc-ship-form label { display: block; font-weight: 600; margin-bottom: 4px; }
+.sc-ship-form input[type="text"], .sc-ship-form input[type="url"], .sc-ship-form input[type="date"], .sc-ship-form select { width: 100%; }
+.sc-ship-form .sc-ship-wide { grid-column: 1 / -1; }
+.sc-ship-form .sc-pd__check { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; margin-right: 16px; }
+.sc-ship-form .description { display: block; margin-top: 4px; }
+.sc-pd__heading { margin: 16px 0 4px; }
+.sc-pd .sc-pd__wide { grid-column: 1 / -1; }
+.sc-builder-note { margin: 8px 0 4px; color: #50575e; }
+.sc-item-options { margin: 4px 0 0; padding: 0; list-style: none; color: #50575e; font-size: 12px; }
+.sc-item-options li { margin: 0; }
+.sc-item-options__label { font-weight: 600; }
+
+/* Digital product (product data) and Downloads box (order screen). */
+.sc-pd.sc-dl .sc-pd__check { margin-top: 0; }
+.sc-pd.sc-dl .sc-dl__body[hidden] { display: none; }
+.sc-dl__files { margin: 4px 0 8px; }
+.sc-dl__files td, .sc-dl__files th { vertical-align: top; }
+.sc-dl__files .sc-dl__name { width: 32%; }
+.sc-pd .sc-dl__files input[type="text"] { width: 100%; }
+.sc-dl__url { display: flex; gap: 6px; align-items: center; }
+.sc-pd .sc-dl__url input[type="text"] { flex: 1; min-width: 0; width: auto; }
+.sc-dl__tools { width: 32px; text-align: center; }
+.sc-dl__remove { color: #b32d2e; font-size: 16px; text-decoration: none; }
+.sc-dl__problem { margin: 6px 0 0; color: #b32d2e; }
+.sc-dl__limits { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px 20px; }
+.sc-dl__perms td { vertical-align: top; }
+.sc-dl__link { margin-top: 6px; font-size: 12px; }
+.sc-dl__actions { margin-top: 12px; }
+.sc-dl__log { margin-top: 12px; }
+.sc-dl__log summary { cursor: pointer; color: #2271b1; }
+.sc-dl__log ul { margin: 8px 0 0 18px; list-style: disc; }
+@media (max-width: 782px) {
+	.sc-dl__url { flex-wrap: wrap; }
+	.sc-dl__files .sc-dl__name { width: auto; }
+}
+
+/* Sidcraft Builder Pro gateways card (Settings → Payments, Store screen). */
+.sc-pro-card { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; max-width: 960px; margin: 16px 0 8px; padding: 16px 20px; background: #f6f3ff; border: 1px solid #d9cffd; border-left: 4px solid #7c5cfc; border-radius: 6px; box-shadow: none; }
+.sc-pro-card.notice { margin: 16px 20px 8px 2px; border-left-color: #7c5cfc; }
+.sc-pro-card__body { flex: 1 1 420px; }
+.sc-pro-card__body p { margin: 4px 0; }
+.sc-pro-card__title { font-size: 15px; font-weight: 600; color: #1d2327; }
+.sc-pro-card .sc-pro-card__warn { color: #8a4b00; font-weight: 500; }
+.sc-pro-card__actions { display: flex; align-items: center; gap: 12px; margin: 0; }
+.sc-pro-card__dismiss { color: #50575e; }
