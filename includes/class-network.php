@@ -449,6 +449,14 @@ class Network {
 					$value[ $choice ]['image'] = 0;
 				}
 			}
+			if ( '_sidccofo_variants' === $key && is_array( $value ) ) {
+				// Combination images too.
+				foreach ( $value as $combo => $row ) {
+					if ( is_array( $row ) ) {
+						$value[ $combo ]['image'] = 0;
+					}
+				}
+			}
 			update_post_meta( $id, $key, wp_slash( $value ) );
 		}
 		if ( Post_Types::COUPON === $type && ! $existing ) {

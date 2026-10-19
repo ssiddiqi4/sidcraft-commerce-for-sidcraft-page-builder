@@ -237,6 +237,8 @@ class Assets {
 			'i18n'      => array(
 				/* translators: %s: price including the chosen options. */
 				'withOptions'       => __( 'With your choices: %s', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'variantSoldOut'    => __( 'This combination is sold out. Choose other options.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'variantNotSold'    => __( 'This combination isn’t available. Choose other options.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 				'adding'            => __( 'Adding…', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 				'added'             => __( 'Added', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 				'viewCart'          => __( 'View cart', 'sidcraft-commerce-for-sidcraft-page-builder' ),

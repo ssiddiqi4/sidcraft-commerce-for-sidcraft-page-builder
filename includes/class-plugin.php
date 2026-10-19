@@ -153,6 +153,7 @@ final class Plugin {
 			'includes/data/class-product-options.php',
 			'includes/data/class-price-rules.php',
 			'includes/data/class-choice-stock.php',
+			'includes/data/class-variants.php',
 			'includes/data/class-product.php',
 			'includes/data/class-coupon.php',
 			'includes/data/class-gift-card.php',

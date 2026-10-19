@@ -372,22 +372,88 @@
 	 * Item options: show the price with the chosen extras.
 	 * ------------------------------------------------------------------- */
 
+	/* ---------------------------------------------------------------------
+	 * Combinations (two or more options) with their own price, SKU, image
+	 * and stock: the one the current choices make, or null.
+	 * ------------------------------------------------------------------- */
+
+	function currentVariant( form ) {
+		var box = form.querySelector( '[data-sc-options][data-sc-variants]' );
+		if ( ! box ) {
+			return null;
+		}
+		var list;
+		try {
+			list = JSON.parse( box.dataset.scVariants || '[]' );
+		} catch ( err ) {
+			return null;
+		}
+		var picked = {};
+		box.querySelectorAll( 'select, input[type="radio"]:checked' ).forEach( function ( input ) {
+			var group = input.closest( '[data-sc-option]' );
+			if ( group && input.value ) {
+				picked[ group.dataset.scOption ] = input.value;
+			}
+		} );
+		for ( var i = 0; i < list.length; i++ ) {
+			var match = true;
+			for ( var gid in list[ i ].choices ) {
+				if ( picked[ gid ] !== list[ i ].choices[ gid ] ) {
+					match = false;
+					break;
+				}
+			}
+			if ( match ) {
+				return list[ i ];
+			}
+		}
+		return null;
+	}
+
+	// Sold out / not sold: say so and keep the button from adding it.
+	function refreshVariantStatus( form ) {
+		var status = form.querySelector( '[data-sc-variant-status]' );
+		var button = form.querySelector( 'button[type="submit"][data-sc-add-to-cart]' );
+		if ( ! status ) {
+			return;
+		}
+		var variant = currentVariant( form );
+		var blocked = variant && ! variant.available;
+		status.hidden = ! blocked;
+		status.textContent = blocked ? ( variant.sold ? i18n.variantSoldOut : i18n.variantNotSold ) || '' : '';
+		if ( button ) {
+			button.disabled = !! blocked;
+		}
+	}
+
 	function refreshOptionsTotal( form ) {
 		var total = form.querySelector( '[data-sc-options-total]' );
 		if ( ! total ) {
 			return;
 		}
+		var variant = currentVariant( form );
+		if ( variant && ! variant.available ) {
+			total.hidden = true; // The status line says why instead.
+			return;
+		}
+		var own = variant && variant.price !== null && variant.price !== undefined;
 		var extra = 0;
 		form.querySelectorAll( '[data-sc-options] input:checked, [data-sc-options] select' ).forEach( function ( input ) {
+			// A combination's own price replaces its options' amounts.
+			var group = input.closest( '[data-sc-option]' );
+			if ( own && group && variant.choices[ group.dataset.scOption ] !== undefined ) {
+				return;
+			}
 			var price = input.tagName === 'SELECT' ? ( input.selectedOptions[ 0 ] && input.selectedOptions[ 0 ].dataset.price ) : input.dataset.price;
 			extra += parseFloat( price || '0' ) || 0;
 		} );
-		if ( Math.abs( extra ) < 0.005 ) {
+		if ( ! own && Math.abs( extra ) < 0.005 ) {
 			total.hidden = true;
 			return;
 		}
 		// Choices can lower the price too, never below zero (as in the cart).
-		var sum = Math.max( 0, ( parseFloat( total.dataset.base || '0' ) || 0 ) + extra );
+		var base = own ? parseFloat( variant.price ) : ( parseFloat( total.dataset.base || '0' ) || 0 );
+		var sum = Math.max( 0, base + extra );
 		total.textContent = ( i18n.withOptions || '%s' ).replace( '%s', formatPrice( sum ) );
 		total.hidden = false;
 	}
@@ -405,13 +471,15 @@
 			}
 		} );
 
-		// SKU: the picked choices' own SKUs, else the product's.
+		var variant = currentVariant( form );
+
+		// SKU: the combination's, else the picked choices' own SKUs, else the product's.
 		var sku = form.querySelector( '[data-sc-sku]' );
 		if ( sku ) {
 			var skus = picked.map( function ( el ) {
 				return el.dataset.sku || '';
 			} ).filter( Boolean );
-			sku.textContent = skus.length ? skus.join( ' / ' ) : ( sku.dataset.base || '—' );
+			sku.textContent = variant && variant.sku ? variant.sku : ( skus.length ? skus.join( ' / ' ) : ( sku.dataset.base || '—' ) );
 		}
 
 		// Image: the last picked choice with one, else the product image.
@@ -432,6 +500,10 @@
 		} );
 		var src = source ? source.dataset.image : img.dataset.scOriginalSrc;
 		var srcset = source ? ( source.dataset.imageSrcset || '' ) : img.dataset.scOriginalSrcset;
+		if ( variant && variant.image ) {
+			src = variant.image;
+			srcset = variant.srcset || '';
+		}
 		if ( img.getAttribute( 'src' ) !== src ) {
 			img.setAttribute( 'src', src );
 			if ( srcset ) {
@@ -445,8 +517,10 @@
 	// Required radio buttons start on a choice: show its image and SKU at once.
 	function initChoiceMedia() {
 		document.querySelectorAll( '[data-sc-atc-form]' ).forEach( function ( form ) {
-			if ( form.querySelector( '[data-sc-options] [data-image], [data-sc-options] [data-sku]' ) ) {
+			if ( form.querySelector( '[data-sc-options] [data-image], [data-sc-options] [data-sku], [data-sc-variants]' ) ) {
 				refreshChoiceMedia( form );
+				refreshOptionsTotal( form );
+				refreshVariantStatus( form );
 			}
 		} );
 	}
@@ -473,6 +547,7 @@
 		if ( form && e.target.closest( '[data-sc-options]' ) ) {
 			refreshOptionsTotal( form );
 			refreshChoiceMedia( form );
+			refreshVariantStatus( form );
 			var notice = form.querySelector( '.sc-atc__notice.is-error' );
 			if ( notice ) {
 				notice.textContent = '';

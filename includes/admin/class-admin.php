@@ -507,6 +507,7 @@ class Admin {
 				<textarea id="sc-options" name="sidccofo_options" rows="5" class="large-text code" placeholder="<?php echo esc_attr( "Size*: Small | Medium +2 | Large +4\nExtras [checkbox]: Cheese +1 | Bacon +2.50\nSpecial instructions [text]: e.g. no onions" ); ?>"><?php echo esc_textarea( (string) $m( '_sidccofo_options' ) ); ?></textarea>
 				<span class="description"><?php echo esc_html( \SidcraftCommerce\Data\Product_Options::help_text() ); ?></span></p>
 			<?php $this->render_choice_stock( $post ); ?>
+			<?php $this->render_variants( $post ); ?>
 		</div>
 		<?php if ( \SidcraftCommerce\Modules::enabled( 'giftcards' ) ) : ?>
 			<h4 class="sc-pd__heading"><?php esc_html_e( 'Gift card', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></h4>
@@ -584,6 +585,69 @@ class Admin {
 	}
 
 	/**
+	 * Combinations grid: each combination of two or more single-choice options
+	 * with its own sold flag, SKU, prices, stock and image.
+	 *
+	 * @param \WP_Post $post Product.
+	 */
+	protected function render_variants( $post ) {
+		$groups  = \SidcraftCommerce\Data\Product_Options::normalize( \SidcraftCommerce\Data\Product_Options::parse( (string) get_post_meta( $post->ID, '_sidccofo_options', true ) ) );
+		$vgroups = \SidcraftCommerce\Data\Variants::groups( $groups );
+		if ( count( $vgroups ) < 2 ) {
+			return;
+		}
+		if ( \SidcraftCommerce\Data\Variants::count( $vgroups ) > \SidcraftCommerce\Data\Variants::MAX ) {
+			/* translators: 1: number of combinations, 2: limit. */
+			echo '<p class="sc-pd__wide description">' . esc_html( sprintf( __( 'These options make %1$d combinations, more than the %2$d that can each have their own SKU, price, stock and image. Use stock, SKU and image per choice instead.', 'sidcraft-commerce-for-sidcraft-page-builder' ), \SidcraftCommerce\Data\Variants::count( $vgroups ), \SidcraftCommerce\Data\Variants::MAX ) ) . '</p>';
+			return;
+		}
+		$sym = trim( currency_symbol() );
+		?>
+		<div class="sc-pd__wide sc-variants">
+			<p><strong><?php esc_html_e( 'Combinations', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></strong>
+				<span class="description"><?php esc_html_e( 'Each combination of the options above can have its own SKU, price, stock and image. Empty fields use the product’s (price: the product price plus the choices’ amounts). Untick “Sold” for combinations you don’t offer. New combinations appear here after saving.', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></span></p>
+			<table class="widefat striped">
+				<thead><tr>
+					<th><?php esc_html_e( 'Combination', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th>
+					<th><?php esc_html_e( 'Sold', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th>
+					<th><?php esc_html_e( 'SKU', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th>
+					<?php /* translators: %s: currency symbol. */ ?>
+					<th><?php echo esc_html( sprintf( __( 'Price (%s)', 'sidcraft-commerce-for-sidcraft-page-builder' ), $sym ) ); ?></th>
+					<?php /* translators: %s: currency symbol. */ ?>
+					<th><?php echo esc_html( sprintf( __( 'Sale (%s)', 'sidcraft-commerce-for-sidcraft-page-builder' ), $sym ) ); ?></th>
+					<th><?php esc_html_e( 'In stock', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th>
+					<th><?php esc_html_e( 'Image', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th>
+				</tr></thead>
+				<tbody>
+					<?php foreach ( \SidcraftCommerce\Data\Variants::combinations( $groups ) as $combo ) : ?>
+						<?php
+						$row   = \SidcraftCommerce\Data\Variants::row( $post->ID, $combo['key'] );
+						$left  = \SidcraftCommerce\Data\Variants::stock( $post->ID, $combo['key'] );
+						$base  = 'sidccofo_variants[' . $combo['key'] . ']';
+						$label = $combo['label'];
+						?>
+						<tr>
+							<td><?php echo esc_html( $label ); ?></td>
+							<td><input type="hidden" name="<?php echo esc_attr( $base . '[enabled]' ); ?>" value="0"><input type="checkbox" name="<?php echo esc_attr( $base . '[enabled]' ); ?>" value="1" <?php checked( $row['enabled'] ); ?> aria-label="<?php echo esc_attr( sprintf( /* translators: %s: combination. */ __( 'Sell %s', 'sidcraft-commerce-for-sidcraft-page-builder' ), $label ) ); ?>"></td>
+							<td><input type="text" class="sc-choice-sku" name="<?php echo esc_attr( $base . '[sku]' ); ?>" value="<?php echo esc_attr( $row['sku'] ); ?>" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: combination. */ __( 'SKU of %s', 'sidcraft-commerce-for-sidcraft-page-builder' ), $label ) ); ?>"></td>
+							<td><input type="text" inputmode="decimal" class="small-text" name="<?php echo esc_attr( $base . '[regular]' ); ?>" value="<?php echo esc_attr( $row['regular'] ); ?>" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: combination. */ __( 'Price of %s', 'sidcraft-commerce-for-sidcraft-page-builder' ), $label ) ); ?>"></td>
+							<td><input type="text" inputmode="decimal" class="small-text" name="<?php echo esc_attr( $base . '[sale]' ); ?>" value="<?php echo esc_attr( $row['sale'] ); ?>" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: combination. */ __( 'Sale price of %s', 'sidcraft-commerce-for-sidcraft-page-builder' ), $label ) ); ?>"></td>
+							<td><input type="number" min="0" step="1" class="small-text" name="<?php echo esc_attr( $base . '[stock]' ); ?>" value="<?php echo null === $left ? '' : esc_attr( (string) $left ); ?>" placeholder="∞" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: combination. */ __( 'Stock of %s', 'sidcraft-commerce-for-sidcraft-page-builder' ), $label ) ); ?>"></td>
+							<td class="sc-choice-image" data-sc-image-field>
+								<input type="hidden" name="<?php echo esc_attr( $base . '[image]' ); ?>" value="<?php echo esc_attr( $row['image'] ? (string) $row['image'] : '' ); ?>">
+								<span class="sc-image-field__preview"><?php echo $row['image'] ? wp_get_attachment_image( $row['image'], array( 40, 40 ) ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core image HTML. ?></span>
+								<button type="button" class="button button-small" data-sc-image-pick><?php esc_html_e( 'Choose', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></button>
+								<button type="button" class="button-link" data-sc-image-clear<?php echo $row['image'] ? '' : ' hidden'; ?>><?php esc_html_e( 'Remove', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></button>
+							</td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Save the stock per choice table. Counts for choices that no longer
 	 * exist are removed.
 	 *
@@ -608,7 +672,8 @@ class Admin {
 			}
 		}
 		foreach ( array_keys( (array) get_post_meta( $post_id ) ) as $meta_key ) {
-			if ( 0 === strpos( (string) $meta_key, '_sidccofo_cstock_' ) && ! isset( $keep[ $meta_key ] ) ) {
+			// Combination stock (_sidccofo_cstock_v…) is kept by Variants::save().
+			if ( 0 === strpos( (string) $meta_key, '_sidccofo_cstock_' ) && 0 !== strpos( (string) $meta_key, '_sidccofo_cstock_v' ) && ! isset( $keep[ $meta_key ] ) ) {
 				delete_post_meta( $post_id, $meta_key );
 			}
 		}
@@ -733,6 +798,10 @@ class Admin {
 			update_post_meta( $post_id, '_sidccofo_currency_prices', implode( "\n", $lines ) );
 		}
 		$this->save_choice_stock( $post_id );
+		// Combinations: only when the grid was on the screen (it appears after the options are saved).
+		if ( isset( $_POST['sidccofo_variants'] ) && is_array( $_POST['sidccofo_variants'] ) ) {
+			\SidcraftCommerce\Data\Variants::save( $post_id, wp_unslash( $_POST['sidccofo_variants'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized in Variants::save().
+		}
 		foreach ( array( 'weight', 'length', 'width', 'height' ) as $measure ) {
 			$value = \SidcraftCommerce\parse_price( wp_unslash( $_POST[ 'sidccofo_' . $measure ] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parsed as a number.
 			update_post_meta( $post_id, '_sidccofo_' . $measure, $value );

@@ -18,7 +18,8 @@
  *   _sidccofo_upsells, _sidccofo_cross_sells (product ids: "You may also like" on the
  *   product page, and suggestions in the cart),
  *   _sidccofo_tax_class (tax class slug, '' = standard),
- *   _sidccofo_choice_extra ("group|choice" => [ sku, image ]: a choice's own SKU and image).
+ *   _sidccofo_choice_extra ("group|choice" => [ sku, image ]: a choice's own SKU and image),
+ *   _sidccofo_variants (per-combination SKU, price, stock and image; see Variants).
  * Amounts are in the store currency; get_price() and the other shopper-facing
  * getters return them in the shopper's currency (see Currencies).
  * Derived meta kept in sync on save (for fast sorting / filtering):
@@ -755,6 +756,10 @@ class Product {
 		if ( $in && $this->has_choice_stock() && Choice_Stock::blocks_purchase( $this->get_id(), $this->get_options() ) ) {
 			$in = false;
 		}
+		// Every combination sold out or not sold.
+		if ( $in && Variants::none_available( $this ) ) {
+			$in = false;
+		}
 		return $in;
 	}
 
@@ -828,7 +833,11 @@ class Product {
 		if ( '' === $this->get_regular_price() ) {
 			return '';
 		}
-		if ( $this->is_on_sale() ) {
+		$range = Variants::price_range( $this );
+		if ( $range ) {
+			/* translators: 1: lowest price, 2: highest price. */
+			$html = esc_html( sprintf( __( '%1$s – %2$s', 'sidcraft-commerce-for-sidcraft-page-builder' ), format_price( $range[0] ), format_price( $range[1] ) ) );
+		} elseif ( $this->is_on_sale() ) {
 			$html = sprintf(
 				'<span class="sc-price-stack"><ins class="sc-price__sale">%2$s</ins><del class="sc-price__regular" aria-hidden="true">%1$s</del></span><span class="sc-sr-only screen-reader-text">%3$s</span>',
 				esc_html( format_price( $this->get_display_regular_price() ) ),
@@ -1408,6 +1417,10 @@ class Product {
 	 * @return string
 	 */
 	public function sku_for_selection( array $selection ) {
+		$combo = Variants::key_for( $this->get_options(), $selection );
+		if ( '' !== $combo && '' !== Variants::row( $this->get_id(), $combo )['sku'] ) {
+			return Variants::row( $this->get_id(), $combo )['sku']; // The combination's own SKU.
+		}
 		$skus = array();
 		foreach ( $this->picked_choices( $selection ) as list( $group, $choice ) ) {
 			$sku = $this->get_choice_extra( $group, $choice )['sku'];
@@ -1426,6 +1439,10 @@ class Product {
 	 * @return int Attachment id.
 	 */
 	public function image_for_selection( array $selection ) {
+		$combo = Variants::key_for( $this->get_options(), $selection );
+		if ( '' !== $combo && Variants::row( $this->get_id(), $combo )['image'] ) {
+			return Variants::row( $this->get_id(), $combo )['image']; // The combination's own image.
+		}
 		$image = 0;
 		foreach ( $this->picked_choices( $selection ) as list( $group, $choice ) ) {
 			$own   = $this->get_choice_extra( $group, $choice )['image'];

@@ -410,6 +410,9 @@
  * images, external products.
  * ------------------------------------------------------------------- */
 .sc-options__sku { margin: 0; font-size: .875em; color: var(--sc-text-muted); }
+.sc-options__variant { margin: 0; font-size: .875em; font-weight: 600; color: var(--sc-danger); }
+.sc-options__variant[hidden] { display: none; }
+.sc-btn[data-sc-add-to-cart]:disabled { opacity: .5; cursor: not-allowed; }
 .sc-product-image { display: block; }
 
 .sc-linked { margin: 40px 0 0; clear: both; }

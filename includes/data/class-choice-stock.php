@@ -66,7 +66,9 @@ class Choice_Stock {
 	}
 
 	/**
-	 * Tracked choices among a selection: "group|choice" => [ group, choice, label, left ].
+	 * Tracked choices among a selection, and the combination they make when it
+	 * has its own stock (see Variants): "group|choice" or "variant|key" =>
+	 * [ group, choice, label, left, meta_key ].
 	 *
 	 * @param int   $product_id Product.
 	 * @param array $groups     Product's groups (normalized).
@@ -84,12 +86,32 @@ class Choice_Stock {
 				$left = self::get( $product_id, $group['id'], (string) $cid );
 				if ( null !== $left ) {
 					$out[ $group['id'] . '|' . $cid ] = array(
-						'group'  => $group['id'],
-						'choice' => (string) $cid,
-						'label'  => $group['label'] . ': ' . ( $labels[ $cid ] ?? $cid ),
-						'left'   => $left,
+						'group'    => $group['id'],
+						'choice'   => (string) $cid,
+						'label'    => $group['label'] . ': ' . ( $labels[ $cid ] ?? $cid ),
+						'left'     => $left,
+						'meta_key' => self::meta_key( $group['id'], (string) $cid ),
 					);
 				}
+			}
+		}
+		$combo = Variants::key_for( $groups, $selection );
+		if ( '' !== $combo ) {
+			$left = Variants::stock( $product_id, $combo );
+			if ( null !== $left ) {
+				$names = array();
+				foreach ( Variants::combinations( $groups ) as $row ) {
+					if ( $row['key'] === $combo ) {
+						$names[] = $row['label'];
+					}
+				}
+				$out[ 'variant|' . $combo ] = array(
+					'group'    => '',
+					'choice'   => $combo,
+					'label'    => $names ? $names[0] : $combo,
+					'left'     => $left,
+					'meta_key' => Variants::stock_key( $combo ),
+				);
 			}
 		}
 		return $out;
@@ -181,7 +203,7 @@ class Choice_Stock {
 			$product = Product::get( $product_id );
 			$keys    = array();
 			foreach ( self::tracked_in( $product_id, $product ? $product->get_options() : array(), $item['selection'] ) as $row ) {
-				$key = self::meta_key( $row['group'], $row['choice'] );
+				$key = $row['meta_key'];
 				if ( ! self::adjust( $product_id, $key, -1 * $qty ) ) {
 					self::give_back( $taken );
 					foreach ( $keys as $done ) {

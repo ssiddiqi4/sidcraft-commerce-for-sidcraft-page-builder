@@ -5,7 +5,7 @@ Tags: e-commerce, shop, checkout, cart, digital-products
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.8.0
+Stable tag: 1.9.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -196,6 +196,12 @@ Settings, sessions and temporary data are removed. Products, orders, coupons and
 8. Sidcraft Commerce in action.
 
 == Changelog ==
+
+= 1.9.0 =
+* New: per-combination variants. A product with two or more options (dropdown or radio) gets a Combinations grid under Product data: each combination (e.g. Red / Large) has its own SKU, price, sale price, stock and image, and can be marked as not sold.
+* The product page switches price, SKU and image when a combination is picked, and says when it is sold out or not sold; the Add to cart button is disabled for those.
+* Stock is taken from the combination at checkout and given back if the order is cancelled or refunded. Prices show as a range (lowest – highest).
+* Network copy: combination images are cleared on the target site, like choice images.
 
 = 1.8.0 =
 * New: a choice can have its own SKU and image (Product data → Stock, SKU and image per choice). Picking it shows its image and SKU on the product page and in quick view; the cart, checkout and order use them.
@@ -403,6 +409,9 @@ Settings, sessions and temporary data are removed. Products, orders, coupons and
 * First build (WooCommerce-based, replaced by 0.2.0).
 
 == Upgrade Notice ==
+
+= 1.9.0 =
+Adds per-combination variants: a grid of option combinations, each with its own SKU, price, sale price, stock and image. Template changed: units/item-options.php; compare theme overrides of it.
 
 = 1.8.0 =
 Adds choice SKUs and images, upsells and cross-sells, product tags, coupon exclusions, external products, category images, tax classes and per-item shipping. Fixes items with options staying in the cart after checkout. Templates changed: units/item-options.php, units/add-to-cart.php, units/cart-panel.php, loop/product-card.php, quick-view.php; new units/product-categories.php. Compare theme overrides of those templates.

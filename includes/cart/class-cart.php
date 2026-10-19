@@ -386,6 +386,14 @@ class Cart {
 			if ( null !== $resolved ) {
 				// Choices can lower the price too, but never below zero.
 				$price = round_amount( max( 0.0, $price + $resolved['extra'] ) );
+				// A combination with its own price replaces the product price and
+				// its options' amounts; other options (extras) still add theirs.
+				$groups = $product->get_options();
+				$combo  = \SidcraftCommerce\Data\Variants::key_for( $groups, $resolved['selection'] );
+				$own    = '' !== $combo ? \SidcraftCommerce\Data\Variants::own_price( $product->get_id(), $combo ) : null;
+				if ( null !== $own ) {
+					$price = round_amount( max( 0.0, $own + $resolved['extra'] - \SidcraftCommerce\Currencies::to_active( \SidcraftCommerce\Data\Variants::options_amount( $groups, $combo ) ) ) );
+				}
 			}
 			$line = array(
 				'key'        => $key,
@@ -529,10 +537,19 @@ class Cart {
 	public function validate_choices( $product_id, array $selection, $quantity, $skip_key = null ) {
 		$product_id = \SidcraftCommerce\Multilingual::original_id( absint( $product_id ) ); // Translations share the original's cart line.
 		$product = Product::get( $product_id );
-		if ( ! $product || ! $selection || ! $product->has_choice_stock() ) {
+		if ( ! $product || ! $selection ) {
 			return true;
 		}
-		$groups  = $product->get_options();
+		$groups = $product->get_options();
+		// A combination that isn't sold (see Variants).
+		$combo = \SidcraftCommerce\Data\Variants::key_for( $groups, $selection );
+		if ( '' !== $combo && ! \SidcraftCommerce\Data\Variants::row( $product_id, $combo )['enabled'] ) {
+			/* translators: %s: product name. */
+			return new \WP_Error( 'sidccofo_unavailable', sprintf( __( 'This combination of %s isn’t available. Choose other options.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $product->get_name() ) );
+		}
+		if ( ! $product->has_choice_stock() ) {
+			return true;
+		}
 		$tracked = \SidcraftCommerce\Data\Choice_Stock::tracked_in( $product_id, $groups, $selection );
 		foreach ( $tracked as $id => $row ) {
 			$need = (int) $quantity;

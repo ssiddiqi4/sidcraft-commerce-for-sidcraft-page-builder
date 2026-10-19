@@ -6,7 +6,7 @@
  * Field names must stay sidccofo_options[group id] (checkboxes: [group id][]).
  *
  * @package SidcraftCommerce
- * @version 1.8.0
+ * @version 1.9.0
  *
  * @var \SidcraftCommerce\Data\Product $product
  * @var array[]                        $groups  From Product::get_options().
@@ -40,8 +40,10 @@ $sidcraft_commerce_media   = static function ( $group, $choice ) use ( $product,
 	}
 	return $attrs;
 };
+// Combinations with their own price, SKU, image and stock (see Variants).
+$sidcraft_commerce_variants = \SidcraftCommerce\Data\Variants::applies( $groups ) ? \SidcraftCommerce\Data\Variants::for_script( $product ) : array();
 ?>
-<div class="sc-options" data-sc-options>
+<div class="sc-options" data-sc-options<?php echo $sidcraft_commerce_variants ? ' data-sc-variants="' . esc_attr( wp_json_encode( $sidcraft_commerce_variants ) ) . '"' : ''; ?>>
 	<?php foreach ( $groups as $sidcraft_commerce_group ) : ?>
 		<?php
 		$sidcraft_commerce_id   = $sidcraft_commerce_uid . '-' . $sidcraft_commerce_group['id'];
@@ -88,8 +90,11 @@ $sidcraft_commerce_media   = static function ( $group, $choice ) use ( $product,
 			<p class="sc-field__error" id="<?php echo esc_attr( $sidcraft_commerce_err ); ?>" data-sc-option-error></p>
 		</div>
 	<?php endforeach; ?>
-	<?php if ( $sidcraft_commerce_has_sku ) : ?>
+	<?php if ( $sidcraft_commerce_has_sku || array_filter( wp_list_pluck( $sidcraft_commerce_variants, 'sku' ) ) ) : ?>
 		<p class="sc-options__sku"><?php esc_html_e( 'SKU:', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?> <span data-sc-sku data-base="<?php echo esc_attr( $product->get_sku() ); ?>"><?php echo esc_html( '' !== $product->get_sku() ? $product->get_sku() : '—' ); ?></span></p>
+	<?php endif; ?>
+	<?php if ( $sidcraft_commerce_variants ) : ?>
+		<p class="sc-options__variant" data-sc-variant-status role="status" aria-live="polite" hidden></p>
 	<?php endif; ?>
 	<p class="sc-options__total" data-sc-options-total data-base="<?php echo esc_attr( $product->get_price() ); ?>" hidden></p>
 </div>
