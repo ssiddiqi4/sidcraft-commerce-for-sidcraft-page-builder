@@ -97,6 +97,12 @@ class Settings_Page {
 		}
 
 		return array(
+			'modules'  => array(
+				'tab'    => 'modules',
+				'title'  => __( 'Modules', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'intro'  => __( 'Turn off what your store doesn’t use: its menus, settings, Units and cart and checkout fields go away, and its products can’t be bought. Nothing is deleted; turning a module back on brings everything back.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'fields' => \SidcraftCommerce\Modules::settings_fields(),
+			),
 			'general'  => array(
 				'tab'    => 'general',
 				'title'  => __( 'Store', 'sidcraft-commerce-for-sidcraft-page-builder' ),
@@ -301,6 +307,7 @@ class Settings_Page {
 	protected function tabs() {
 		$tabs = array(
 			'general'   => __( 'General', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'modules'   => __( 'Modules', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			'shipping'  => __( 'Shipping & tax', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			'payments'  => __( 'Payments', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			'downloads' => __( 'Downloads', 'sidcraft-commerce-for-sidcraft-page-builder' ),
@@ -343,6 +350,9 @@ class Settings_Page {
 			return $pages[ substr( $key, 5 ) ] ?? 0;
 		}
 		$all = (array) get_option( self::OPTION, array() );
+		if ( ! array_key_exists( $key, $all ) && null !== \SidcraftCommerce\Modules::default_for( $key ) ) {
+			return \SidcraftCommerce\Modules::default_for( $key ); // Module switches saved before 1.7.0 don't exist yet.
+		}
 		return $all[ $key ] ?? '';
 	}
 
@@ -548,6 +558,21 @@ class Settings_Page {
 			}
 		}
 
+		// Event pages come and go with the Events module.
+		if ( (int) ( $clean['module_events'] ?? 1 ) !== (int) ( $old['module_events'] ?? 1 ) ) {
+			update_option( 'sidcraft_commerce_flush_rewrites', 1, true );
+		}
+
+		// Subscriptions still renewing would stop charging (and stop ending) with the module off.
+		if ( isset( $clean['module_subscriptions'] ) && ! $clean['module_subscriptions'] && \SidcraftCommerce\Modules::enabled( 'subscriptions' ) && \SidcraftCommerce\Modules::has_live_subscriptions() ) {
+			$clean['module_subscriptions'] = 1;
+			add_settings_error(
+				self::OPTION,
+				'sidccofo_subscriptions_live',
+				__( 'Subscriptions stay on: some subscriptions are still waiting for payment, active, on hold or cancelled at period end. Cancel them under Store → Subscriptions (or wait for them to end), then turn the module off.', 'sidcraft-commerce-for-sidcraft-page-builder' )
+			);
+		}
+
 		\SidcraftCommerce\Checkout\Checkout::reset_gateways();
 		$clean['currency'] = strtoupper( substr( preg_replace( '/[^A-Za-z]/', '', (string) $clean['currency'] ), 0, 3 ) );
 		foreach ( array( 'shipping_flat', 'shipping_free_over' ) as $amount ) {
@@ -565,7 +590,10 @@ class Settings_Page {
 			return;
 		}
 		$tab = (string) $this->current_tab();
-		echo '<div class="wrap"><h1>' . esc_html__( 'Store settings', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h1><nav class="nav-tab-wrapper">';
+		echo '<div class="wrap"><h1>' . esc_html__( 'Store settings', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h1>';
+		// Pages outside Settings don't print messages on their own (e.g. "Subscriptions stay on").
+		settings_errors( self::OPTION );
+		echo '<nav class="nav-tab-wrapper">';
 		foreach ( $this->tabs() as $slug => $label ) {
 			printf(
 				'<a href="%1$s" class="nav-tab%2$s">%3$s</a>',

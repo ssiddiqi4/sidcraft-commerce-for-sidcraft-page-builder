@@ -117,6 +117,9 @@ class Cart {
 	 * @return array
 	 */
 	protected function gift_raw() {
+		if ( ! \SidcraftCommerce\Modules::enabled( 'giftcards' ) ) {
+			return array(); // Gift cards can't be bought with the module off.
+		}
 		$lines = $this->session->get( 'gift_lines', array() );
 		return is_array( $lines ) ? $lines : array();
 	}
@@ -674,6 +677,9 @@ class Cart {
 	 * @return Coupon|\WP_Error
 	 */
 	public function apply_coupon( $code ) {
+		if ( ! \SidcraftCommerce\Modules::enabled( 'coupons' ) ) {
+			return new \WP_Error( 'sidccofo_coupon_off', __( 'Coupons can’t be used in this store.', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
+		}
 		$code = Coupon::normalize( $code );
 		if ( '' === $code ) {
 			return new \WP_Error( 'sidccofo_coupon_empty', __( 'Enter a coupon code.', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
@@ -713,6 +719,9 @@ class Cart {
 	 * @return string
 	 */
 	public function get_coupon_code() {
+		if ( ! \SidcraftCommerce\Modules::enabled( 'coupons' ) ) {
+			return ''; // A code applied before the module was switched off no longer counts.
+		}
 		return Coupon::normalize( (string) $this->session->get( 'coupon', '' ) );
 	}
 
@@ -1035,6 +1044,9 @@ class Cart {
 	 * @return string[]
 	 */
 	public function get_gift_card_codes() {
+		if ( ! \SidcraftCommerce\Modules::enabled( 'giftcards' ) ) {
+			return array(); // Cards applied before the module was switched off no longer pay.
+		}
 		$codes = $this->session->get( 'gift_cards', array() );
 		return is_array( $codes ) ? array_values( array_unique( array_map( array( Gift_Card::class, 'normalize' ), $codes ) ) ) : array();
 	}
@@ -1046,6 +1058,9 @@ class Cart {
 	 * @return Gift_Card|\WP_Error
 	 */
 	public function apply_gift_card( $code ) {
+		if ( ! \SidcraftCommerce\Modules::enabled( 'giftcards' ) ) {
+			return new \WP_Error( 'sidccofo_giftcard_off', __( 'Gift cards can’t be used in this store.', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
+		}
 		$norm = Gift_Card::normalize( $code );
 		if ( '' === $norm ) {
 			return new \WP_Error( 'sidccofo_giftcard_empty_code', __( 'Enter a gift card code.', 'sidcraft-commerce-for-sidcraft-page-builder' ) );

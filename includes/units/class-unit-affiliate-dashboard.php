@@ -54,7 +54,7 @@ class Affiliate_Dashboard extends Unit {
 	 */
 	protected function render_html( array $settings ) {
 		if ( ! Affiliates::enabled() ) {
-			return current_user_can( 'manage_options' ) ? '<p class="sc-empty">' . esc_html__( 'Turn affiliates on under Store → Settings → Rewards & affiliates.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>' : '';
+			return current_user_can( 'manage_options' ) ? '<p class="sc-empty">' . esc_html__( 'Turn affiliates on under Store → Settings → Modules.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>' : '';
 		}
 		$user = get_current_user_id();
 		return $this->template(

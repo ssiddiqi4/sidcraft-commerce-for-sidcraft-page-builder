@@ -5,7 +5,7 @@ Tags: e-commerce, shop, checkout, cart, digital-products
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.6.0
+Stable tag: 1.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,7 @@ Sidcraft Commerce turns [Sidcraft Page Builder](https://canvasly.pro) into a com
 * Digital downloads: sell e-books, music, software, courses or printables. Tick "Downloadable" on a product and add one or more files (upload them, pick them from the media library or link to files hosted elsewhere), with an optional download limit and expiry. Tick "Virtual" for products with nothing to ship: a cart of virtual products skips the shipping cost and the address fields.
 * Each buyer gets a private link per file on the order-received page, in the order emails and on a My downloads page (My Downloads Unit or `[sidccofo_downloads]`). Access starts when the order is paid (or when it is marked Completed), pauses when it is cancelled or refunded, and past buyers get files you add later. On the order screen, change downloads left and expiry, revoke or restore access, give access to another product's files, see the download history and email the links again. Store → Download log lists every order with downloads.
 * Download security: uploads go to a protected folder with random file names; files are only served from approved folders and in file types WordPress allows; force download (resumable), X-Sendfile / X-Accel-Redirect / X-LiteSpeed-Location or redirect; optional login or email confirmation before downloading; optional IP logging, included in WordPress's personal data export and erase tools.
+* Modules: turn off what your store doesn't use under Store → Settings → Modules — Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates. Their menus, settings, Units and checkout fields go away; nothing is deleted.
 * Gift cards: sell them as products (preset amounts and/or a custom amount, recipient, message, optional send date) or issue them by hand. Recipients get an email with the code; customers redeem one or more cards in the cart or at checkout, and unused balance stays on the card.
 * Shipment tracking: add tracking numbers on the order screen. Links are built automatically for Australia Post, Canada Post, City-Link Express, DHL, DPD, Fastway South Africa, FedEx, OnTrac, Parcelforce, Polish carriers (Poczta Polska, InPost, DPD Polska, DHL Parcel Polska, GLS), Royal Mail, SAPO, TNT Express (consignment and reference), UPS and USPS, or use any carrier with a custom link.
 * Developers can add any payment method (a local bank, a regional wallet, a proprietary system) by extending one PHP class; settings, return and webhook URLs are provided. See docs/example-gateway.php.
@@ -195,6 +196,14 @@ Settings, sessions and temporary data are removed. Products, orders, coupons and
 8. Sidcraft Commerce in action.
 
 == Changelog ==
+
+= 1.7.0 =
+* New: Store → Settings → Modules. Turn Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates on or off. A module that is off loses its menus, settings tab, Units, blocks and cart / checkout fields, and its products (event tickets, subscription and gift card products) show as unavailable. Nothing is deleted: turning a module back on brings everything back.
+* Events, Subscriptions, Gift cards and Coupons stay on after updating. The Reward points and Affiliates switches moved here from the Rewards & affiliates tab, which now shows only while one of them is on.
+* Orders placed while a module was on keep being handled: bought gift cards are still issued and delivered, sold tickets still open, check in and give seats back on refunds, and points and commissions follow their orders as before.
+* Subscriptions can't be turned off while any subscription is waiting for payment, active, on hold or cancelled at period end, so no renewal is skipped silently.
+* Shortcodes of switched-off Units (for example [sidccofo_subscriptions]) print nothing instead of the shortcode.
+* New filter: sidcraft_commerce_module_enabled ( $on, $module ).
 
 = 1.6.0 =
 * New: subscriptions. On a product's edit screen, tick "Bill this product every period" and set how often (every n days, weeks, months or years), the number of payments (or until cancelled), a free trial and a sign-up fee. The product price is what each period costs; product pages, the cart, checkout, emails and orders show it as "$10 / month" with the terms. Subscribers need an account (checkout asks them to create one).
@@ -382,6 +391,9 @@ Settings, sessions and temporary data are removed. Products, orders, coupons and
 * First build (WooCommerce-based, replaced by 0.2.0).
 
 == Upgrade Notice ==
+
+= 1.7.0 =
+Adds Store → Settings → Modules to turn off Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates. Everything stays on as before. Templates changed: units/coupon-form.php and units/gift-card-redeem.php (hidden when their module is off); compare theme overrides of those templates.
 
 = 1.6.0 =
 Adds subscriptions (repeat billing) and a My subscriptions page. Templates changed: units/checkout.php (free-trial card choice), units/order-confirmation.php (pay a renewal), units/cart-panel.php, units/checkout-summary.php, emails/order.php; new units/subscriptions.php and emails/subscription.php. Compare theme overrides of those templates.

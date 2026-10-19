@@ -36,8 +36,13 @@ class Gift_Cards {
 	 * Attach hooks.
 	 */
 	public function hooks() {
+		// Orders placed while gift cards were on still issue, deliver and give
+		// back their cards after the module is switched off.
 		add_action( 'sidcraft_commerce_order_status_changed', array( $this, 'on_status' ), 5, 3 );
 		add_action( 'sidcraft_commerce_cleanup', array( $this, 'send_due' ) );
+		if ( ! Modules::enabled( 'giftcards' ) ) {
+			return;
+		}
 		add_action( 'rest_api_init', array( $this, 'routes' ) );
 
 		if ( is_admin() ) {

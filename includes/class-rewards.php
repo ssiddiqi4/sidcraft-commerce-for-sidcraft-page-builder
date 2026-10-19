@@ -4,7 +4,7 @@
  * them at checkout.
  *
  * Settings (Store → Settings → Rewards & affiliates):
- *   rewards_enabled      Turn the program on.
+ *   rewards_enabled      Turn the program on (shown under Settings → Modules).
  *   rewards_earn_rate    Points per 1 unit of currency spent on products (after coupons).
  *   rewards_point_value  What 1 point is worth when spent (e.g. 0.01).
  *   rewards_min_redeem   Fewest points that can be spent at once.
@@ -54,15 +54,15 @@ class Rewards {
 	 * Attach hooks.
 	 */
 	public function hooks() {
-		add_filter( 'sidcraft_commerce_settings_sections', array( $this, 'settings' ) );
-		add_filter( 'sidcraft_commerce_settings_tabs', array( $this, 'tab' ) );
 		// Orders placed while the program was on still give back, take back
 		// and award their points after it is switched off.
 		add_action( 'sidcraft_commerce_order_status_changed', array( $this, 'status_changed' ), 20, 3 );
 		add_action( 'sidcraft_commerce_order_partial_refund', array( $this, 'partial_refund' ), 10, 3 );
 		if ( ! self::enabled() ) {
-			return;
+			return; // Switched on under Settings → Modules.
 		}
+		add_filter( 'sidcraft_commerce_settings_sections', array( $this, 'settings' ) );
+		add_filter( 'sidcraft_commerce_settings_tabs', array( $this, 'tab' ) );
 		add_filter( 'sidcraft_commerce_cart_total', array( $this, 'cart_total' ), 50, 2 );
 		add_filter( 'sidcraft_commerce_totals_rows', array( $this, 'totals_rows' ), 10, 2 );
 		add_filter( 'sidcraft_commerce_checkout_errors', array( $this, 'checkout_errors' ), 20 );
@@ -80,7 +80,7 @@ class Rewards {
 	 * @return bool
 	 */
 	public static function enabled() {
-		return (bool) setting( 'rewards_enabled', 0 );
+		return Modules::enabled( 'rewards' );
 	}
 
 	/**
@@ -681,7 +681,6 @@ class Rewards {
 			'title'  => __( 'Reward points', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			'intro'  => __( 'Logged-in customers earn points on paid orders and can spend them at checkout. Spent points come back if an order is cancelled or refunded, and points earned on it are taken away again. Adjust a customer’s points on their user screen.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			'fields' => array(
-				'rewards_enabled'     => array( __( 'Reward points', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Turn the program on.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 				'rewards_earn_rate'   => array( __( 'Points per 1 spent', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'On products, after coupons; shipping and tax earn nothing. Products can earn a fixed number per unit instead (Product data).', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 				'rewards_point_value' => array( __( 'Value of 1 point', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'In store currency when spent, e.g. 0.01 (100 points = 1).', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 				'rewards_min_redeem'  => array( __( 'Fewest points to spend', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( '0 = any amount.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),

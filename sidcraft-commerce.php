@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Sidcraft Commerce for Sidcraft Page Builder
  * Description:       An online store for Sidcraft Page Builder: products, digital downloads, event tickets, cart, checkout, coupons, reviews and PayPal payments. No WooCommerce needed.
- * Version:           1.6.0
+ * Version:           1.7.0
  * Requires at least: 6.3
  * Requires PHP:      7.4
  * Requires Plugins:  sidcraft-page-builder
@@ -21,13 +21,14 @@ defined( 'ABSPATH' ) || exit;
  * Constants. Everything else lives in /includes and loads only after the
  * Sidcraft check passes, so a missing builder never causes a fatal error.
  */
-define( 'SIDCRAFT_COMMERCE_VERSION', '1.6.0' );
+define( 'SIDCRAFT_COMMERCE_VERSION', '1.7.0' );
 define( 'SIDCRAFT_COMMERCE_FILE', __FILE__ );
 define( 'SIDCRAFT_COMMERCE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SIDCRAFT_COMMERCE_URL', plugin_dir_url( __FILE__ ) );
 
 require_once SIDCRAFT_COMMERCE_PATH . 'includes/class-dependencies.php';
 require_once SIDCRAFT_COMMERCE_PATH . 'includes/class-install.php';
+require_once SIDCRAFT_COMMERCE_PATH . 'includes/class-modules.php';
 require_once SIDCRAFT_COMMERCE_PATH . 'includes/integrations/class-builder-products.php';
 
 // Before Sidcraft Page Builder loads: it reads its post types while its own file loads.
@@ -37,7 +38,7 @@ require_once SIDCRAFT_COMMERCE_PATH . 'includes/integrations/class-builder-produ
 add_filter(
 	'sidcraft_page_builder_documents_post_types',
 	static function ( $types ) {
-		if ( is_array( $types ) && ! in_array( 'sidccofo_event', $types, true ) ) {
+		if ( is_array( $types ) && ! in_array( 'sidccofo_event', $types, true ) && \SidcraftCommerce\Modules::enabled( 'events' ) ) {
 			$types[] = 'sidccofo_event';
 		}
 		return $types;

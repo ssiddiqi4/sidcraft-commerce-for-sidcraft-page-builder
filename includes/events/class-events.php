@@ -40,10 +40,18 @@ class Events {
 		add_action( 'init', array( $this, 'register' ), 1 );
 		add_action( 'init', array( $this, 'maybe_flush' ), 100 );
 		add_action( 'sidcraft_commerce_register_assets', array( $this, 'register_assets' ) );
-		add_filter( 'sidcraft_commerce_core_units', array( $this, 'units' ) );
+		add_filter( 'sidcraft_commerce_core_units', array( $this, 'units' ) ); // Modules drops them when Events is off.
 
+		// Tickets already sold keep working with the module off: their links,
+		// PDFs and check-in, and cancelled or refunded orders give seats back.
+		// The ticket products stay hidden, and can't be bought (Modules).
 		( new Placeholders() )->hooks();
 		( new Ticketing() )->hooks();
+		if ( ! \SidcraftCommerce\Modules::enabled( 'events' ) ) {
+			add_action( 'template_redirect', array( new Frontend(), 'endpoints' ), 1 );
+			return;
+		}
+
 		( new Frontend() )->hooks();
 		( new Integrations() )->hooks();
 		( new Blocks() )->hooks();

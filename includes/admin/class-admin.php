@@ -447,20 +447,28 @@ class Admin {
 				<span class="description"><?php echo esc_html( \SidcraftCommerce\Data\Product_Options::help_text() ); ?></span></p>
 			<?php $this->render_choice_stock( $post ); ?>
 		</div>
-		<h4 class="sc-pd__heading"><?php esc_html_e( 'Gift card', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></h4>
-		<div class="sc-pd">
-			<p><label class="sc-pd__check"><input type="checkbox" name="sidccofo_gift_card" value="1" <?php checked( (bool) $m( '_sidccofo_gift_card' ) ); ?>> <?php esc_html_e( 'This product is a gift card', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label></p>
-			<p><label for="sc-gc-amounts"><?php echo esc_html( sprintf( /* translators: %s: symbol. */ __( 'Amounts (%s)', 'sidcraft-commerce-for-sidcraft-page-builder' ), trim( $sym ) ) ); ?></label>
-				<input type="text" id="sc-gc-amounts" name="sidccofo_gc_amounts" value="<?php echo esc_attr( $m( '_sidccofo_gc_amounts' ) ); ?>" placeholder="25, 50, 100">
-				<span class="description"><?php esc_html_e( 'Separated by commas. The regular price above is not used for gift cards.', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></span></p>
-			<p><label class="sc-pd__check"><input type="checkbox" name="sidccofo_gc_custom" value="1" <?php checked( (bool) $m( '_sidccofo_gc_custom' ) ); ?>> <?php esc_html_e( 'Let buyers enter their own amount', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label></p>
-			<p><label for="sc-gc-min"><?php esc_html_e( 'Custom amount: minimum', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
-				<input type="text" inputmode="decimal" id="sc-gc-min" name="sidccofo_gc_min" value="<?php echo esc_attr( $m( '_sidccofo_gc_min' ) ); ?>" placeholder="10"></p>
-			<p><label for="sc-gc-max"><?php esc_html_e( 'Custom amount: maximum', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
-				<input type="text" inputmode="decimal" id="sc-gc-max" name="sidccofo_gc_max" value="<?php echo esc_attr( $m( '_sidccofo_gc_max' ) ); ?>" placeholder="<?php esc_attr_e( 'No limit', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>"></p>
-		</div>
+		<?php if ( \SidcraftCommerce\Modules::enabled( 'giftcards' ) ) : ?>
+			<h4 class="sc-pd__heading"><?php esc_html_e( 'Gift card', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></h4>
+			<div class="sc-pd">
+				<p><label class="sc-pd__check"><input type="checkbox" name="sidccofo_gift_card" value="1" <?php checked( (bool) $m( '_sidccofo_gift_card' ) ); ?>> <?php esc_html_e( 'This product is a gift card', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label></p>
+				<p><label for="sc-gc-amounts"><?php echo esc_html( sprintf( /* translators: %s: symbol. */ __( 'Amounts (%s)', 'sidcraft-commerce-for-sidcraft-page-builder' ), trim( $sym ) ) ); ?></label>
+					<input type="text" id="sc-gc-amounts" name="sidccofo_gc_amounts" value="<?php echo esc_attr( $m( '_sidccofo_gc_amounts' ) ); ?>" placeholder="25, 50, 100">
+					<span class="description"><?php esc_html_e( 'Separated by commas. The regular price above is not used for gift cards.', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></span></p>
+				<p><label class="sc-pd__check"><input type="checkbox" name="sidccofo_gc_custom" value="1" <?php checked( (bool) $m( '_sidccofo_gc_custom' ) ); ?>> <?php esc_html_e( 'Let buyers enter their own amount', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label></p>
+				<p><label for="sc-gc-min"><?php esc_html_e( 'Custom amount: minimum', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
+					<input type="text" inputmode="decimal" id="sc-gc-min" name="sidccofo_gc_min" value="<?php echo esc_attr( $m( '_sidccofo_gc_min' ) ); ?>" placeholder="10"></p>
+				<p><label for="sc-gc-max"><?php esc_html_e( 'Custom amount: maximum', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
+					<input type="text" inputmode="decimal" id="sc-gc-max" name="sidccofo_gc_max" value="<?php echo esc_attr( $m( '_sidccofo_gc_max' ) ); ?>" placeholder="<?php esc_attr_e( 'No limit', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>"></p>
+			</div>
+		<?php elseif ( $m( '_sidccofo_gift_card' ) ) : ?>
+			<p class="description sc-pd__error"><?php esc_html_e( 'This product is a gift card. It can’t be bought while Gift cards are turned off under Store → Settings → Modules.', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></p>
+		<?php endif; ?>
 		<?php
-		Subscriptions_Admin::render_product_section( $post );
+		if ( \SidcraftCommerce\Modules::enabled( 'subscriptions' ) ) {
+			Subscriptions_Admin::render_product_section( $post );
+		} elseif ( $m( '_sidccofo_subscription' ) ) {
+			echo '<p class="description sc-pd__error">' . esc_html__( 'This product is billed every period. It can’t be bought while Subscriptions are turned off under Store → Settings → Modules.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>';
+		}
 		Downloads_Admin::render_product_section( $post );
 	}
 
@@ -641,22 +649,26 @@ class Admin {
 		$attributes = array_slice( array_filter( array_map( 'trim', preg_split( '/\R/', sanitize_textarea_field( wp_unslash( $_POST['sidccofo_attributes'] ?? '' ) ) ) ), 'strlen' ), 0, 100 );
 		update_post_meta( $post_id, '_sidccofo_attributes', implode( "\n", $attributes ) );
 
-		// Gift card product.
-		update_post_meta( $post_id, '_sidccofo_gift_card', empty( $_POST['sidccofo_gift_card'] ) ? 0 : 1 );
-		$amounts = array();
-		foreach ( preg_split( '/[\s;,]+/', sanitize_text_field( wp_unslash( $_POST['sidccofo_gc_amounts'] ?? '' ) ) ) as $part ) {
-			$value = $this->price( $part );
-			if ( '' !== $value && (float) $value > 0 ) {
-				$amounts[] = $value;
+		// Gift card product (its fields aren't shown, so are kept, while Gift cards are off).
+		if ( \SidcraftCommerce\Modules::enabled( 'giftcards' ) ) {
+			update_post_meta( $post_id, '_sidccofo_gift_card', empty( $_POST['sidccofo_gift_card'] ) ? 0 : 1 );
+			$amounts = array();
+			foreach ( preg_split( '/[\s;,]+/', sanitize_text_field( wp_unslash( $_POST['sidccofo_gc_amounts'] ?? '' ) ) ) as $part ) {
+				$value = $this->price( $part );
+				if ( '' !== $value && (float) $value > 0 ) {
+					$amounts[] = $value;
+				}
 			}
+			update_post_meta( $post_id, '_sidccofo_gc_amounts', implode( ', ', array_unique( $amounts ) ) );
+			update_post_meta( $post_id, '_sidccofo_gc_custom', empty( $_POST['sidccofo_gc_custom'] ) ? 0 : 1 );
+			update_post_meta( $post_id, '_sidccofo_gc_min', $this->price( wp_unslash( $_POST['sidccofo_gc_min'] ?? '' ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parsed by price().
+			update_post_meta( $post_id, '_sidccofo_gc_max', $this->price( wp_unslash( $_POST['sidccofo_gc_max'] ?? '' ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parsed by price().
 		}
-		update_post_meta( $post_id, '_sidccofo_gc_amounts', implode( ', ', array_unique( $amounts ) ) );
-		update_post_meta( $post_id, '_sidccofo_gc_custom', empty( $_POST['sidccofo_gc_custom'] ) ? 0 : 1 );
-		update_post_meta( $post_id, '_sidccofo_gc_min', $this->price( wp_unslash( $_POST['sidccofo_gc_min'] ?? '' ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parsed by price().
-		update_post_meta( $post_id, '_sidccofo_gc_max', $this->price( wp_unslash( $_POST['sidccofo_gc_max'] ?? '' ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parsed by price().
 
-		// Subscription and virtual / downloadable products.
-		Subscriptions_Admin::save_product_section( $post_id );
+		// Subscription (likewise) and virtual / downloadable products.
+		if ( \SidcraftCommerce\Modules::enabled( 'subscriptions' ) ) {
+			Subscriptions_Admin::save_product_section( $post_id );
+		}
 		Downloads_Admin::save_product_section( $post_id );
 
 		Product::sync_derived_meta( $post_id );

@@ -4,7 +4,7 @@
  * commission on the orders those customers place.
  *
  * Settings (Store → Settings → Rewards & affiliates):
- *   affiliates_enabled       Turn the program on.
+ *   affiliates_enabled       Turn the program on (shown under Settings → Modules).
  *   affiliates_rate          Commission in % of products bought (after coupons;
  *                            shipping, tax and gift cards don't count).
  *   affiliates_cookie_days   How long a visit through a link counts.
@@ -43,14 +43,14 @@ class Affiliates {
 	 * Attach hooks.
 	 */
 	public function hooks() {
-		add_filter( 'sidcraft_commerce_settings_sections', array( $this, 'settings' ) );
-		add_filter( 'sidcraft_commerce_settings_tabs', array( $this, 'tab' ) );
 		// Commissions already noted keep following their orders when the program is switched off.
 		add_action( 'sidcraft_commerce_order_status_changed', array( $this, 'status_changed' ), 20, 3 );
 		add_action( 'sidcraft_commerce_order_partial_refund', array( $this, 'partial_refund' ), 10, 3 );
 		if ( ! self::enabled() ) {
-			return;
+			return; // Switched on under Settings → Modules.
 		}
+		add_filter( 'sidcraft_commerce_settings_sections', array( $this, 'settings' ) );
+		add_filter( 'sidcraft_commerce_settings_tabs', array( $this, 'tab' ) );
 		add_action( 'init', array( $this, 'track' ), 30 );
 		add_action( 'sidcraft_commerce_order_created', array( $this, 'order_created' ) );
 		add_action( 'admin_post_sidccofo_aff_apply', array( $this, 'apply' ) );
@@ -68,7 +68,7 @@ class Affiliates {
 	 * @return bool
 	 */
 	public static function enabled() {
-		return (bool) setting( 'affiliates_enabled', 0 );
+		return Modules::enabled( 'affiliates' );
 	}
 
 	/**
@@ -607,7 +607,6 @@ class Affiliates {
 			'title'  => __( 'Affiliates', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			'intro'  => __( 'Affiliates share a link; orders from visitors who arrive through it earn them a commission once paid. Put the Affiliate Dashboard Unit (or [sidccofo_affiliate_dashboard]) on a page where customers can join and follow their earnings. Approve them and record payouts under Store → Affiliates.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			'fields' => array(
-				'affiliates_enabled'      => array( __( 'Affiliates', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Turn the program on.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 				'affiliates_rate'         => array( __( 'Commission (%)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Of products bought, after coupons. Shipping, tax and gift cards don’t count. Each affiliate can have their own rate.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 				'affiliates_cookie_days'  => array( __( 'Referral lasts (days)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'How long after the visit an order still counts.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 				'affiliates_auto_approve' => array( __( 'Approve new affiliates automatically', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox' ),

@@ -78,6 +78,7 @@ final class Plugin {
 		$this->assets    = new Assets();
 		$this->units     = new Unit_Registry();
 
+		( new Modules() )->hooks();
 		( new Data\Post_Types() )->hooks();
 		( new Currencies() )->hooks();
 		( new Multilingual() )->hooks();
@@ -95,7 +96,10 @@ final class Plugin {
 		$this->rewards->hooks();
 		( new Affiliates() )->hooks();
 		( new Accounts() )->hooks();
-		( new Subscriptions() )->hooks();
+		// Off only once no subscription is running (see Settings_Page::sanitize()).
+		if ( Modules::enabled( 'subscriptions' ) ) {
+			( new Subscriptions() )->hooks();
+		}
 		( new Downloads\Downloads() )->hooks();
 		( new Downloads\Files() )->hooks();
 		( new Downloads\Handler() )->hooks();
@@ -110,7 +114,9 @@ final class Plugin {
 			( new Admin\Pro_Card() )->hooks();
 			( new Admin\Export() )->hooks();
 			( new Admin\Downloads_Admin() )->hooks();
-			( new Admin\Subscriptions_Admin() )->hooks();
+			if ( Modules::enabled( 'subscriptions' ) ) {
+				( new Admin\Subscriptions_Admin() )->hooks();
+			}
 		}
 
 		add_action( 'init', array( $this, 'register_core_units' ), 5 );

@@ -20,6 +20,9 @@ defined( 'ABSPATH' ) || exit;
 
 use SidcraftCommerce\Data\Post_Types;
 
+if ( ! \SidcraftCommerce\Modules::enabled( 'coupons' ) ) {
+	return;
+}
 $sidcraft_commerce_counts = wp_count_posts( Post_Types::COUPON );
 if ( empty( $sidcraft_commerce_counts->publish ) && '' === $cart->get_coupon_code() ) {
 	return;

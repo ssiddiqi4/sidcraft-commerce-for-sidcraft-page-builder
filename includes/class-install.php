@@ -134,6 +134,10 @@ final class Sidcraft_Commerce_Install {
 				// 1.6.0: subscriptions — setting defaults and the My subscriptions page.
 				add_action( 'init', array( __CLASS__, 'upgrade_subscriptions' ), 21 );
 			}
+			if ( version_compare( $version, '1.7.0', '<' ) ) {
+				// 1.7.0: module switches (Settings → Modules), on as before. Defaults only.
+				add_action( 'init', array( __CLASS__, 'upgrade_settings' ), 22 );
+			}
 		}
 	}
 
@@ -256,6 +260,10 @@ final class Sidcraft_Commerce_Install {
 			'affiliates_auto_approve'    => 0,
 			'affiliates_param'           => 'ref',
 			'subscription_grace_days'    => '7',
+			'module_events'              => 1,
+			'module_subscriptions'       => 1,
+			'module_giftcards'           => 1,
+			'module_coupons'             => 1,
 		);
 		$current  = (array) get_option( 'sidcraft_commerce_settings', array() );
 		update_option( 'sidcraft_commerce_settings', array_merge( $defaults, $current ) );

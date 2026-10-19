@@ -19,6 +19,9 @@ defined( 'ABSPATH' ) || exit;
 use SidcraftCommerce\Data\Post_Types;
 use function SidcraftCommerce\format_price;
 
+if ( ! \SidcraftCommerce\Modules::enabled( 'giftcards' ) ) {
+	return;
+}
 $sidcraft_commerce_counts  = wp_count_posts( Post_Types::GIFTCARD );
 $sidcraft_commerce_applied = $cart->get_applied_gift_cards();
 if ( empty( $sidcraft_commerce_counts->publish ) && ! $sidcraft_commerce_applied ) {
