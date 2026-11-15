@@ -1,7 +1,8 @@
 <?php
 /**
  * Optional modules a store can switch off under Store → Settings → Modules:
- * Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates.
+ * Events, Subscriptions, Gift cards, Coupons, Reward points, Affiliates,
+ * Email marketing and Live chat.
  *
  * A module that is off loses its menus, settings, Units, blocks and cart and
  * checkout fields, and its products (event tickets, subscription and gift
@@ -43,6 +44,8 @@ class Modules {
 			'coupons'       => array( 'module_coupons', 1 ),
 			'rewards'       => array( 'rewards_enabled', 0 ),
 			'affiliates'    => array( 'affiliates_enabled', 0 ),
+			'marketing'     => array( 'module_marketing', 1 ),
+			'livechat'      => array( 'module_livechat', 0 ),
 		);
 	}
 
@@ -102,6 +105,8 @@ class Modules {
 			'coupons'       => array( __( 'Coupons', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Discount codes customers enter in the cart or at checkout.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			'rewards'       => array( __( 'Reward points', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Customers earn points on paid orders and spend them at checkout. Set it up under Rewards & affiliates.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			'affiliates'    => array( __( 'Affiliates', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Pay commission on orders from visitors who arrive through an affiliate’s link. Set it up under Rewards & affiliates.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'marketing'     => array( __( 'Email marketing', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'A mailing list with signup forms and a checkout opt-in, email campaigns to groups of subscribers, and automatic welcome, abandoned-cart, follow-up and win-back emails. When off, nothing is sent and the list is kept.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'livechat'      => array( __( 'Live chat', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'A chat button on your store pages; you answer under Store → Live chat. While nobody has that page open, visitors leave a message that is emailed to you.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 		);
 		$fields = array();
 		foreach ( self::keys() as $id => $module ) {
@@ -154,6 +159,7 @@ class Modules {
 		$kept = array();
 		foreach ( (array) $units as $unit ) {
 			$off = ( $unit instanceof Units\Subscriptions && ! self::enabled( 'subscriptions' ) )
+				|| ( $unit instanceof Units\Newsletter && ! self::enabled( 'marketing' ) )
 				|| ( is_object( $unit ) && 0 === strpos( get_class( $unit ), __NAMESPACE__ . '\\Events\\' ) && ! self::enabled( 'events' ) );
 			if ( ! $off ) {
 				$kept[] = $unit;
@@ -174,6 +180,12 @@ class Modules {
 	public function settings_sections( $sections ) {
 		if ( ! self::enabled( 'giftcards' ) ) {
 			unset( $sections['giftcards'] );
+		}
+		if ( ! self::enabled( 'marketing' ) ) {
+			unset( $sections['marketing'], $sections['marketing_auto'] );
+		}
+		if ( ! self::enabled( 'livechat' ) ) {
+			unset( $sections['livechat'] );
 		}
 		return $sections;
 	}

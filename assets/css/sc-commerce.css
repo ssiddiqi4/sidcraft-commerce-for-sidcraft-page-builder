@@ -437,3 +437,13 @@
 .sc-term-image img { display: block; width: 100%; height: auto; max-height: 360px; object-fit: cover; border-radius: var(--sc-radius-lg); }
 
 .sc-atc--external { margin: 0; }
+
+/* Newsletter signup (2.0.0) */
+.sc-newsletter { display: grid; gap: 10px; }
+.sc-newsletter__title { margin: 0; }
+.sc-newsletter__text, .sc-newsletter__consent, .sc-newsletter__message { margin: 0; font-size: .9em; }
+.sc-newsletter__fields { display: flex; flex-wrap: wrap; gap: 8px; }
+.sc-newsletter__fields input { flex: 1 1 180px; min-width: 0; padding: 10px 12px; border: 1px solid var(--sc-border, #d6d4e0); border-radius: 8px; font: inherit; }
+.sc-newsletter__hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.sc-newsletter.is-done .sc-newsletter__message { color: var(--sc-success, #1a7f37); font-weight: 600; }
+.sc-optin label { display: flex; gap: 8px; align-items: flex-start; }

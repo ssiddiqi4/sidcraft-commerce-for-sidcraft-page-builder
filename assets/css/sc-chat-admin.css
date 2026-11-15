@@ -1,0 +1,27 @@
+/* Live chat inbox (2.0.0). */
+.sc-inbox { display: grid; grid-template-columns: 320px 1fr; gap: 16px; margin-top: 12px; min-height: 520px; }
+.sc-inbox__side, .sc-inbox__main { background: #fff; border: 1px solid #dcdcde; border-radius: 6px; padding: 12px; min-width: 0; }
+.sc-inbox__tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.sc-inbox__list { margin: 0; max-height: 600px; overflow-y: auto; }
+.sc-inbox__list li { margin: 0; }
+.sc-inbox__item { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid #f0f0f1; padding: 10px 8px; cursor: pointer; }
+.sc-inbox__item:hover, .sc-inbox__item.is-current { background: #f6f7f7; }
+.sc-inbox__item.is-unread .sc-inbox__name { font-weight: 700; }
+.sc-inbox__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-inbox__count { background: #d63638; color: #fff; border-radius: 9px; padding: 0 7px; font-size: 12px; line-height: 18px; align-self: center; }
+.sc-inbox__last, .sc-inbox__time { grid-column: 1 / -1; color: #646970; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-inbox__main { display: flex; flex-direction: column; }
+.sc-inbox__head { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid #f0f0f1; }
+.sc-inbox__meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; margin-top: 4px; }
+.sc-inbox__actions { display: flex; gap: 10px; align-items: center; }
+.sc-inbox__log { flex: 1; overflow-y: auto; max-height: 460px; min-height: 240px; padding: 12px 4px; display: flex; flex-direction: column; gap: 8px; }
+.sc-inbox__msg { max-width: 75%; padding: 8px 11px; border-radius: 10px; background: #f0f0f1; white-space: pre-wrap; overflow-wrap: anywhere; }
+.sc-inbox__msg p { margin: 0; }
+.sc-inbox__msg--operator { align-self: flex-end; background: #2271b1; color: #fff; }
+.sc-inbox__msg--system { align-self: center; background: none; color: #646970; font-size: 12px; }
+.sc-inbox__by { display: block; font-size: 11px; opacity: .8; margin-bottom: 2px; }
+.sc-inbox__form textarea { width: 100%; }
+.sc-inbox__row { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.sc-inbox__error { color: #d63638; margin: 4px 0 0; }
+.sc-inbox__empty, .sc-inbox__none { color: #646970; padding: 8px; }
+@media (max-width: 960px) { .sc-inbox { grid-template-columns: 1fr; } }

@@ -552,4 +552,33 @@
 				showErrors( form, err );
 			} );
 	} );
+
+	/* ------------------------- Abandoned-cart email ------------------------ */
+
+	// Email marketing on: remember the cart for a reminder once the email is
+	// typed (the server keeps it only for people who agreed to emails).
+	var marketing = window.sidccofoCommerce && window.sidccofoCommerce.marketing;
+	var captured = '';
+	function capture( form ) {
+		var email = form.querySelector( '[name="email"]' );
+		var optin = form.querySelector( '[data-sc-optin]' );
+		if ( ! email || ! email.value || ! email.checkValidity() ) {
+			return;
+		}
+		var name = form.querySelector( '[name="first_name"]' );
+		var key = email.value + '|' + ( optin && optin.checked ? 1 : 0 );
+		if ( key === captured ) {
+			return;
+		}
+		captured = key;
+		cart.api( 'marketing/capture', 'POST', { email: email.value, first_name: name ? name.value : '', optin: !! ( optin && optin.checked ) } ).catch( function () {} );
+	}
+	if ( marketing && marketing.capture ) {
+		document.addEventListener( 'change', function ( e ) {
+			var form = e.target.closest && e.target.closest( '[data-sc-checkout]' );
+			if ( form && ( 'email' === e.target.name || e.target.hasAttribute( 'data-sc-optin' ) ) ) {
+				capture( form );
+			}
+		} );
+	}
 } )();

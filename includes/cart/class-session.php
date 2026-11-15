@@ -120,7 +120,16 @@ class Session {
 	}
 
 	/**
-	 * Whether this visitor has a session.
+	 * The session key ('' before the first write).
+	 *
+	 * @return string
+	 */
+	public function get_key() {
+		return $this->key;
+	}
+
+	/**
+	 * Whether the visitor has a session yet.
 	 *
 	 * @return bool
 	 */

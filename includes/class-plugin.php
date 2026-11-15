@@ -109,8 +109,21 @@ final class Plugin {
 		( new Integrations\Builder_Products() )->hooks();
 		( new Events\Events() )->hooks();
 
+		if ( Modules::enabled( 'marketing' ) ) {
+			( new Marketing\Marketing() )->hooks();
+		}
+		if ( Modules::enabled( 'livechat' ) ) {
+			( new Live_Chat\Live_Chat() )->hooks();
+		}
+
 		if ( is_admin() ) {
 			( new Admin\Admin() )->hooks();
+			if ( Modules::enabled( 'marketing' ) ) {
+				( new Admin\Marketing_Admin() )->hooks();
+			}
+			if ( Modules::enabled( 'livechat' ) ) {
+				( new Admin\Live_Chat_Admin() )->hooks();
+			}
 			( new Admin\Settings_Page() )->hooks();
 			( new Admin\Pro_Card() )->hooks();
 			( new Admin\Export() )->hooks();
@@ -199,6 +212,13 @@ final class Plugin {
 			'includes/units/class-unit-currency-switcher.php',
 			'includes/units/class-unit-affiliate-dashboard.php',
 			'includes/units/class-unit-subscriptions.php',
+			'includes/units/class-unit-newsletter.php',
+			'includes/marketing/class-subscribers.php',
+			'includes/marketing/class-mailer.php',
+			'includes/marketing/class-abandoned.php',
+			'includes/marketing/class-marketing.php',
+			'includes/live-chat/class-chats.php',
+			'includes/live-chat/class-live-chat.php',
 			'includes/integrations/class-sidcraft-bridge.php',
 			'includes/events/class-qr.php',
 			'includes/events/class-barcode.php',
@@ -229,6 +249,8 @@ final class Plugin {
 			'includes/admin/class-export.php',
 			'includes/admin/class-downloads-admin.php',
 			'includes/admin/class-subscriptions-admin.php',
+			'includes/admin/class-marketing-admin.php',
+			'includes/admin/class-live-chat-admin.php',
 		);
 		foreach ( $files as $file ) {
 			require_once SIDCRAFT_COMMERCE_PATH . $file;
@@ -262,6 +284,7 @@ final class Plugin {
 			new Units\Currency_Switcher(),
 			new Units\Affiliate_Dashboard(),
 			new Units\Subscriptions(),
+			new Units\Newsletter(),
 		);
 
 		/**

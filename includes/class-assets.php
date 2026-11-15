@@ -99,6 +99,18 @@ class Assets {
 			)
 		);
 
+		// Newsletter forms: standalone, so a signup form doesn't pull in the cart script.
+		wp_register_script(
+			'sidccofo-newsletter',
+			$url . 'js/sc-newsletter.js',
+			array(),
+			$ver,
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
+
 		/**
 		 * Register extra handles for third-party Units.
 		 *
@@ -205,7 +217,9 @@ class Assets {
 		}
 		foreach ( (array) ( $assets['scripts'] ?? array() ) as $handle ) {
 			wp_enqueue_script( $handle );
-			$this->add_config();
+			if ( 'sidccofo-newsletter' !== $handle ) {
+				$this->add_config();
+			}
 		}
 	}
 

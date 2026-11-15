@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 final class Sidcraft_Commerce_Install {
 
 	/** Bump when the table schema changes. */
-	const DB_VERSION = '2';
+	const DB_VERSION = '3';
 
 	/**
 	 * Activation hook. Network activation sets up every site of the network
@@ -99,14 +99,25 @@ final class Sidcraft_Commerce_Install {
 		if ( is_multisite() && $network_wide ) {
 			self::each_site(
 				static function () {
-					wp_clear_scheduled_hook( 'sidcraft_commerce_cleanup' );
+					self::clear_cron();
 					delete_option( 'rewrite_rules' ); // Rebuilt on the site's next load.
 				}
 			);
 			return;
 		}
-		wp_clear_scheduled_hook( 'sidcraft_commerce_cleanup' );
+		self::clear_cron();
 		flush_rewrite_rules();
+	}
+
+	/**
+	 * Remove every scheduled job of the store (hourly tidy-up, campaign
+	 * batches, order follow-ups). Campaigns still sending carry on after
+	 * reactivation: the hourly job picks them up again.
+	 */
+	public static function clear_cron() {
+		foreach ( array( 'sidcraft_commerce_cleanup', 'sidcraft_commerce_marketing_batch', 'sidcraft_commerce_marketing_followup' ) as $hook ) {
+			wp_unschedule_hook( $hook );
+		}
 	}
 
 	/**
@@ -134,9 +145,10 @@ final class Sidcraft_Commerce_Install {
 				// 1.6.0: subscriptions — setting defaults and the My subscriptions page.
 				add_action( 'init', array( __CLASS__, 'upgrade_subscriptions' ), 21 );
 			}
-			if ( version_compare( $version, '1.8.0', '<' ) ) {
+			if ( version_compare( $version, '2.0.0', '<' ) ) {
 				// 1.7.0: module switches (Settings → Modules), on as before.
 				// 1.8.0: upsells / cross-sells switches and tax classes; /product-tag/ links.
+				// 2.0.0: email marketing and live chat settings.
 				// Defaults only (and a rewrite flush).
 				add_action( 'init', array( __CLASS__, 'upgrade_settings' ), 22 );
 			}
@@ -171,8 +183,11 @@ final class Sidcraft_Commerce_Install {
 	}
 
 	/**
-	 * Cart sessions live in their own table: one row per visitor with a cart,
-	 * expiring automatically. Keeps wp_options free of per-visitor rows.
+	 * Custom tables. Cart sessions: one row per visitor with a cart, expiring
+	 * automatically, which keeps wp_options free of per-visitor rows.
+	 * Marketing (2.0.0): subscribers, the email log (one row per email sent,
+	 * for opens, clicks and not sending twice) and checkouts left unfinished.
+	 * Live chat (2.0.0): conversations and their messages.
 	 */
 	public static function create_tables() {
 		global $wpdb;
@@ -188,6 +203,91 @@ final class Sidcraft_Commerce_Install {
 				session_expiry bigint(20) unsigned NOT NULL,
 				PRIMARY KEY  (session_key),
 				KEY session_expiry (session_expiry)
+			) {$charset};"
+		);
+
+		$prefix = $wpdb->prefix . 'sidccofo_';
+		dbDelta(
+			"CREATE TABLE {$prefix}subscribers (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				email varchar(190) NOT NULL,
+				first_name varchar(100) NOT NULL DEFAULT '',
+				user_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				status varchar(20) NOT NULL DEFAULT 'pending',
+				token char(32) NOT NULL,
+				source varchar(40) NOT NULL DEFAULT '',
+				tags varchar(255) NOT NULL DEFAULT '',
+				created bigint(20) unsigned NOT NULL DEFAULT 0,
+				confirmed bigint(20) unsigned NOT NULL DEFAULT 0,
+				orders int(10) unsigned NOT NULL DEFAULT 0,
+				spent decimal(19,4) NOT NULL DEFAULT 0,
+				last_order bigint(20) unsigned NOT NULL DEFAULT 0,
+				winback_sent bigint(20) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY  (id),
+				UNIQUE KEY email (email),
+				UNIQUE KEY token (token),
+				KEY status (status)
+			) {$charset};"
+		);
+		dbDelta(
+			"CREATE TABLE {$prefix}email_log (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				ref varchar(40) NOT NULL,
+				subscriber_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				email varchar(190) NOT NULL,
+				sent bigint(20) unsigned NOT NULL DEFAULT 0,
+				opened bigint(20) unsigned NOT NULL DEFAULT 0,
+				clicked bigint(20) unsigned NOT NULL DEFAULT 0,
+				failed tinyint(1) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY  (id),
+				UNIQUE KEY ref_email (ref,email),
+				KEY subscriber_id (subscriber_id)
+			) {$charset};"
+		);
+		dbDelta(
+			"CREATE TABLE {$prefix}abandoned (
+				session_key char(32) NOT NULL,
+				email varchar(190) NOT NULL,
+				first_name varchar(100) NOT NULL DEFAULT '',
+				token char(32) NOT NULL,
+				cart longtext NOT NULL,
+				total decimal(19,4) NOT NULL DEFAULT 0,
+				currency char(3) NOT NULL DEFAULT '',
+				updated bigint(20) unsigned NOT NULL DEFAULT 0,
+				reminded bigint(20) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY  (session_key),
+				UNIQUE KEY token (token),
+				KEY updated (updated)
+			) {$charset};"
+		);
+		dbDelta(
+			"CREATE TABLE {$prefix}chats (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				visitor char(32) NOT NULL,
+				user_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				name varchar(100) NOT NULL DEFAULT '',
+				email varchar(190) NOT NULL DEFAULT '',
+				status varchar(20) NOT NULL DEFAULT 'open',
+				page varchar(255) NOT NULL DEFAULT '',
+				created bigint(20) unsigned NOT NULL DEFAULT 0,
+				updated bigint(20) unsigned NOT NULL DEFAULT 0,
+				operator_read bigint(20) unsigned NOT NULL DEFAULT 0,
+				visitor_read bigint(20) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY  (id),
+				KEY visitor (visitor),
+				KEY status_updated (status,updated)
+			) {$charset};"
+		);
+		dbDelta(
+			"CREATE TABLE {$prefix}chat_messages (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				chat_id bigint(20) unsigned NOT NULL,
+				sender varchar(10) NOT NULL,
+				author_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				body text NOT NULL,
+				created bigint(20) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY  (id),
+				KEY chat_id (chat_id,id)
 			) {$charset};"
 		);
 
@@ -269,6 +369,38 @@ final class Sidcraft_Commerce_Install {
 			'tax_classes'                => '',
 			'auto_upsells'               => 1,
 			'cart_cross_sells'           => 1,
+			// 2.0.0: email marketing (on) and live chat (off until a store turns it on).
+			'module_marketing'           => 1,
+			'module_livechat'            => 0,
+			'marketing_double_optin'     => 1,
+			'marketing_checkout_optin'   => 1,
+			'marketing_optin_text'       => __( 'Email me news and offers. You can unsubscribe at any time.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'marketing_from_email'       => '',
+			'marketing_address'          => '',
+			'marketing_batch'            => '50',
+			'marketing_track'            => 1,
+			'marketing_welcome'          => 1,
+			'marketing_welcome_subject'  => __( 'Welcome to {store_name}', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'marketing_welcome_body'     => __( "Hi {first_name},\n\nThanks for subscribing. We'll send you our news and offers now and then.\n\n{shop_link}", 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'marketing_abandoned'        => 1,
+			'marketing_abandoned_hours'  => '4',
+			'marketing_abandoned_subject' => __( 'You left something in your cart', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'marketing_abandoned_body'   => __( "Hi {first_name},\n\nYour cart is still waiting for you:\n\n{cart}\n\n{cart_link}", 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'marketing_followup'         => 1,
+			'marketing_followup_days'    => '7',
+			'marketing_followup_subject' => __( 'How was your order?', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'marketing_followup_body'    => __( "Hi {first_name},\n\nWe hope you're enjoying your order #{order_number}. A short review helps other shoppers:\n\n{products}", 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'marketing_winback'          => 0,
+			'marketing_winback_days'     => '90',
+			'marketing_winback_subject'  => __( 'We miss you', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'marketing_winback_body'     => __( "Hi {first_name},\n\nIt's been a while. Here's what's new in the shop:\n\n{shop_link}", 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'livechat_title'             => __( 'Chat with us', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'livechat_greeting'          => __( 'Hi! How can we help?', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'livechat_offline'           => __( 'We’re away right now. Leave a message and we’ll email you back.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'livechat_pages'             => 'all',
+			'livechat_ask_email'         => 1,
+			'livechat_position'          => 'right',
+			'livechat_keep_days'         => '180',
 		);
 		$current  = (array) get_option( 'sidcraft_commerce_settings', array() );
 		update_option( 'sidcraft_commerce_settings', array_merge( $defaults, $current ) );

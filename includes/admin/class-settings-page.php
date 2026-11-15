@@ -245,6 +245,68 @@ class Settings_Page {
 					'giftcard_expiry_months' => array( __( 'New cards expire after (months)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( '0 = never. Check your local rules: many places require gift cards to stay valid for years or forever.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 				),
 			),
+			'marketing' => array(
+				'tab'    => 'marketing',
+				'title'  => __( 'Mailing list', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'intro'  => __( 'People join with the Newsletter Signup Unit ([sidccofo_newsletter]) or the box at checkout. Write campaigns under Store → Email campaigns; see subscribers under Store → Mailing list.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'fields' => array(
+					'marketing_double_optin'   => array( __( 'Double opt-in', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Signup forms send a confirmation link first; only confirmed addresses get emails. Recommended (and required in some countries).', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'marketing_checkout_optin' => array( __( 'Opt-in box at checkout', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'An unticked box above "Place order". Customers who tick it join the list.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'marketing_optin_text'     => array( __( 'Opt-in box text', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text' ),
+					'marketing_from_email'     => array( __( '"From" address', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'email', __( 'Empty: the site’s admin email. Use an address on your own domain so emails aren’t marked as spam.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'marketing_address'        => array( __( 'Postal address', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'textarea', __( 'Shown at the bottom of every marketing email; required by anti-spam laws in many countries.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'marketing_batch'          => array( __( 'Emails per batch', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'int', __( 'Campaigns send this many emails a minute (1–500). Lower it if your host limits outgoing email.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'marketing_track'          => array( __( 'Count opens and clicks', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Adds a tiny image and passes links through your site. Mention it in your privacy policy.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				),
+			),
+			'marketing_auto' => array(
+				'tab'    => 'marketing',
+				'title'  => __( 'Automatic emails', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'intro'  => __( 'Only subscribed people get these. Merge tags: {first_name}, {store_name}, {shop_link}; abandoned cart: {cart}, {cart_link}; follow-up: {order_number}, {products}. Leave a blank line between paragraphs.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'fields' => array(
+					'marketing_welcome'           => array( __( 'Welcome email', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'When someone joins the list.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'marketing_welcome_subject'   => array( __( 'Welcome subject', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text' ),
+					'marketing_welcome_body'      => array( __( 'Welcome text', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'textarea' ),
+					'marketing_abandoned'         => array( __( 'Abandoned cart email', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'When a subscriber (or a shopper who ticks the checkout box) types their email at checkout but doesn’t order. Its button puts the cart back.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'marketing_abandoned_hours'   => array( __( 'Send after (hours)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'int' ),
+					'marketing_abandoned_subject' => array( __( 'Abandoned cart subject', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text' ),
+					'marketing_abandoned_body'    => array( __( 'Abandoned cart text', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'textarea' ),
+					'marketing_followup'          => array( __( 'Order follow-up email', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Asks subscribed customers for a review some days after they paid.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'marketing_followup_days'     => array( __( 'Send after (days)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'int' ),
+					'marketing_followup_subject'  => array( __( 'Follow-up subject', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text' ),
+					'marketing_followup_body'     => array( __( 'Follow-up text', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'textarea' ),
+					'marketing_winback'           => array( __( 'Win-back email', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'To subscribed customers who haven’t ordered for a while (once per quiet spell).', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'marketing_winback_days'      => array( __( 'No order for (days)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'int' ),
+					'marketing_winback_subject'   => array( __( 'Win-back subject', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text' ),
+					'marketing_winback_body'      => array( __( 'Win-back text', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'textarea' ),
+				),
+			),
+			'livechat' => array(
+				'tab'    => 'livechat',
+				'title'  => __( 'Live chat', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'intro'  => __( 'Answer chats under Store → Live chat. You show as online while that page is open; otherwise visitors can leave a message, which is emailed to the new-order address.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				'fields' => array(
+					'livechat_title'     => array( __( 'Title', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text' ),
+					'livechat_greeting'  => array( __( 'Greeting', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text' ),
+					'livechat_offline'   => array( __( 'When nobody is online', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text' ),
+					'livechat_pages'     => array(
+						__( 'Show the chat button', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						array(
+							'all'   => __( 'On every page', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+							'store' => __( 'On product, cart and checkout pages', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						),
+					),
+					'livechat_position'  => array(
+						__( 'Position', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						array(
+							'right' => __( 'Bottom right', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+							'left'  => __( 'Bottom left', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						),
+					),
+					'livechat_ask_email' => array( __( 'Ask for name and email first', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Logged-in customers are never asked. Always asked when nobody is online, so you can reply by email.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+					'livechat_keep_days' => array( __( 'Delete closed chats after (days)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'int', __( '0 = keep them.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				),
+			),
 			'emails'   => array(
 				'tab'    => 'emails',
 				'title'  => __( 'Emails', 'sidcraft-commerce-for-sidcraft-page-builder' ),
@@ -318,6 +380,12 @@ class Settings_Page {
 			'downloads' => __( 'Downloads', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			'emails'    => __( 'Emails', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 		);
+		if ( \SidcraftCommerce\Modules::enabled( 'marketing' ) ) {
+			$tabs['marketing'] = __( 'Marketing', 'sidcraft-commerce-for-sidcraft-page-builder' );
+		}
+		if ( \SidcraftCommerce\Modules::enabled( 'livechat' ) ) {
+			$tabs['livechat'] = __( 'Live chat', 'sidcraft-commerce-for-sidcraft-page-builder' );
+		}
 
 		/**
 		 * Filter the settings tabs: slug => label.
@@ -384,6 +452,8 @@ class Settings_Page {
 			printf( '<input type="checkbox" id="%1$s" name="%2$s" value="1" %3$s>', esc_attr( $id ), esc_attr( $name ), checked( (bool) $value, true, false ) );
 		} elseif ( 'textarea' === $args['type'] ) {
 			printf( '<textarea id="%1$s" name="%2$s" rows="3" class="large-text">%3$s</textarea>', esc_attr( $id ), esc_attr( $name ), esc_textarea( (string) $value ) );
+		} elseif ( 'int' === $args['type'] ) {
+			printf( '<input type="number" min="0" step="1" id="%1$s" name="%2$s" value="%3$s" class="small-text">', esc_attr( $id ), esc_attr( $name ), esc_attr( (string) $value ) );
 		} elseif ( 'password' === $args['type'] ) {
 			// Never echo secrets back; empty input keeps the stored value.
 			printf( '<input type="password" id="%1$s" name="%2$s" value="" class="regular-text" autocomplete="off" placeholder="%3$s">', esc_attr( $id ), esc_attr( $name ), $value ? esc_attr__( '•••••••• saved — leave empty to keep', 'sidcraft-commerce-for-sidcraft-page-builder' ) : '' );
@@ -539,6 +609,9 @@ class Settings_Page {
 						break;
 					case 'number':
 						$clean[ $key ] = max( 0, min( 4, absint( $raw ) ) );
+						break;
+					case 'int':
+						$clean[ $key ] = (string) absint( $raw );
 						break;
 					case 'select':
 						$clean[ $key ] = array_key_exists( (string) $raw, $field[1] ) ? (string) $raw : ( $old[ $key ] ?? '' );
