@@ -213,238 +213,37 @@ Settings, sessions, temporary data, chats, the email log and remembered carts ar
 == Changelog ==
 
 = 2.0.0 =
-* New: Email marketing module (Store → Mailing list, Store → Email campaigns, Settings → Marketing). Newsletter Signup Unit and checkout opt-in, double opt-in, tags, CSV import/export; campaigns to segments, sent now or scheduled, in batches, with open and click counts; automatic welcome, abandoned-cart, order follow-up and win-back emails; unsubscribe links and one-click List-Unsubscribe headers; personal data export and erase.
-* New: Live chat module (Store → Live chat, Settings → Live chat). Chat button on all or only store pages, inbox with unread counts, offline messages emailed to the store, replies by email, personal data export and erase. Off until you turn it on under Settings → Modules.
-* Security: an account created at checkout no longer receives other guest orders (and their downloads, subscriptions and tickets) placed with that email until the person proves the address is theirs (a password login or reset).
-* Security: a PayPal return can no longer apply one order's payment to another order with the same total.
-* Security: a gift card can no longer be spent twice by two checkouts at the same moment; its balance changes in one database step.
-* Security: only store managers can set event ticket types and prices (Authors and Editors could create purchasable ticket products).
-* Fixed: "Update order" and "Record refund" on the order screen (the refund box's form was nested inside the order form).
-* Fixed: prices of combinations in a second currency (choice amounts were converted twice).
-* Fixed: a second coupon with an existing code could be published, and the original was then turned into a draft.
-* Fixed: a store without payment methods couldn't take free orders (gift cards, 100% coupons).
-* Fixed: a free order couldn't be refunded, so its gift card balance couldn't be returned.
-* Fixed: subscriptions kept renewing after their first order was refunded or cancelled; they are cancelled now and the store is told.
-* Fixed: a PayPal payment arriving after an unpaid order was cancelled is now noted on the order instead of being ignored.
-* Fixed: logged-in visitors with someone else's download link skipped the email check guests get.
-* Fixed: the mini cart kept the old currency after switching currency.
-* Fixed: shipping-zone and tax-rate rows could overwrite each other after removing a middle row.
-* Fixed: the hourly maintenance job (renewals, reminders, cleanups) is scheduled again if it was lost on a single site too.
-* Fixed: event reminder emails are sent in the order's language; empty download files; PayPal item names with HTML entities; PHP 8.4 notice in the attendee CSV export; network copy no longer copies hidden ticket products.
-* Faster: the cart's lines are worked out once per request instead of up to 20 times; most pages no longer make a cart request to refill the mini cart; "Currency by country" only disables page caching on pages that show prices; product grids keep their cache until something they sort or filter on changes, and load products, images, upsells and cross-sells in a few queries; event lists and calendars, rating breakdowns and the editor's product picker use one query instead of one per item.
-* Unpaid orders: one job releases their stock after 2 hours (filter sidcraft_commerce_unpaid_hold_hours); the unused 24-hour job was removed.
-* Templates: new units/newsletter.php and emails/marketing.php; units/checkout.php changed.
+* New: Email marketing. Mailing list with the Newsletter Signup Unit and a checkout opt-in (double opt-in, tags, CSV import and export); campaigns to customer groups, sent now or scheduled, with open and click counts; automatic welcome, abandoned-cart, order follow-up and win-back emails; one-click unsubscribe.
+* New: Live chat. A chat button on your pages and an inbox under Store → Live chat; visitors leave a message by email while you're away. Off until turned on under Settings → Modules.
+* Security: accounts created at checkout only receive other guest orders once the email is proven; PayPal returns are checked against their order; gift cards can't be spent twice at once; only store managers set event ticket prices.
+* Fixed: "Update order" and "Record refund" on the order screen; combination prices in a second currency; duplicate coupon codes; free orders on stores without payment methods; refunds of free orders; subscriptions renewing after their first order was refunded; late PayPal payments; the mini cart after a currency switch; editing settings rows.
+* Faster: far fewer database queries for the cart, product grids, event calendars and reviews; most pages no longer request the cart; page caching stays on for pages without prices.
 
 = 1.9.0 =
-* New: per-combination variants. A product with two or more options (dropdown or radio) gets a Combinations grid under Product data: each combination (e.g. Red / Large) has its own SKU, price, sale price, stock and image, and can be marked as not sold.
-* The product page switches price, SKU and image when a combination is picked, and says when it is sold out or not sold; the Add to cart button is disabled for those.
-* Stock is taken from the combination at checkout and given back if the order is cancelled or refunded. Prices show as a range (lowest – highest).
-* Network copy: combination images are cleared on the target site, like choice images.
+* New: per-combination variants. Each combination of options (e.g. Red / Large) can have its own SKU, price, sale price, stock and image, or not be sold. Stock is taken from the combination at checkout.
 
 = 1.8.0 =
-* New: a choice can have its own SKU and image (Product data → Stock, SKU and image per choice). Picking it shows its image and SKU on the product page and in quick view; the cart, checkout and order use them.
-* New: upsells and cross-sells (Product data → Linked products). Upsells show as "You may also like" below the product; the cart page suggests the cross-sells of what's in the cart. Both can be turned off under Store → Settings.
-* New: product tags, with /product-tag/… pages, a Tags column, a "By tag" source in the Product Grid Unit and a Tags row in the specifications table.
-* New: coupon exclusions (products and categories that never get the discount), a maximum spend, and allowed emails (account or billing email; *@example.com allows a domain).
-* New: external / affiliate products. With a product URL, the Add to cart button becomes a "Buy at…" button to that site (opened in a new tab, marked sponsored).
-* New: category and brand images, shown on their pages and in the admin lists, and the Product Categories Unit ([sidccofo_product_categories]): a grid of category cards.
-* New: tax classes (Store → Settings → Tax classes), e.g. a reduced rate for food or books. Rate rows take a class; products pick one. Where a class has no row for a place, the standard rate applies.
-* New: a per-item rate for shipping zones (e.g. 5 plus 2 per item).
-* Fixed: items with options (size, extras) stayed in the cart after checkout.
-* Fixed: uninstalling with "delete data" left brands behind.
+* New: SKU and image per choice, upsells and cross-sells, product tags, coupon exclusions and maximum spend, external products, category and brand images, tax classes and per-item shipping.
 
 = 1.7.0 =
-* New: Store → Settings → Modules. Turn Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates on or off. A module that is off loses its menus, settings tab, Units, blocks and cart / checkout fields, and its products (event tickets, subscription and gift card products) show as unavailable. Nothing is deleted: turning a module back on brings everything back.
-* Events, Subscriptions, Gift cards and Coupons stay on after updating. The Reward points and Affiliates switches moved here from the Rewards & affiliates tab, which now shows only while one of them is on.
-* Orders placed while a module was on keep being handled: bought gift cards are still issued and delivered, sold tickets still open, check in and give seats back on refunds, and points and commissions follow their orders as before.
-* Subscriptions can't be turned off while any subscription is waiting for payment, active, on hold or cancelled at period end, so no renewal is skipped silently.
-* Shortcodes of switched-off Units (for example [sidccofo_subscriptions]) print nothing instead of the shortcode.
-* New filter: sidcraft_commerce_module_enabled ( $on, $module ).
+* New: Store → Settings → Modules turns Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates on or off. Nothing is deleted.
 
 = 1.6.0 =
-* New: subscriptions. On a product's edit screen, tick "Bill this product every period" and set how often (every n days, weeks, months or years), the number of payments (or until cancelled), a free trial and a sign-up fee. The product price is what each period costs; product pages, the cart, checkout, emails and orders show it as "$10 / month" with the terms. Subscribers need an account (checkout asks them to create one).
-* New: the first order pays the first period (or only the sign-up fee during a free trial) and starts the subscription when it is paid. Renewal orders are created when a payment is due, in the subscription's currency and language, with shipping and tax worked out again for physical products. Months keep their day (Jan 31 → Feb 28 → Mar 31).
-* New: automatic renewals for payment methods that keep a card (Stripe in Sidcraft Pro, which saves the card at checkout, also during a free trial). Otherwise, or when the card is declined, the subscription shows "Payment due" and the customer gets an email with a link to pay the renewal with any payment method. A renewal still unpaid after Settings → Payments → Subscriptions → Days to pay a renewal (default 7) is cancelled, and so is its subscription.
-* New: My Subscriptions Unit and `[sidccofo_subscriptions]` (a My subscriptions page is created): price, status, next payment, Pay now, Cancel (access lasts until the paid period ends) and Keep subscription. Customers are emailed when a subscription is cancelled or finishes.
-* New: Store → Subscriptions: every subscription with its customer, price, status and next payment; on each, its first order and renewals, history, and changing the status, next payment date and price, creating the renewal now or no longer charging the saved card. Orders link to the subscription they start or renew.
-* Refunding an order doesn't end its subscription: cancel the subscription under Store → Subscriptions. A payment that arrives after a subscription ended is flagged to the store by email.
-* Developers: gateways can charge renewals by returning true from supports( 'subscriptions' ), saving their details with Subscriptions::save_token() and implementing charge_renewal(); hook sidcraft_commerce_subscription_status_changed.
+* New: subscriptions with free trials, sign-up fees, automatic renewals and a My subscriptions page.
 
 = 1.5.0 =
-* New: several currencies. Store → Settings → Currencies lists more currencies with your rate, symbol, position, decimals and countries. Shoppers switch with the Currency Switcher Unit (or [sidccofo_currency_switcher], or ?sidccofo_currency=EUR), or get their country's (CDN country header or the checkout country) or their language's currency. Prices, quantity discounts, option extras, shipping rates, coupon amounts and minimum spends, gift card balances and reward point values are converted from the store currency; a product can have a fixed price per currency, which sale prices, specials and quantity discounts take the same share off. Orders are charged and kept in the shopper's currency with the rate used, and are shown in it in emails, on the order-received page and in admin (with the store-currency value). Payment methods that can't take a currency are hidden for it, with a link to pay in the store currency. Points are earned and commissions owed on the store-currency value.
-* New: WPML and Polylang. Products, product categories, brands, events and event categories can be translated (wpml-config.xml; Polylang lists them under Languages → Settings). A translation is the original product in another language: carts, stock, prices, price rules, downloads, reviews and event tickets are the original's, so every language sells the same stock; names, links, descriptions, images, attribute and option labels come from the translation. Shop pages open in the shopper's language, cart and checkout requests keep it, orders remember it and customer emails (order, shipping, downloads, tickets, gift cards) are sent in it. Optional currency per language.
-* New: WordPress Multisite. Network activation sets up every site (and sites added later); each store has its own carts, cookies and settings. Network Admin → Stores: every store's orders and sales for 30 days, the latest orders across stores, and copying settings (without payment methods), products (categories, brands, images, downloadable files) and coupons (their product and category limits follow) between stores, updating earlier copies instead of duplicating. WP-CLI: wp sidcraft-commerce stores, wp sidcraft-commerce copy --from=1 --to=2,3.
-* Fixed: a store's uploads have two web addresses on a subdirectory Multisite network; downloadable files are recognised by both.
-
-= 1.4.2 =
-* Fixed: two checkouts sent at the same moment could both use a coupon's last use (its usage limit or a customer's uses per customer). Checkouts using the same coupon now take turns, from checking its limits until the new order has counted its use (a second or two; the payment step isn't held up), and checkouts with different coupons or none don't wait at all.
-* Fixed: the usage count could miss a use when two orders counted the coupon at the same moment; it is now updated in one step.
-
-= 1.4.1 =
-* New: coupons can limit uses per customer (Uses per customer on the coupon screen). A customer is their account or their billing email, so guests can't get round the limit by checking out without an account; logged-in customers are told when they apply the coupon, guests at checkout. Cancelled and refunded orders give the use back, and orders placed before this update count too.
+* New: several currencies, WPML and Polylang translations, and Multisite stores.
 
 = 1.4.0 =
-* New: price rules on products (Product data → Price rules): quantity discounts ("10+: 18"), specials that start and end on a date ("from 2026-11-27 until 2026-11-30: 15% off"), and prices for customer groups ("group Wholesale: 70"). The cart counts every unit of a product for quantity discounts, the product page lists the steps and the running special's end date, and sorting and "on sale" follow scheduled specials hourly.
-* New: customer groups (Store → Settings → Catalog). Each group is a WordPress role to give customers under Users.
-* New: option choices can lower the price ("Thin -1.50"; never below zero) and have their own stock (Product data → Stock per choice). Sold-out choices are shown disabled; orders take choice stock with the product stock and cancellations and refunds put it back.
-* New: coupon rules: free shipping, only some products or categories (the discount counts only those items), only for logged-in customers, and a start date.
-* New: brands (Store → Brands), attributes ("Label: value" lines with [Group] headings), weight and dimensions, shown in a specifications table on product pages (or the Product Specifications Unit). Shipping zones can add a rate per unit of weight.
-* New: reward points (Store → Settings → Rewards & affiliates): customers earn points on paid orders and spend them at checkout; cancelled and refunded orders give spent points back and take earned points away (partial refunds take back their share; points already spent leave a balance owed that new points pay off first). Adjust a customer's points on their user screen.
-* New: affiliates: referral links (?ref=CODE), commissions on paid orders (void when cancelled or refunded, reduced by partial refunds; none on an affiliate's own orders), the Affiliate Dashboard Unit for joining and following earnings, and Store → Affiliates for approvals, personal rates and payouts.
-* Fixed: logged-in customers got "Your session expired" when placing an order, because the store's requests didn't carry WordPress's REST nonce, so WordPress treated them as logged out. Logged-in shoppers now send it (guests still don't, so cached pages keep working).
-
-= 1.3.2 =
-* Fixed: Events → Add New Event opened an empty block editor; the event form (date, venue, address, map, capacity, tickets) sat in a collapsed panel below the canvas. Events now open in the classic event screen with Event details directly under the title. The sidcraft_commerce_event_block_editor filter switches back to the block editor.
-* Fixed: an event page designed in Sidcraft Page Builder with an Event details Unit but no Event tickets Unit had no ticket selector, so "Get tickets" led to a page with nothing to buy. Each automatic part (details, tickets, map) is now skipped only when the layout places that Unit itself; "Hide the automatic details and tickets" still turns all of them off.
-* Fixed: a ticket type's own "Sales end" date was ignored once the event started when "Stop selling when the event starts" was on (the default), so a multi-day event showed "Registration has closed" on its first day. The ticket type's date now wins; the event's end still closes sales.
-* Fixed: the event's schema.org offers said InStock while registration was closed; they now say OutOfStock.
-* New: Location preview box on the event screen. It shows the map the event page will show (Google Maps or OpenStreetMap, per Events → Settings) and updates as you type the venue, address or coordinates.
-
-= 1.3.1 =
-* Performance: the cart loads all its products in one batch instead of two queries per product. The cart is read on every page a shopper with items in the cart views (for the mini-cart count), so this saves those queries site-wide, not only on the cart and checkout (a 10-line cart: 63 queries to 40 on checkout).
-* Performance: builder pages load every product their commerce Units show (price, add to cart, stock, rating) in one batch before rendering, instead of two queries per Unit.
-* Performance: templates (product cards, cart, checkout) look for a theme override once per request instead of once per card.
-* Performance: the rewrite-flush flag and the two Events options read on every request are autoloaded, so they no longer cost a database query each on every page.
-* Fixed: the readme's Stable tag (1.2.0) did not match the plugin version.
+* New: price rules (quantity discounts, dated specials, customer-group prices), stock per choice, more coupon rules, brands and specifications, reward points and affiliates.
 
 = 1.2.0 =
-* New: event management and ticketing (Events menu, ticket types with capacities, per-order limits, sales windows, attendee types and dynamic pricing).
-* New: tickets sold through hidden product placeholders, so currency, taxes, coupons, gift cards, stock and all payment methods apply.
-* New: attendee details at checkout, including custom fields and private file uploads.
-* New: ticket emails with embedded QR codes, PDF tickets and .ics files; attendee copies; reminders; optional WhatsApp messages.
-* New: QR / barcode check-in (any phone camera, Check-in screen with camera or USB scanner, Attendees list with bulk actions and CSV export).
-* New: Google Calendar links and a subscription feed; Zoom meeting creation; Google Maps / OpenStreetMap venue maps.
-* New: Event List, Event Calendar, Event Details, Event Tickets, Event Map and My Tickets as Sidcraft Units, Gutenberg blocks and shortcodes.
-* New: `sidcraft_commerce_checkout_after_fields` action and `sidcraft_commerce_settings_tabs` filter.
-* Fix: reopening a cancelled order now clears its old refunded-quantity record, so stock and reports match the units it holds again.
+* New: events and ticketing with QR check-in, PDF tickets and calendar sync.
 
 = 1.1.0 =
-* New: Digital downloads. Downloadable products with several files, download limits (per unit bought) and expiry; private links per buyer on the order-received page, in order emails and on a new My downloads page (My Downloads Unit and `[sidccofo_downloads]`).
-* New: Virtual products. A cart of virtual products and gift cards has no shipping cost or address fields.
-* New: Downloads box on orders: edit downloads left and expiry, revoke or restore access, grant another product's files, email the links again, download history. Store → Download log.
-* New: Store → Settings → Downloads: download method (force download with resumable downloads, X-Sendfile / X-Accel-Redirect, redirect), grant on payment or completion, login or email confirmation, approved folders, protected uploads folder, IP logging.
-* New: Past buyers get files added to a product later; links pause on cancelled or refunded orders.
-* New: The Product data panel in Sidcraft Page Builder has Virtual and Downloadable switches.
-* New: Download history in WordPress's personal data export and erase tools.
-* Templates updated (1.1.0): emails/order.php, units/order-confirmation.php; new units/downloads.php.
+* New: digital downloads and virtual products.
 
-= 1.0.9 =
-* Stock is reserved when the order is placed. The update only succeeds while enough units remain, so two buyers cannot both take the last item. A pending order unpaid after 24 hours is cancelled and its stock is returned.
-* Partial refunds. The order screen records an amount and the quantities to put back. A Stripe or PayPal refund that covers the order total marks it Refunded. A smaller amount does not return stock unless quantities are named. Each provider event is applied once.
-* Disputed status. Stripe `charge.dispute.created` and `charge.dispute.closed`, and PayPal customer-dispute events, keep stock reserved while a dispute is open. A lost dispute refunds the order. A won dispute restores the previous status.
-* Guest checkout can create an account. Logging in or registering with the same email attaches guest orders placed on 1.0.9 or newer.
-* Three-decimal currencies (BHD, JOD, KWD, OMR, TND) are charged in thousandths. Zero-decimal currencies stay on a factor of 1.
-* Store → Export catalog writes products, categories, price, SKU, stock and item options to JSON, without the page-builder layout.
-* Templates updated (1.0.9): units/checkout.php.
-
-= 0.9.2 =
-* Plugin Check: output escaping on the order screen's item list and in the Add to Cart template.
-
-= 0.9.1 =
-* Developers: new `sidcraft_commerce_editor_styles` filter so add-on Units are styled in the Sidcraft Page Builder canvas, and add-on Units can use any glyph or emoji as their builder icon.
-
-= 0.9.0 =
-* Item options. Type option groups on a product (Product data → Item options, or the builder's Product data panel): dropdowns, buttons, multiple choices and text boxes, each choice optionally adding to the price, and any group can be required. Customers choose on the product page with a running price; each combination is its own cart line; stock is checked across all lines of a product; prices are recalculated on every request. Choices show in the cart, checkout, order-received page, emails, the order screen and PayPal.
-* Add-on support: `sidcraft_commerce_product_options` filter, `Cart::add_with_options()` and an `options` parameter on the cart/add REST route.
-* Order statuses can be registered by add-ons with `Post_Types::register_order_status()`: label, position, colour, whether it counts as paid, and an optional customer email. Stock, sales, gift cards and reviews now follow each status's "paid" setting instead of a fixed list. New `sidcraft_commerce_order_status_definitions` filter; the older `sidcraft_commerce_order_statuses` filter still works.
-* Checkout fields added by add-ons can be dropdowns (`select` with choices) or text areas, and their values now show on the order-received page and in emails as well as the admin.
-* New developer guide (docs/ADDONS.md) and a complete restaurant add-on example (docs/example-addon.php).
-* Templates updated (0.9.0): units/add-to-cart.php, units/cart-panel.php, units/checkout.php, units/checkout-summary.php, units/order-confirmation.php, emails/order.php. New: units/item-options.php.
-
-= 0.8.0 =
-* Products are designed in Sidcraft Page Builder. Add New Product (menu, Products list and admin bar) opens a new product in the builder, and products get "Edit with Sidcraft Page Builder" on the product screen, in the Products list and in the admin bar.
-* New Product data panel inside the builder: regular and sale price, SKU, stock tracking and quantity or stock status, image badge, featured, categories, product image, short description and "hide the automatic buy box". It opens by itself on a new product without a price, and the builder's Save also saves it.
-* The automatic buy box is skipped when the product layout already has an Add to Cart Unit, and it now sits above a Sidcraft layout instead of being replaced by it.
-* New setting: Store → Settings → "Design products with Sidcraft Page Builder" (on by default). Turn it off to add and edit products in the WordPress editor.
-
-= 0.7.4 =
-* Plugin Check: order-screen shipment fields are sanitized field by field when read, and the shipment save no longer writes to $_POST.
-* Fix: adding a shipment with "Mark the order Completed" no longer gets undone by the order status dropdown on the same save.
-* Admin: gift card screen uses a stylesheet class instead of an inline style.
-
-= 0.7.3 =
-* Gift cards. Tick "This product is a gift card" on a product and set preset amounts and/or allow a custom amount (with a minimum and maximum). Buyers choose the amount, recipient, message and an optional send date; each card is emailed to the recipient once the order is paid, or on the chosen date.
-* Store → Gift cards: issue cards by hand (store credit, prizes), see balances, recipients and history, change a balance, resend the email, disable a card.
-* Redeeming: a gift card field in the cart and at checkout. Several cards per order; a card pays up to its balance and keeps the rest. When cards cover the whole order, no payment method is needed. Amounts are taken when the order is placed and returned if it is cancelled or refunded; cards bought in a cancelled or refunded order are disabled.
-* Gift cards are not charged tax or shipping and coupons don't apply to them. Optional expiry for new cards (Store → Settings → Payments → Gift cards; default never).
-* Orders with nothing left to pay (gift cards or a 100% coupon) no longer ask for a payment method.
-* Codes are protected against guessing (10 failed attempts per hour per visitor).
-* Templates updated (0.7.3): units/add-to-cart.php, units/cart-panel.php, units/checkout.php, units/checkout-summary.php. New: units/gift-card-form.php, units/gift-card-redeem.php, emails/gift-card.php.
-
-= 0.7.2 =
-* Shipment tracking: a "Shipment tracking" box on each order adds the carrier, tracking number and date. The customer gets a "Your order has shipped" email with a Track your package button, and the tracking shows on the order-received page. Several shipments per order are supported.
-* Automatic tracking links for Australia Post, Canada Post, City-Link Express, DHL, DPD (UK and Europe), Fastway South Africa, FedEx, OnTrac, Parcelforce, Poczta Polska, InPost, DPD Polska, DHL Parcel Polska, GLS Poland, Royal Mail, SAPO, TNT Express (consignment and reference), UPS and USPS. Custom carriers with any link; Store → Settings → Shipping & tax → "Your carriers" saves your own carriers and can replace a built-in link.
-* Adding a shipment can mark the order Completed (one email: the shipped email replaces the "order complete" email).
-* Templates updated (0.7.2): emails/order.php. New: units/shipments.php.
-
-= 0.7.1 =
-* All payment gateways work for everyone; there is no licence check of any kind.
-* Declares its dependency on Sidcraft Page Builder (Requires Plugins header).
-
-= 0.7.0 =
-* New payment methods: Stripe (cards, Apple Pay, Google Pay) with Klarna, Afterpay / Clearpay and Affirm; Razorpay; PayU India; Mercado Pago.
-* PayPal: on-page buttons with Pay in 4 (Pay Later), Venmo and cards, plus a Pay in 4 message (the redirect flow remains as an option).
-* Developer framework: the Gateway base class now provides settings fields, return and webhook routes (/gateway/{id}/return and /webhook), HTTP helpers and a POST-form checkout flow. Example in docs/example-gateway.php.
-* Store → Settings is split into tabs: General, Shipping & tax, Payments, Emails.
-
-= 0.6.2 =
-* Plugin Check: coupon lookup no longer sets suppress_filters; tested up to WordPress 7.1.
-
-= 0.6.1 =
-* WordPress.org review: text domain is now sidcraft-commerce-for-sidcraft-page-builder; every stored name, post type, status, shortcode, script handle and JavaScript global uses the sidccofo prefix; admin CSS/JS are enqueued files; editor REST routes check per-product permissions.
-* Shortcodes are now [sidccofo_product_grid], [sidccofo_cart], [sidccofo_checkout], [sidccofo_order_confirmation] and so on.
-* wp-config.php constants renamed: SIDCRAFT_COMMERCE_PAYPAL_CLIENT_ID, SIDCRAFT_COMMERCE_PAYPAL_SECRET, SIDCRAFT_COMMERCE_PAYPAL_WEBHOOK_ID.
-
-= 0.6.0 =
-* Verified-customer reviews. Clicking a star on a product (Product Rating Unit, buy box or the reviews section) opens a popup with that rating picked; the customer enters their order number, the email used on the order and their review. The order must be paid and contain the product, and each order can review each product once. Reviews appear in the product details with a "Verified purchase" badge, the average, a 5-to-1 star breakdown and the review list.
-* New Product Reviews Unit ([sidccofo_product_reviews]); added automatically below the product description (Store → Settings → "Show reviews on product pages").
-* Store → Settings → "Publish verified reviews immediately" (on by default); turn off to approve each review under Comments first. The Comments screen shows the stars and a link to the verifying order.
-* The open WordPress comment form is closed on products, so only verified customers can review. Existing reviews are kept and still count toward the average.
-* Protection against guessing: the same message for a wrong order number or email, a limit of 10 failed attempts per hour per visitor, and a hidden spam-trap field.
-* Product Rating Unit: stars are clickable (switch "Click a star to rate"), and it now shows "Be the first to review" instead of hiding when a product has no reviews.
-* Templates updated (0.6.0): units/product-rating.php. New: single/reviews.php, single/no-comments.php.
-
-= 0.5.0 =
-* Coupons (Store → Coupons): the coupon title is the code; choose a percentage of the (sale-priced) subtotal or a fixed amount off, with optional minimum spend, expiry date and usage limit. Customers apply or remove one coupon in the cart or at checkout. The discount shows as its own line in the cart, checkout, confirmation, emails and admin order, reduces tax and counts toward free shipping, and is sent to PayPal as a discount. Usage is counted when an order is placed on hold / processing and given back on cancel / refund.
-* Image badges: pick HOT, POPULAR, Sale or Clearance per product (Product data → Image badge). It shows top-right on the product image in grids, quick view and the product page. Without a chosen badge, products on sale still show "Sale".
-* Sold Out: out-of-stock products get a highlighted "Sold Out" label over a dimmed image.
-* Sale prices: the sale price now sits above the struck-through regular price. A sale price that isn't lower than the regular price is rejected with a notice. The cart shows the struck-through regular price next to sale-priced lines.
-* Fix: the sidcraft_commerce_order_status_{status} action fired with an empty status.
-* Templates updated (0.5.0): loop/product-card.php, quick-view.php, units/cart-panel.php, units/checkout-summary.php. New: units/coupon-form.php.
-
-= 0.4.1 =
-* Fix: no translations are loaded before init (WordPress 6.7+ "_load_textdomain_just_in_time was called incorrectly" notice when Sidcraft Page Builder was missing or inactive).
-* Admin: "Add New Product" menu label; order screen shows country, state and payment method names; sale prices in the Products list no longer show screen-reader text.
-
-= 0.4.0 =
-* Tax by country and state: prices entered including or excluding tax, a rate table (country, optional state, rate, label), optional tax on shipping. Tax shows as its own line (or "Includes … tax") in the cart, checkout, confirmation, emails and admin, and is sent to the payment provider.
-* Shipping zones: a flat rate per group of countries, a * zone for everywhere else, free shipping over an amount (store-wide or per zone). Countries outside every zone can't check out and aren't offered.
-* Checkout: country and state are lists; shipping and tax update as soon as they change. "Add $X more for free shipping" in the cart.
-* Templates updated (0.4.0): cart-panel.php, checkout.php, checkout-summary.php, order-confirmation.php, emails/order.php.
-* Coding standards: passes WordPress Coding Standards (PHPCS) and Plugin Check.
-
-= 0.3.3 =
-* Readme text updates.
-
-= 0.3.2 =
-* Internal detection changes.
-
-= 0.3.1 =
-* Sidcraft integration wired to Sidcraft Page Builder's real extension API (tested with 0.15.4): Units register on sidcraft_page_builder_units_register, appear in the editor under Commerce, preview live on the editor canvas, and are excluded from Sidcraft's fragment cache.
-* Fixed: Sidcraft Page Builder is detected by SIDCRAFT_PAGE_BUILDER_VERSION plus its own requirements check (0.15.0+ required).
-* Fixed: Sidcraft layouts are read from _sidsyn_document_data (assets now load in <head> on Sidcraft-built pages).
-* Fixed: product URLs could 404 after Sidcraft Page Builder was reactivated or updated; permalinks now repair themselves.
-
-= 0.3.0 =
-* Payments: PayPal (Orders v2, verified webhooks).
-
-= 0.2.0 =
-* Standalone store engine: no WooCommerce dependency. Products, categories, reviews, cart sessions, checkout, orders, emails, settings.
-* Stripe Checkout gateway with signed webhooks and a return-page fallback. Offline payment gateway.
-* New Units: Cart, Checkout, Order Confirmation. Cart/Checkout layouts adapt to the space they're given.
-
-= 0.1.0 =
-* First build (WooCommerce-based, replaced by 0.2.0).
+Older versions and full details: see changelog.txt.
 
 == Upgrade Notice ==
 
