@@ -181,32 +181,6 @@ class Frontend {
 	public function cleanup() {
 		Session::cleanup();
 
-		$stale = get_posts(
-			array(
-				'post_type'      => Post_Types::ORDER,
-				'post_status'    => 'sidccofo-pending',
-				'posts_per_page' => 50,
-				'fields'         => 'ids',
-				'date_query'     => array(
-					array(
-						'before' => gmdate( 'Y-m-d H:i:s', time() - 2 * HOUR_IN_SECONDS ),
-						'column' => 'post_date_gmt',
-					),
-				),
-				// Subscription renewals wait for their own grace period (Subscriptions::run).
-				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Bounded hourly batch.
-					array(
-						'key'     => '_sidccofo_renewal_of',
-						'compare' => 'NOT EXISTS',
-					),
-				),
-			)
-		);
-		foreach ( $stale as $id ) {
-			$order = Order::get( $id );
-			if ( $order ) {
-				$order->set_status( 'sidccofo-cancelled', __( 'Unpaid for 2 hours.', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
-			}
-		}
+		Order::release_abandoned();
 	}
 }

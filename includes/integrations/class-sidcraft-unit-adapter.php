@@ -172,19 +172,21 @@ class Sidcraft_Unit_Adapter extends \SidcraftPageBuilder\Units\Unit {
 		static $options = null;
 		if ( null === $options ) {
 			$options = array( '' => __( '— Current product page —', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
-			$ids     = get_posts(
+			// Whole posts in one query (titles need them), without their meta and terms.
+			$posts   = get_posts(
 				array(
-					'post_type'      => Post_Types::PRODUCT,
-					'post_status'    => array( 'publish', 'draft', 'private' ),
-					'posts_per_page' => 200, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Editor product picker, admin only.
-					'orderby'        => 'title',
-					'order'          => 'ASC',
-					'fields'         => 'ids',
-					'no_found_rows'  => true,
+					'post_type'              => Post_Types::PRODUCT,
+					'post_status'            => array( 'publish', 'draft', 'private' ),
+					'posts_per_page'         => 200, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Editor product picker, admin only.
+					'orderby'                => 'title',
+					'order'                  => 'ASC',
+					'no_found_rows'          => true,
+					'update_post_meta_cache' => false,
+					'update_post_term_cache' => false,
 				)
 			);
-			foreach ( $ids as $id ) {
-				$options[ (string) $id ] = get_the_title( $id ) . ' (#' . $id . ')';
+			foreach ( $posts as $post ) {
+				$options[ (string) $post->ID ] = get_the_title( $post ) . ' (#' . $post->ID . ')';
 			}
 		}
 		return $options;

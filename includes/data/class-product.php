@@ -1237,17 +1237,20 @@ class Product {
 			$stored  = round_amount( apply_filters( 'sidcraft_commerce_product_price', (float) $plain, $product, 1 ) );
 			$on_sale = '' !== $product->get_regular_price() && $plain < round_amount( (float) $product->get_regular_price() );
 		}
-		update_post_meta( $id, '_sidccofo_price', '' === $product->get_regular_price() ? '' : (string) $stored );
-		update_post_meta( $id, '_sidccofo_on_sale', $on_sale ? 1 : 0 );
+		// update_post_meta() is false when the value didn't change: cached grids
+		// are only thrown away when something they sort or filter on moved.
+		$changed  = (bool) update_post_meta( $id, '_sidccofo_price', '' === $product->get_regular_price() ? '' : (string) $stored );
+		$changed  = (bool) update_post_meta( $id, '_sidccofo_on_sale', $on_sale ? 1 : 0 ) || $changed;
 		update_post_meta( $id, '_sidccofo_dated_rules', Price_Rules::has_dates( $product->get_price_rules() ) ? 1 : 0 );
 		if ( $product->managing_stock() ) {
-			update_post_meta( $id, '_sidccofo_stock_status', $product->get_stock_quantity() > 0 ? 'instock' : 'outofstock' );
+			$changed = (bool) update_post_meta( $id, '_sidccofo_stock_status', $product->get_stock_quantity() > 0 ? 'instock' : 'outofstock' ) || $changed;
 		} elseif ( '' === $product->meta( '_sidccofo_stock_status' ) ) {
-			update_post_meta( $id, '_sidccofo_stock_status', 'instock' );
+			$changed = (bool) update_post_meta( $id, '_sidccofo_stock_status', 'instock' ) || $changed;
 		}
 		foreach ( array( '_sidccofo_total_sales', '_sidccofo_rating_avg', '_sidccofo_rating_count' ) as $key ) {
 			if ( '' === get_post_meta( $id, $key, true ) ) {
 				update_post_meta( $id, $key, 0 );
+				$changed = true;
 			}
 		}
 
@@ -1255,7 +1258,10 @@ class Product {
 		// them the original's values.
 		self::copy_to_translations( $id, array( '_sidccofo_price', '_sidccofo_on_sale', '_sidccofo_dated_rules', '_sidccofo_stock_status', '_sidccofo_total_sales', '_sidccofo_rating_avg', '_sidccofo_rating_count', '_sidccofo_featured' ) );
 
-		self::bump_query_version();
+		// Saving the product itself (title, status, order, featured…) bumps on save_post (see Post_Types).
+		if ( $changed ) {
+			self::bump_query_version();
+		}
 	}
 
 	/**
@@ -1267,6 +1273,36 @@ class Product {
 
 	/**
 	 * Current product query cache version.
+	 *
+	 * @return string
+	 */
+	/**
+	 * Load many products (posts, meta, terms and featured images) in a few
+	 * queries before a list renders them one by one.
+	 *
+	 * @param int[] $ids Product ids.
+	 */
+	public static function prime( array $ids ) {
+		$ids = array_values( array_unique( array_filter( array_map( 'absint', $ids ) ) ) );
+		if ( ! $ids ) {
+			return;
+		}
+		_prime_post_caches( $ids, true, true );
+		// Featured images too (core only does this for the main query).
+		$thumbs = array();
+		foreach ( $ids as $id ) {
+			$thumb = (int) get_post_meta( $id, '_thumbnail_id', true );
+			if ( $thumb ) {
+				$thumbs[] = $thumb;
+			}
+		}
+		if ( $thumbs ) {
+			_prime_post_caches( $thumbs, false, true );
+		}
+	}
+
+	/**
+	 * Current product-query version.
 	 *
 	 * @return string
 	 */
@@ -1322,7 +1358,9 @@ class Product {
 	 */
 	protected function linked_ids( $key ) {
 		$out = array();
-		foreach ( array_map( 'absint', (array) $this->meta( $key ) ) as $id ) {
+		$ids = array_filter( array_map( 'absint', (array) $this->meta( $key ) ) );
+		self::prime( $ids ); // One query for them all, before get_post_status() loads each.
+		foreach ( $ids as $id ) {
 			if ( $id && $id !== $this->get_id() && 'publish' === get_post_status( $id ) && Post_Types::PRODUCT === get_post_type( $id ) ) {
 				$out[] = $id;
 			}

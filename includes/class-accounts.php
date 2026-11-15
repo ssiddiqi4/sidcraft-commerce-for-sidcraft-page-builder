@@ -2,9 +2,13 @@
 /**
  * Guest orders and WordPress accounts.
  *
- * Checkout can create an account from the order email. A later registration
- * or login with that same account email attaches guest orders from 1.0.9 on
- * (they store _sidccofo_billing_email and customer id 0).
+ * Checkout can create an account from the order email. Guest orders placed
+ * with the account email (they store _sidccofo_billing_email and customer id
+ * 0) are attached once the person has shown the address is theirs: a login
+ * with a password, or a password reset, both of which go through that inbox.
+ * Creating an account alone attaches nothing, so typing someone else's email
+ * at checkout can't reach their orders, downloads, subscriptions or tickets.
+ * Accounts made at checkout are marked unverified until then.
  *
  * @package SidcraftCommerce
  */
@@ -21,13 +25,15 @@ defined( 'ABSPATH' ) || exit;
  */
 class Accounts {
 
+	/** User meta on accounts made at checkout, until the email is proven. */
+	const UNVERIFIED = '_sidccofo_email_unverified';
+
 	/**
 	 * Attach hooks.
 	 */
 	public function hooks() {
-		add_action( 'user_register', array( $this, 'claim' ) );
 		add_action( 'wp_login', array( $this, 'claim_on_login' ), 10, 2 );
-		add_action( 'sidcraft_commerce_cleanup', array( Order::class, 'release_abandoned' ) );
+		add_action( 'after_password_reset', array( $this, 'claim_on_reset' ) );
 	}
 
 	/**
@@ -38,8 +44,32 @@ class Accounts {
 	 */
 	public function claim_on_login( $user_login, $user ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed
 		if ( $user instanceof \WP_User ) {
+			delete_user_meta( $user->ID, self::UNVERIFIED );
 			$this->claim( $user->ID );
 		}
+	}
+
+	/**
+	 * A password set from the emailed link proves the address too.
+	 *
+	 * @param \WP_User $user User.
+	 */
+	public function claim_on_reset( $user ) {
+		if ( $user instanceof \WP_User ) {
+			delete_user_meta( $user->ID, self::UNVERIFIED );
+			$this->claim( $user->ID );
+		}
+	}
+
+	/**
+	 * Has this user shown their account email is theirs? (Accounts made at
+	 * checkout haven't, until they log in with a password or reset it.)
+	 *
+	 * @param int $user_id User.
+	 * @return bool
+	 */
+	public static function email_verified( $user_id ) {
+		return $user_id > 0 && ! get_user_meta( (int) $user_id, self::UNVERIFIED, true );
 	}
 
 	/**
@@ -49,7 +79,7 @@ class Accounts {
 	 */
 	public function claim( $user_id ) {
 		$user = get_userdata( (int) $user_id );
-		if ( ! $user || ! is_email( $user->user_email ) ) {
+		if ( ! $user || ! is_email( $user->user_email ) || ! self::email_verified( (int) $user_id ) ) {
 			return;
 		}
 		$email = strtolower( $user->user_email );

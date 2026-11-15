@@ -99,8 +99,8 @@ class My_Tickets extends Unit {
 			foreach ( $order_ids as $order_id ) {
 				$found = array_merge( $found, Ticket::for_order( (int) $order_id ) );
 			}
-			// Tickets bought for this person by someone else.
-			if ( is_email( $user->user_email ) ) {
+			// Tickets bought for this person by someone else (once the account email is proven theirs).
+			if ( is_email( $user->user_email ) && \SidcraftCommerce\Accounts::email_verified( (int) $user->ID ) ) {
 				$ids = get_posts(
 					array(
 						'post_type'      => \SidcraftCommerce\Events\Events::TICKET,

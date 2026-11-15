@@ -284,20 +284,41 @@ class Gift_Card {
 	}
 
 	/**
-	 * Take an amount off the balance (never below zero).
+	 * Take an amount off the balance: all of it or nothing, in one
+	 * conditional update, so two checkouts can't both spend the same balance.
 	 *
 	 * @param float  $amount Amount.
 	 * @param int    $order  Order ID.
 	 * @param string $note   Note.
-	 * @return float Amount actually taken.
+	 * @return float Amount taken (0 when the balance is no longer enough).
 	 */
 	public function debit( $amount, $order = 0, $note = '' ) {
-		$take = round_amount( min( $this->get_balance(), max( 0, (float) $amount ) ) );
-		if ( $take > 0 ) {
-			update_post_meta( $this->get_id(), '_sidccofo_gc_balance', (string) round_amount( $this->get_balance() - $take ) );
-			$this->log( -$take, $order, $note );
+		$take = round_amount( max( 0, (float) $amount ) );
+		if ( $take <= 0 || ! $this->adjust_balance( -$take ) ) {
+			return 0.0;
 		}
+		$this->log( -$take, $order, $note );
 		return $take;
+	}
+
+	/**
+	 * Move the stored balance by $delta in the database itself (no read-then-write).
+	 *
+	 * @param float $delta Negative to take (refused when the balance is short).
+	 * @return bool
+	 */
+	protected function adjust_balance( $delta ) {
+		global $wpdb;
+		$delta = (float) $delta;
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Conditional balance update, like product stock.
+		if ( $delta < 0 ) {
+			$done = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_value = ROUND(CAST(meta_value AS DECIMAL(19,4)) - %f, 4) WHERE post_id = %d AND meta_key = '_sidccofo_gc_balance' AND CAST(meta_value AS DECIMAL(19,4)) >= %f", abs( $delta ), $this->get_id(), abs( $delta ) - 0.00001 ) );
+		} else {
+			$done = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_value = ROUND(CAST(meta_value AS DECIMAL(19,4)) + %f, 4) WHERE post_id = %d AND meta_key = '_sidccofo_gc_balance'", $delta, $this->get_id() ) );
+		}
+		// phpcs:enable
+		wp_cache_delete( $this->get_id(), 'post_meta' );
+		return (bool) $done;
 	}
 
 	/**
@@ -310,7 +331,9 @@ class Gift_Card {
 	public function credit( $amount, $order = 0, $note = '' ) {
 		$amount = round_amount( max( 0, (float) $amount ) );
 		if ( $amount > 0 ) {
-			update_post_meta( $this->get_id(), '_sidccofo_gc_balance', (string) round_amount( $this->get_balance() + $amount ) );
+			if ( ! $this->adjust_balance( $amount ) ) {
+				update_post_meta( $this->get_id(), '_sidccofo_gc_balance', (string) $amount ); // No balance row yet.
+			}
 			$this->log( $amount, $order, $note );
 		}
 	}

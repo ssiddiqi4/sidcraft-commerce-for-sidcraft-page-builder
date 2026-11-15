@@ -97,6 +97,7 @@ class Cart {
 	 */
 	protected function changed() {
 		$this->totals = null;
+		$this->items  = null;
 		$has          = $this->raw() || $this->gift_raw() || $this->option_raw();
 		$this->session->set_cookie( \SidcraftCommerce\cookie_name( 'sidccofo_items_in_cart' ), $has ? '1' : '' );
 		$this->session->set_cookie( \SidcraftCommerce\cookie_name( 'sidccofo_cart_hash' ), $has ? $this->get_hash() : '' );
@@ -349,6 +350,27 @@ class Cart {
 	 *                 total, gift_card (array|null), options (rows: label, value, price).
 	 */
 	public function get_items() {
+		// Read many times per request (counts, subtotals, tax, shipping, the
+		// panels): worked out once while the cart, currency and customer stay
+		// the same. Every change clears it (see changed() and forget_totals()).
+		// The product version moves when a product or its stock changes (e.g. stock reserved by this checkout).
+		$key = md5( wp_json_encode( array( $this->raw(), $this->gift_raw(), $this->option_raw(), \SidcraftCommerce\currency(), get_current_user_id(), \SidcraftCommerce\Data\Product::query_version() ) ) );
+		if ( null !== $this->items && $this->items['key'] === $key ) {
+			return $this->items['lines'];
+		}
+		$this->items = array(
+			'key'   => $key,
+			'lines' => $this->build_items(),
+		);
+		return $this->items['lines'];
+	}
+
+	/**
+	 * Lines, priced now (see get_items()).
+	 *
+	 * @return array[]
+	 */
+	protected function build_items() {
 		$lines = array();
 		$this->prime_products();
 		// Quantity discounts count every unit of a product that is really in
@@ -392,7 +414,8 @@ class Cart {
 				$combo  = \SidcraftCommerce\Data\Variants::key_for( $groups, $resolved['selection'] );
 				$own    = '' !== $combo ? \SidcraftCommerce\Data\Variants::own_price( $product->get_id(), $combo ) : null;
 				if ( null !== $own ) {
-					$price = round_amount( max( 0.0, $own + $resolved['extra'] - \SidcraftCommerce\Currencies::to_active( \SidcraftCommerce\Data\Variants::options_amount( $groups, $combo ) ) ) );
+					// get_options() amounts are already in the shopper's currency, like $own.
+					$price = round_amount( max( 0.0, $own + $resolved['extra'] - \SidcraftCommerce\Data\Variants::options_amount( $groups, $combo ) ) );
 				}
 			}
 			$line = array(
@@ -719,6 +742,7 @@ class Cart {
 		}
 		$this->session->set( 'coupon', $coupon->get_code() );
 		$this->totals = null;
+		$this->items  = null;
 		do_action( 'sidcraft_commerce_coupon_applied', $coupon, $this );
 		return $coupon;
 	}
@@ -731,6 +755,7 @@ class Cart {
 			$this->session->set( 'coupon', '' );
 		}
 		$this->totals = null;
+		$this->items  = null;
 		do_action( 'sidcraft_commerce_coupon_removed', $this );
 	}
 
@@ -928,6 +953,7 @@ class Cart {
 			)
 		);
 		$this->totals = null;
+		$this->items  = null;
 		return true;
 	}
 
@@ -939,11 +965,19 @@ class Cart {
 	protected $totals = null;
 
 	/**
+	 * Lines for this request, with the key they were built for.
+	 *
+	 * @var array|null
+	 */
+	protected $items = null;
+
+	/**
 	 * Work the totals out again on next use (after something they depend on,
 	 * such as a coupon's usage, may have changed).
 	 */
 	public function forget_totals() {
 		$this->totals = null;
+		$this->items  = null;
 	}
 
 	/**
@@ -1120,6 +1154,7 @@ class Cart {
 		$codes[] = $norm;
 		$this->session->set( 'gift_cards', $codes );
 		$this->totals = null;
+		$this->items  = null;
 		return $card;
 	}
 
@@ -1132,6 +1167,7 @@ class Cart {
 		$norm = Gift_Card::normalize( $code );
 		$this->session->set( 'gift_cards', array_values( array_diff( $this->get_gift_card_codes(), array( $norm ) ) ) );
 		$this->totals = null;
+		$this->items  = null;
 	}
 
 	/**
@@ -1170,7 +1206,10 @@ class Cart {
 	}
 
 	/**
-	 * Fingerprint of the cart contents (for cached fragments).
+	 * Fingerprint of the cart contents (for cached fragments). Only what the
+	 * shopper changes: the script also keys its copy by currency and refreshes
+	 * it after a few minutes, so price edits show up without a request on
+	 * every page.
 	 *
 	 * @return string
 	 */
@@ -1178,6 +1217,6 @@ class Cart {
 		$raw  = $this->raw();
 		$gift = $this->gift_raw();
 		$opts = $this->option_raw();
-		return ( $raw || $gift || $opts ) ? md5( wp_json_encode( array( $raw, $gift, $opts ) ) . \SidcraftCommerce\Data\Product::query_version() ) : '';
+		return ( $raw || $gift || $opts ) ? md5( wp_json_encode( array( $raw, $gift, $opts ) ) ) : '';
 	}
 }

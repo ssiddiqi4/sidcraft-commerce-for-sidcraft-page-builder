@@ -5,7 +5,7 @@ Tags: e-commerce, shop, checkout, cart, digital-products
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.9.0
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,7 +26,7 @@ Sidcraft Commerce turns [Sidcraft Page Builder](https://canvasly.pro) into a com
 * Digital downloads: sell e-books, music, software, courses or printables. Tick "Downloadable" on a product and add one or more files (upload them, pick them from the media library or link to files hosted elsewhere), with an optional download limit and expiry. Tick "Virtual" for products with nothing to ship: a cart of virtual products skips the shipping cost and the address fields.
 * Each buyer gets a private link per file on the order-received page, in the order emails and on a My downloads page (My Downloads Unit or `[sidccofo_downloads]`). Access starts when the order is paid (or when it is marked Completed), pauses when it is cancelled or refunded, and past buyers get files you add later. On the order screen, change downloads left and expiry, revoke or restore access, give access to another product's files, see the download history and email the links again. Store → Download log lists every order with downloads.
 * Download security: uploads go to a protected folder with random file names; files are only served from approved folders and in file types WordPress allows; force download (resumable), X-Sendfile / X-Accel-Redirect / X-LiteSpeed-Location or redirect; optional login or email confirmation before downloading; optional IP logging, included in WordPress's personal data export and erase tools.
-* Modules: turn off what your store doesn't use under Store → Settings → Modules — Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates. Their menus, settings, Units and checkout fields go away; nothing is deleted.
+* Modules: turn off what your store doesn't use under Store → Settings → Modules — Events, Subscriptions, Gift cards, Coupons, Reward points, Affiliates, Email marketing and Live chat. Their menus, settings, Units and checkout fields go away; nothing is deleted.
 * Gift cards: sell them as products (preset amounts and/or a custom amount, recipient, message, optional send date) or issue them by hand. Recipients get an email with the code; customers redeem one or more cards in the cart or at checkout, and unused balance stays on the card.
 * Shipment tracking: add tracking numbers on the order screen. Links are built automatically for Australia Post, Canada Post, City-Link Express, DHL, DPD, Fastway South Africa, FedEx, OnTrac, Parcelforce, Polish carriers (Poczta Polska, InPost, DPD Polska, DHL Parcel Polska, GLS), Royal Mail, SAPO, TNT Express (consignment and reference), UPS and USPS, or use any carrier with a custom link.
 * Developers can add any payment method (a local bank, a regional wallet, a proprietary system) by extending one PHP class; settings, return and webhook URLs are provided. See docs/example-gateway.php.
@@ -47,6 +47,8 @@ Sidcraft Commerce turns [Sidcraft Page Builder](https://canvasly.pro) into a com
 * Several currencies: list more currencies with your rates (Store → Settings → Currencies). Shoppers pick one with the Currency Switcher Unit, or get the one for their country or language; prices, options, shipping, coupons, gift cards and reward points are shown and charged in it, and each order keeps its currency and rate. A product can have its own price per currency.
 * Translated stores with WPML or Polylang: products, categories, brands and events can be translated. Every language sells the same stock, shares reviews and fills the same cart line; shop pages open in the shopper's language and order emails go out in it.
 * Several stores on WordPress Multisite: network-activate it and each site is its own store, with its own cookies. Network Admin → Stores shows every store's orders and sales, the latest orders across stores, and copies settings, products (with images and downloadable files) and coupons between stores. WP-CLI: `wp sidcraft-commerce stores` and `wp sidcraft-commerce copy`.
+* Email marketing (new in 2.0.0): a mailing list with the Newsletter Signup Unit (`[sidccofo_newsletter]`) and an opt-in box at checkout, double opt-in, tags, CSV import and export. Email campaigns written in the WordPress editor go to everyone or to a group (customers, not yet customers, spent more than, no order for N days, ordered recently, tagged), now or at a set time, in batches. Automatic emails: welcome, abandoned cart (with a button that puts the cart back), order follow-up asking for a review, and win-back. Every email has an unsubscribe link and one-click unsubscribe headers; opens and clicks are counted. Only people who agreed get marketing email.
+* Live chat (new in 2.0.0): a chat button on your store pages and an inbox under Store → Live chat with unread counts, the visitor's account, orders and the page they started on. While nobody has the inbox open, visitors leave a message that is emailed to you, and you can answer by email too. Light: nothing loads from the server until a visitor opens the chat.
 * Subscriptions: bill any product every day, week, month or year, for a set number of payments or until cancelled, with an optional free trial and sign-up fee. Each renewal is an order. With Stripe in Sidcraft Pro the saved card is charged automatically; otherwise (or when a card is declined) the customer is emailed a link to pay with any payment method. Customers see, cancel and keep their subscriptions on a My subscriptions page (My Subscriptions Unit or `[sidccofo_subscriptions]`); Store → Subscriptions lists them, with the orders, history, next payment date and price of each.
 
 = Sell event tickets, deliver QR tickets, and check in guests =
@@ -171,7 +173,19 @@ Stripe `charge.refunded` and PayPal `PAYMENT.CAPTURE.REFUNDED` record the amount
 
 = Can a guest attach the order to an account? =
 
-Yes. Checkout has “Create an account with this email”. WordPress emails a link to set the password. If that email already has an account, the buyer is asked to log in. Logging in or registering later with the same email attaches guest orders placed on version 1.0.9 or newer.
+Yes. Checkout has “Create an account with this email”. WordPress emails a link to set the password. If that email already has an account, the buyer is asked to log in. Other guest orders with the same email are attached once the person has shown the address is theirs: by setting the password from the emailed link, or logging in with it (from 2.0.0; creating an account alone attaches nothing).
+
+= How does email marketing stay legal? =
+
+Only people who agreed get marketing email: the checkout box is never ticked in advance, signup forms ask for consent and (by default) a confirmation click, and imports never re-subscribe someone who left. Every email carries an unsubscribe link, one-click unsubscribe headers and, when you enter it under Store → Settings → Marketing, your postal address. The list is included in WordPress's personal data export and erase tools. Mention open and click counting in your privacy policy, or turn it off.
+
+= Will campaigns reach the inbox? =
+
+Emails go out through WordPress (wp_mail), so use an SMTP or email-sending plugin and a "From" address on your own domain for good delivery. Campaigns send in batches every minute (50 by default) through WP-Cron; on a quiet site, set up a real server cron for steady sending.
+
+= Does live chat slow my pages down? =
+
+No. The page gets one small deferred script and stylesheet; nothing is requested from the server until a visitor opens the chat, and an open conversation is checked every few seconds only while its window is open and the tab is visible.
 
 = How do I export products? =
 
@@ -183,7 +197,7 @@ BHD, JOD, KWD, OMR and TND are sent to payment providers in thousandths and disp
 
 = What happens to my data if I delete the plugin? =
 
-Settings, sessions and temporary data are removed. Products, orders, coupons and gift cards are kept, unless you add `define( 'SIDCRAFT_COMMERCE_REMOVE_ALL_DATA', true );` to wp-config.php before deleting the plugin.
+Settings, sessions, temporary data, chats, the email log and remembered carts are removed. Products, orders, coupons, gift cards, campaigns and the mailing list are kept, unless you add `define( 'SIDCRAFT_COMMERCE_REMOVE_ALL_DATA', true );` to wp-config.php before deleting the plugin.
 
 == Screenshots ==
 
@@ -197,6 +211,29 @@ Settings, sessions and temporary data are removed. Products, orders, coupons and
 8. Sidcraft Commerce in action.
 
 == Changelog ==
+
+= 2.0.0 =
+* New: Email marketing module (Store → Mailing list, Store → Email campaigns, Settings → Marketing). Newsletter Signup Unit and checkout opt-in, double opt-in, tags, CSV import/export; campaigns to segments, sent now or scheduled, in batches, with open and click counts; automatic welcome, abandoned-cart, order follow-up and win-back emails; unsubscribe links and one-click List-Unsubscribe headers; personal data export and erase.
+* New: Live chat module (Store → Live chat, Settings → Live chat). Chat button on all or only store pages, inbox with unread counts, offline messages emailed to the store, replies by email, personal data export and erase. Off until you turn it on under Settings → Modules.
+* Security: an account created at checkout no longer receives other guest orders (and their downloads, subscriptions and tickets) placed with that email until the person proves the address is theirs (a password login or reset).
+* Security: a PayPal return can no longer apply one order's payment to another order with the same total.
+* Security: a gift card can no longer be spent twice by two checkouts at the same moment; its balance changes in one database step.
+* Security: only store managers can set event ticket types and prices (Authors and Editors could create purchasable ticket products).
+* Fixed: "Update order" and "Record refund" on the order screen (the refund box's form was nested inside the order form).
+* Fixed: prices of combinations in a second currency (choice amounts were converted twice).
+* Fixed: a second coupon with an existing code could be published, and the original was then turned into a draft.
+* Fixed: a store without payment methods couldn't take free orders (gift cards, 100% coupons).
+* Fixed: a free order couldn't be refunded, so its gift card balance couldn't be returned.
+* Fixed: subscriptions kept renewing after their first order was refunded or cancelled; they are cancelled now and the store is told.
+* Fixed: a PayPal payment arriving after an unpaid order was cancelled is now noted on the order instead of being ignored.
+* Fixed: logged-in visitors with someone else's download link skipped the email check guests get.
+* Fixed: the mini cart kept the old currency after switching currency.
+* Fixed: shipping-zone and tax-rate rows could overwrite each other after removing a middle row.
+* Fixed: the hourly maintenance job (renewals, reminders, cleanups) is scheduled again if it was lost on a single site too.
+* Fixed: event reminder emails are sent in the order's language; empty download files; PayPal item names with HTML entities; PHP 8.4 notice in the attendee CSV export; network copy no longer copies hidden ticket products.
+* Faster: the cart's lines are worked out once per request instead of up to 20 times; most pages no longer make a cart request to refill the mini cart; "Currency by country" only disables page caching on pages that show prices; product grids keep their cache until something they sort or filter on changes, and load products, images, upsells and cross-sells in a few queries; event lists and calendars, rating breakdowns and the editor's product picker use one query instead of one per item.
+* Unpaid orders: one job releases their stock after 2 hours (filter sidcraft_commerce_unpaid_hold_hours); the unused 24-hour job was removed.
+* Templates: new units/newsletter.php and emails/marketing.php; units/checkout.php changed.
 
 = 1.9.0 =
 * New: per-combination variants. A product with two or more options (dropdown or radio) gets a Combinations grid under Product data: each combination (e.g. Red / Large) has its own SKU, price, sale price, stock and image, and can be marked as not sold.
@@ -410,6 +447,9 @@ Settings, sessions and temporary data are removed. Products, orders, coupons and
 * First build (WooCommerce-based, replaced by 0.2.0).
 
 == Upgrade Notice ==
+
+= 2.0.0 =
+Adds email marketing (on) and live chat (off until turned on under Settings → Modules). Important security and bug fixes: order screen "Update order" works again, gift cards can't be double-spent, PayPal returns are checked against their order, and checkout-made accounts no longer receive other guest orders. Template changed: units/checkout.php; compare theme overrides of it.
 
 = 1.9.0 =
 Adds per-combination variants: a grid of option combinations, each with its own SKU, price, sale price, stock and image. Template changed: units/item-options.php; compare theme overrides of it.

@@ -425,8 +425,7 @@ class Attendees {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function rest_upload( \WP_REST_Request $request ) {
-		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		$key = 'sidccofo_evup_rate_' . md5( $ip . wp_salt( 'nonce' ) );
+		$key = \SidcraftCommerce\client_key( 'evup_rate' );
 		if ( (int) get_transient( $key ) >= 40 ) {
 			return new \WP_Error( 'sidccofo_upload_rate', __( 'Too many uploads. Please try again later.', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'status' => 429 ) );
 		}

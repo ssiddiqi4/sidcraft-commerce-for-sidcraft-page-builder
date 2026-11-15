@@ -7,7 +7,7 @@
  * data-sc-state and .sc-field__error elements.
  *
  * @package SidcraftCommerce
- * @version 1.6.0
+ * @version 2.0.0
  *
  * @var \SidcraftCommerce\Cart\Cart              $cart
  * @var array                                    $settings
@@ -169,7 +169,8 @@ $sidcraft_commerce_save_card = \SidcraftCommerce\Subscriptions::cart_has( $cart 
 
 		<?php do_action( 'sidcraft_commerce_checkout_before_submit', $cart ); ?>
 
-		<button type="submit" class="sc-btn sc-btn--primary sc-btn--lg sc-btn--block" data-sc-place-order <?php disabled( ! $gateways ); ?>>
+		<?php // Nothing to pay (gift cards, a 100% coupon) needs no payment method. ?>
+		<button type="submit" class="sc-btn sc-btn--primary sc-btn--lg sc-btn--block" data-sc-place-order<?php echo $gateways ? '' : ' data-sc-no-gateways'; ?> <?php disabled( ! $gateways && ! $sidcraft_commerce_free ); ?>>
 			<?php echo esc_html( $settings['button_text'] ); ?>
 		</button>
 	</div>

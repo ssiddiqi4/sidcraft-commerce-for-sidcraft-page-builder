@@ -203,19 +203,14 @@ class Reviews {
 	 * @return int[] 5 => n, 4 => n, … 1 => n.
 	 */
 	public static function distribution( $product_id ) {
+		global $wpdb;
 		$dist = array_fill_keys( array( 5, 4, 3, 2, 1 ), 0 );
-		$ids  = get_comments(
-			array(
-				'post_id'  => (int) $product_id,
-				'status'   => 'approve',
-				'meta_key' => 'sidccofo_rating', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'fields'   => 'ids',
-			)
-		);
-		foreach ( $ids as $id ) {
-			$r = (int) get_comment_meta( $id, 'sidccofo_rating', true );
-			if ( isset( $dist[ $r ] ) ) {
-				++$dist[ $r ];
+		// One grouped count instead of a meta lookup per review.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Read once per product page.
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT CAST(m.meta_value AS UNSIGNED) AS stars, COUNT(*) AS n FROM {$wpdb->comments} c INNER JOIN {$wpdb->commentmeta} m ON m.comment_id = c.comment_ID AND m.meta_key = 'sidccofo_rating' WHERE c.comment_post_ID = %d AND c.comment_approved = '1' GROUP BY stars", (int) $product_id ) );
+		foreach ( (array) $rows as $row ) {
+			if ( isset( $dist[ (int) $row->stars ] ) ) {
+				$dist[ (int) $row->stars ] = (int) $row->n;
 			}
 		}
 		return $dist;
@@ -243,8 +238,7 @@ class Reviews {
 	 * @return string
 	 */
 	protected static function client_key() {
-		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		return 'sidccofo_rv_fail_' . md5( $ip . wp_salt( 'nonce' ) );
+		return client_key( 'rv_fail' );
 	}
 
 	/**

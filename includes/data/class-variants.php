@@ -242,7 +242,8 @@ class Variants {
 	}
 
 	/**
-	 * What the combination's options add to the price (to swap for its own price).
+	 * What the combination's options add to the price (to swap for its own
+	 * price), in the currency of $groups (get_options(): the shopper's).
 	 *
 	 * @param array $groups  Product's option groups (normalized).
 	 * @param string $key    Combination.
@@ -304,7 +305,7 @@ class Variants {
 				continue;
 			}
 			$own      = self::own_price( $product->get_id(), $combo['key'] );
-			$prices[] = null !== $own ? $own : round_amount( max( 0.0, $base + \SidcraftCommerce\Currencies::to_active( self::options_amount( $groups, $combo['key'] ) ) ) );
+			$prices[] = null !== $own ? $own : round_amount( max( 0.0, $base + self::options_amount( $groups, $combo['key'] ) ) ); // Choice amounts are already in the shopper's currency.
 		}
 		if ( ! $prices || abs( max( $prices ) - min( $prices ) ) < 0.005 ) {
 			return null;

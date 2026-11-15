@@ -499,6 +499,19 @@ class Subscriptions {
 					$sub->set_status( 'cancelled', sprintf( __( 'Order #%d was cancelled before payment.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $order->get_id() ) );
 				}
 			}
+			return;
+		}
+
+		if ( in_array( $new_status, array( 'sidccofo-cancelled', 'sidccofo-refunded' ), true ) && in_array( $old_status, $paid, true ) && ! self::renewal_subscription( $order ) ) {
+			// The first order was paid, then refunded or cancelled: stop charging for what was given back.
+			foreach ( Subscription::for_order( $order->get_id() ) as $sub ) {
+				if ( in_array( $sub->get_status(), array( 'active', 'on-hold', 'pending-cancel' ), true ) ) {
+					/* translators: %d: order number. */
+					$sub->set_status( 'cancelled', sprintf( __( 'Its first order #%d was refunded or cancelled.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $order->get_id() ) );
+					/* translators: 1: subscription number, 2: order number. */
+					self::alert_store( sprintf( __( 'Subscription #%1$d was cancelled because its first order #%2$d was refunded or cancelled. Reactivate it if the customer should keep it.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $sub->get_id(), $order->get_id() ), $sub );
+				}
+			}
 		}
 	}
 

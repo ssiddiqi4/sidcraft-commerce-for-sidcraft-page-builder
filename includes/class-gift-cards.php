@@ -378,8 +378,7 @@ class Gift_Cards {
 	 * @return string
 	 */
 	protected static function client_key() {
-		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		return 'sidccofo_gc_fail_' . md5( $ip . wp_salt( 'nonce' ) );
+		return client_key( 'gc_fail' );
 	}
 
 	/**

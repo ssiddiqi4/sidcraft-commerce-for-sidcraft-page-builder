@@ -151,7 +151,9 @@ class Merchandising {
 			}
 		}
 		$out = array();
-		foreach ( array_unique( $ids ) as $id ) {
+		$ids = array_unique( $ids );
+		Product::prime( $ids );
+		foreach ( $ids as $id ) {
 			$product = Product::get( $id );
 			if ( ! isset( $in[ $id ] ) && $product && ( $product->is_purchasable() || $product->is_external() ) && $product->is_in_stock() ) {
 				$out[] = (int) $id;

@@ -154,9 +154,10 @@ class Gateway_PayPal_Standard extends Gateway {
 	public function process_payment( Order $order ) {
 		$names = array();
 		foreach ( $order->get_items() as $item ) {
-			$names[] = $item['name'] . ( (int) $item['quantity'] > 1 ? ' × ' . (int) $item['quantity'] : '' );
+			// Plain text: PayPal shows "&#8217;" literally.
+			$names[] = html_entity_decode( wp_strip_all_tags( (string) $item['name'] ), ENT_QUOTES, 'UTF-8' ) . ( (int) $item['quantity'] > 1 ? ' × ' . (int) $item['quantity'] : '' );
 		}
-		$store = wp_strip_all_tags( get_bloginfo( 'name' ) );
+		$store = html_entity_decode( wp_strip_all_tags( get_bloginfo( 'name' ) ), ENT_QUOTES, 'UTF-8' );
 		/* translators: 1: store name, 2: order number. */
 		$title   = sprintf( __( '%1$s order #%2$d', 'sidcraft-commerce-for-sidcraft-page-builder' ), $store, $order->get_id() );
 		$billing = $order->get_billing();
@@ -341,7 +342,14 @@ class Gateway_PayPal_Standard extends Gateway {
 	 * @param Order|null $order Order (when already known).
 	 */
 	protected function apply( array $data, $order = null ) {
-		$order = $order instanceof Order ? $order : $this->order_from( $data );
+		$named = $this->order_from( $data );
+		// A payment counts only for the order it names: a return URL can't
+		// present one order's transaction to mark another (same total) paid.
+		if ( $order instanceof Order && ( ! $named || $named->get_id() !== $order->get_id() ) ) {
+			$this->log( $order, __( 'Ignored a PayPal payment that belongs to another order.', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
+			return;
+		}
+		$order = $named;
 		if ( ! $order ) {
 			return;
 		}
@@ -355,6 +363,16 @@ class Gateway_PayPal_Standard extends Gateway {
 
 		switch ( $status ) {
 			case 'completed':
+				if ( 'sidccofo-cancelled' === $order->get_status() && ! $order->get_transaction_id() ) {
+					// Paid after the order was cancelled (left unpaid too long, or replaced
+					// by a new checkout attempt): money was taken, so don't drop it silently.
+					/* translators: %s: transaction ID. */
+					$note = sprintf( __( 'PayPal payment %s arrived after this order was cancelled. Check stock and refund it in PayPal, or reopen the order.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $txn );
+					$order->add_note( $note );
+					update_post_meta( $order->get_id(), '_sidccofo_late_payment', $txn );
+					$this->log( $order, $note );
+					return;
+				}
 				if ( ! in_array( $order->get_status(), array( 'sidccofo-pending', 'sidccofo-on-hold' ), true ) ) {
 					return;
 				}

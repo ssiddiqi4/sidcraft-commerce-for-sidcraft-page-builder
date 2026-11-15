@@ -446,6 +446,8 @@ class Checkout {
 				$order->set_status( 'sidccofo-cancelled', __( 'The account could not be created, so the order was cancelled and its stock was returned.', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
 				return $user_id;
 			}
+			// Only this order: older guest orders with the email wait until the address is proven (see Accounts).
+			update_user_meta( $user_id, \SidcraftCommerce\Accounts::UNVERIFIED, 1 );
 			$order->assign_customer( $user_id );
 			wp_new_user_notification( $user_id, null, 'user' );
 			wp_set_current_user( $user_id );
@@ -464,6 +466,12 @@ class Checkout {
 				$base   = min( $applied['card']->get_balance(), \SidcraftCommerce\round_base( $base ) );
 				/* translators: %d: order number. */
 				$taken  = $applied['card']->debit( $base, $order->get_id(), sprintf( __( 'Used for order #%d.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $order->get_id() ) );
+				if ( $taken < $base ) {
+					// The card was spent elsewhere meanwhile: give back what this order took, and stop.
+					update_post_meta( $order->get_id(), '_sidccofo_gift_cards_used', $used );
+					$order->set_status( 'sidccofo-cancelled', __( 'A gift card no longer had enough balance, so the order was cancelled.', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
+					return new \WP_Error( 'sidccofo_giftcard_changed', __( 'A gift card’s balance changed while you were checking out. Please check your cart and try again.', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'status' => 409 ) );
+				}
 				$used[] = array(
 					'id'     => $applied['card']->get_id(),
 					'code'   => $applied['card']->get_masked_code(),

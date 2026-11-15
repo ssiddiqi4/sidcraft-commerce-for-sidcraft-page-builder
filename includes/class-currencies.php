@@ -89,10 +89,11 @@ class Currencies {
 	 */
 	public static function extra() {
 		$raw = setting( 'currencies', array() );
-		$key = self::base() . md5( wp_json_encode( $raw ) );
-		if ( isset( self::$extra[ $key ] ) ) {
-			return self::$extra[ $key ];
+		// Called for every price shown: compare the setting itself (cheap) before hashing it.
+		if ( isset( self::$extra['src'] ) && self::$extra['src'] === array( self::base(), $raw ) ) {
+			return self::$extra['list'];
 		}
+		$key = 'list';
 		$out  = array();
 		$base = self::base();
 		foreach ( (array) $raw as $row ) {
@@ -122,7 +123,10 @@ class Currencies {
 		 *
 		 * @param array[] $out code => row.
 		 */
-		self::$extra = array( $key => (array) apply_filters( 'sidcraft_commerce_currencies', $out ) );
+		self::$extra = array(
+			'src'  => array( $base, $raw ),
+			$key   => (array) apply_filters( 'sidcraft_commerce_currencies', $out ),
+		);
 		return self::$extra[ $key ];
 	}
 
@@ -412,10 +416,11 @@ class Currencies {
 
 	/**
 	 * Pages shown in another currency (or picked by country) must not be
-	 * served from a page cache to shoppers using a different one.
+	 * served from a page cache to shoppers using a different one. Only pages
+	 * that show prices: a blog post or the home page stays cacheable.
 	 */
 	public function maybe_no_cache() {
-		if ( ! self::is_multi() ) {
+		if ( ! self::is_multi() || ! self::page_shows_prices() ) {
 			return;
 		}
 		$chosen = ! empty( $_COOKIE[ cookie_name( self::COOKIE ) ] ) && self::base() !== self::active();
@@ -425,6 +430,29 @@ class Currencies {
 			}
 			nocache_headers();
 		}
+	}
+
+	/**
+	 * Does this request show prices (store pages, product pages and archives,
+	 * or a page holding a commerce Unit)?
+	 *
+	 * @return bool
+	 */
+	protected static function page_shows_prices() {
+		$store = array_filter( array( page_id( 'shop' ), page_id( 'cart' ), page_id( 'checkout' ) ) );
+		$shows = is_singular( Data\Post_Types::PRODUCT ) || is_post_type_archive( Data\Post_Types::PRODUCT )
+			|| is_tax( array( Data\Post_Types::CATEGORY, Data\Post_Types::BRAND, Data\Post_Types::TAG ) )
+			|| ( $store && is_page( $store ) )
+			|| ( is_singular() && Plugin::instance()->assets->units_in_post( get_queried_object_id() ) );
+
+		/**
+		 * Filter whether the current page shows prices (and so can't be page
+		 * cached while shoppers see different currencies). Theme templates
+		 * with prices on other pages should return true.
+		 *
+		 * @param bool $shows Shows prices.
+		 */
+		return (bool) apply_filters( 'sidcraft_commerce_page_shows_prices', $shows );
 	}
 
 	/**

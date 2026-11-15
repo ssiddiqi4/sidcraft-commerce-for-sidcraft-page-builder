@@ -115,6 +115,9 @@ class Coupon {
 				'posts_per_page' => 1,
 				'fields'         => 'ids',
 				'no_found_rows'  => true,
+				// The original coupon wins if a duplicate ever slips through (it holds the usage count).
+				'orderby'        => 'ID',
+				'order'          => 'ASC',
 				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Few coupons; exact-match lookup.
 					array(
 						'key'   => '_sidccofo_coupon_code',

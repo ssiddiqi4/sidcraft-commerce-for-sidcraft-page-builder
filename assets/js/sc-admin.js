@@ -58,7 +58,14 @@
 			var body = table.tBodies[ 0 ];
 			var last = body.rows[ body.rows.length - 1 ];
 			var row = last.cloneNode( true );
-			var n = body.rows.length;
+			// Next free index: after removing a middle row, rows.length would reuse a taken one.
+			var n = 0;
+			body.querySelectorAll( 'input[name]' ).forEach( function ( input ) {
+				var m = input.name.match( /\[(\d+)\]\[[a-z_]+\]$/ );
+				if ( m ) {
+					n = Math.max( n, parseInt( m[ 1 ], 10 ) + 1 );
+				}
+			} );
 			row.querySelectorAll( 'input' ).forEach( function ( input ) {
 				input.value = '';
 				input.placeholder = '';

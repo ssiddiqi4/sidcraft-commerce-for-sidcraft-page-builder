@@ -380,7 +380,27 @@ class Events {
 		 * @param array $args  Request.
 		 */
 		$query = apply_filters( 'sidcraft_commerce_events_query_args', $query, $args );
-		return array_values( array_filter( array_map( array( Event::class, 'get' ), get_posts( $query ) ) ) );
+		$ids   = array_map(
+			static function ( $post ) {
+				return is_object( $post ) ? (int) $post->ID : (int) $post; // A filter may ask for full posts.
+			},
+			get_posts( $query )
+		);
+		// Load the events, then their ticket products, in a few queries (calendars list hundreds).
+		_prime_post_caches( $ids, false, true );
+		$events = array_values( array_filter( array_map( array( Event::class, 'get' ), $ids ) ) );
+		$pids   = array();
+		foreach ( $events as $event ) {
+			foreach ( $event->get_ticket_types() as $type ) {
+				if ( ! empty( $type['product_id'] ) ) {
+					$pids[] = (int) $type['product_id'];
+				}
+			}
+		}
+		if ( $pids ) {
+			_prime_post_caches( array_unique( $pids ), false, true );
+		}
+		return $events;
 	}
 
 	/**

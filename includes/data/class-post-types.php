@@ -33,6 +33,18 @@ class Post_Types {
 	public function hooks() {
 		add_action( 'init', array( $this, 'register' ), 0 );
 		add_action( 'init', array( $this, 'maybe_flush' ), 99 );
+		// Cached product grids hold ids: any saved, trashed or deleted product refreshes them.
+		add_action( 'save_post_' . self::PRODUCT, array( Product::class, 'bump_query_version' ) );
+		add_action(
+			'deleted_post',
+			static function ( $post_id, $post = null ) {
+				if ( $post && self::PRODUCT === $post->post_type ) {
+					Product::bump_query_version();
+				}
+			},
+			10,
+			2
+		);
 	}
 
 	/**

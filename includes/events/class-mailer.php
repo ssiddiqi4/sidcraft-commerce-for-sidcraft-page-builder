@@ -267,19 +267,23 @@ class Mailer {
 		}
 		$sent = 0;
 		foreach ( $by_email as $email => $row ) {
-			$ok = self::send(
-				$row['order'],
-				$row['tickets'],
-				$email,
-				array(
-					/* translators: %s: event name. */
-					'heading' => __( 'See you soon', 'sidcraft-commerce-for-sidcraft-page-builder' ),
-					/* translators: 1: event name, 2: date. */
-					'intro'   => sprintf( __( 'A reminder that %1$s is coming up on %2$s. Your tickets are below.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $event->get_name(), $event->get_date_label() ),
-					'kind'    => 'reminder',
-					'attach'  => (bool) setting( 'ev_reminder_attach', 0 ),
-				)
-			);
+			$send = static function () use ( $row, $email, $event ) {
+				return self::send(
+					$row['order'],
+					$row['tickets'],
+					$email,
+					array(
+						/* translators: %s: event name. */
+						'heading' => __( 'See you soon', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						/* translators: 1: event name, 2: date. */
+						'intro'   => sprintf( __( 'A reminder that %1$s is coming up on %2$s. Your tickets are below.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $event->get_name(), $event->get_date_label() ),
+						'kind'    => 'reminder',
+						'attach'  => (bool) setting( 'ev_reminder_attach', 0 ),
+					)
+				);
+			};
+			// In the language the order was placed in, like the tickets email.
+			$ok = $row['order'] ? \SidcraftCommerce\Multilingual::for_order( $row['order'], $send ) : $send();
 			if ( $ok ) {
 				++$sent;
 			}

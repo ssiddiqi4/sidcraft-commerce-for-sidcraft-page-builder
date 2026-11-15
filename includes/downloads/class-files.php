@@ -100,8 +100,11 @@ class Files {
 	 * Write the protection files once per plugin version.
 	 */
 	public static function maybe_protect() {
-		if ( get_option( self::PROTECTED_OPTION ) !== SIDCRAFT_COMMERCE_VERSION ) {
-			self::protect();
+		// Autoloaded (read with the other options); a failure waits an hour before trying again.
+		if ( get_option( self::PROTECTED_OPTION ) !== SIDCRAFT_COMMERCE_VERSION && ! get_transient( 'sidccofo_protect_retry' ) ) {
+			if ( ! self::protect() ) {
+				set_transient( 'sidccofo_protect_retry', 1, HOUR_IN_SECONDS );
+			}
 		}
 	}
 
@@ -134,7 +137,7 @@ class Files {
 			}
 		}
 		if ( $ok ) {
-			update_option( self::PROTECTED_OPTION, SIDCRAFT_COMMERCE_VERSION, false );
+			update_option( self::PROTECTED_OPTION, SIDCRAFT_COMMERCE_VERSION, true );
 		}
 		return $ok;
 	}

@@ -484,6 +484,37 @@ function sanitize_settings( array $settings, array $controls ) {
 }
 
 /**
+ * Transient key for one visitor (by IP, salted and hashed: the address
+ * itself is never stored), e.g. client_key( 'gc_fail' ).
+ *
+ * @param string $bucket What is being counted.
+ * @return string
+ */
+function client_key( $bucket ) {
+	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	return 'sidccofo_' . $bucket . '_' . md5( $ip . wp_salt( 'nonce' ) );
+}
+
+/**
+ * Count one try for this visitor; false once $max tries were made within
+ * $window seconds (the try isn't counted then).
+ *
+ * @param string $bucket What is being limited.
+ * @param int    $max    Tries allowed.
+ * @param int    $window Seconds.
+ * @return bool
+ */
+function rate_limit( $bucket, $max, $window ) {
+	$key = client_key( 'rl_' . $bucket );
+	$n   = (int) get_transient( $key );
+	if ( $n >= $max ) {
+		return false;
+	}
+	set_transient( $key, $n + 1, $window );
+	return true;
+}
+
+/**
  * Capability needed to manage orders and store settings.
  *
  * @return string

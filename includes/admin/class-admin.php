@@ -275,8 +275,24 @@ class Admin {
 
 		// Codes must be unique among published coupons.
 		if ( '' !== $code && 'publish' === $post->post_status ) {
-			$other = Coupon::get_by_code( $code );
-			if ( $other && $other->get_id() !== (int) $post_id ) {
+			// Another published coupon with this code (get_by_code() could return this one).
+			$other = get_posts(
+				array(
+					'post_type'      => Post_Types::COUPON,
+					'post_status'    => 'publish',
+					'post__not_in'   => array( (int) $post_id ),
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Few coupons; on save only.
+						array(
+							'key'   => '_sidccofo_coupon_code',
+							'value' => $code,
+						),
+					),
+				)
+			);
+			if ( $other ) {
 				remove_action( 'save_post_' . Post_Types::COUPON, array( $this, 'save_coupon' ), 10 );
 				wp_update_post(
 					array(
@@ -1024,12 +1040,22 @@ class Admin {
 			return;
 		}
 		$held = $order->quantities_held();
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
-		wp_nonce_field( 'sidccofo_partial_refund' );
-		echo '<input type="hidden" name="action" value="sidccofo_partial_refund">';
-		echo '<input type="hidden" name="order_id" value="' . esc_attr( (string) $post->ID ) . '">';
+		// This box sits inside the order screen's own <form>: a form can't be
+		// nested, so the refund form is printed after it (admin_footer) and
+		// these fields join it through their form attribute.
+		$form = 'sidccofo-refund-form';
+		add_action(
+			'admin_footer',
+			static function () use ( $post, $form ) {
+				echo '<form id="' . esc_attr( $form ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" hidden>';
+				wp_nonce_field( 'sidccofo_partial_refund' );
+				echo '<input type="hidden" name="action" value="sidccofo_partial_refund">';
+				echo '<input type="hidden" name="order_id" value="' . esc_attr( (string) $post->ID ) . '">';
+				echo '</form>';
+			}
+		);
 		/* translators: %s: currency code. */
-		echo '<p><label>' . esc_html( sprintf( __( 'Amount (%s)', 'sidcraft-commerce-for-sidcraft-page-builder' ), $order->get_currency() ) ) . ' <input name="amount" type="number" min="0" step="0.001" style="width:100%"></label></p>';
+		echo '<p><label>' . esc_html( sprintf( __( 'Amount (%s)', 'sidcraft-commerce-for-sidcraft-page-builder' ), $order->get_currency() ) ) . ' <input form="' . esc_attr( $form ) . '" name="amount" type="number" min="0" step="0.001" style="width:100%"></label></p>';
 		foreach ( $order->get_items() as $index => $item ) {
 			$product_id = (int) $item['product_id'];
 			$max        = min( (int) $item['quantity'], (int) ( $held[ $product_id ] ?? 0 ) );
@@ -1044,11 +1070,10 @@ class Admin {
 					$item['name'],
 					$max
 				)
-			) . ' <input name="refund_qty[' . esc_attr( (string) $index ) . ']" type="number" min="0" max="' . esc_attr( (string) $max ) . '" step="1" value="0" style="width:5em"></label></p>';
+			) . ' <input form="' . esc_attr( $form ) . '" name="refund_qty[' . esc_attr( (string) $index ) . ']" type="number" min="0" max="' . esc_attr( (string) $max ) . '" step="1" value="0" style="width:5em"></label></p>';
 		}
 		echo '<p class="description">' . esc_html__( 'An amount that covers the rest of the order marks it Refunded and returns any units still held. A smaller amount returns only the quantities you enter. The payment itself is refunded in the provider’s dashboard; this records it here.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>';
-		submit_button( __( 'Record refund', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'secondary', 'submit', false );
-		echo '</form>';
+		echo '<button type="submit" form="' . esc_attr( $form ) . '" class="button">' . esc_html__( 'Record refund', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button>';
 	}
 
 	/**

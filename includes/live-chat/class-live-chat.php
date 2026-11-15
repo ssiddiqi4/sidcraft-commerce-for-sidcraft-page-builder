@@ -313,7 +313,7 @@ class Live_Chat {
 		$user   = wp_get_current_user();
 		$online = self::online();
 		$key    = self::visitor_key();
-		if ( ! \SidcraftCommerce\Marketing\Marketing::rate_ok( 'chatmsg_' . $key, 20, MINUTE_IN_SECONDS ) ) {
+		if ( ! \SidcraftCommerce\rate_limit( 'chatmsg' . $key, 20, MINUTE_IN_SECONDS ) ) {
 			return new \WP_Error( 'sidccofo_rate', __( 'You’re sending messages too fast. Please wait a moment.', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'status' => 429 ) );
 		}
 
@@ -327,7 +327,7 @@ class Live_Chat {
 			if ( '' === $email && ( ! $online || setting( 'livechat_ask_email', 1 ) ) ) {
 				return new \WP_Error( 'sidccofo_chat_email', __( 'Enter your email so we can reply.', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'status' => 400 ) );
 			}
-			if ( ! \SidcraftCommerce\Marketing\Marketing::rate_ok( 'chatnew', 5, HOUR_IN_SECONDS ) ) {
+			if ( ! \SidcraftCommerce\rate_limit( 'chatnew', 5, HOUR_IN_SECONDS ) ) {
 				return new \WP_Error( 'sidccofo_rate', __( 'Too many chats from your connection. Please try again later.', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'status' => 429 ) );
 			}
 			$chat = Chats::create(

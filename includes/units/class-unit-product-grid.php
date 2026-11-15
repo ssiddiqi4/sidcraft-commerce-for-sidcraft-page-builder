@@ -150,8 +150,8 @@ class Product_Grid extends Unit {
 				: '';
 		}
 
-		// Prime caches: one query for all products instead of one each.
-		_prime_post_caches( $ids );
+		// Prime caches: a few queries for all products (and their images) instead of several each.
+		Product::prime( $ids );
 		$products = array_filter( array_map( array( Product::class, 'get' ), $ids ) );
 
 		return $this->template(

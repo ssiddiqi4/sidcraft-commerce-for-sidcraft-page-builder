@@ -223,12 +223,27 @@ class Order {
 	}
 
 	/**
-	 * Items.
+	 * Items, each with every key the screens and emails read (orders made by
+	 * an import or an add-on may store fewer).
 	 *
 	 * @return array
 	 */
 	public function get_items() {
-		return $this->meta_array( '_sidccofo_items' );
+		$items = array();
+		foreach ( $this->meta_array( '_sidccofo_items' ) as $key => $item ) {
+			$item          = (array) $item;
+			$item         += array(
+				'product_id' => 0,
+				'name'       => '',
+				'quantity'   => 1,
+				'price'      => 0,
+				'sku'        => '',
+				'options'    => array(),
+			);
+			$item['total'] = $item['total'] ?? round_amount( (float) $item['price'] * (int) $item['quantity'] );
+			$items[ $key ] = $item;
+		}
+		return $items;
 	}
 
 	/**
@@ -816,7 +831,10 @@ class Order {
 			$this->restore_item_quantities( $quantities );
 		}
 
-		$full = $total > 0 && ( $target + 0.00001 ) >= $total && 'sidccofo-refunded' !== $this->get_status();
+		// A free order (paid with gift cards or a 100% coupon) refunds in full when no
+		// quantities are named: that gives the gift card balance back.
+		$covered = $total > 0 ? ( $target + 0.00001 ) >= $total : ! $quantities;
+		$full    = $covered && 'sidccofo-refunded' !== $this->get_status();
 		if ( $full ) {
 			$this->set_status( 'sidccofo-refunded', $note );
 			update_post_meta( $this->id, '_sidccofo_refunded_amount', (string) $total );
@@ -925,19 +943,23 @@ class Order {
 	}
 
 	/**
-	 * Cancel pending orders whose stock has been held for a day.
+	 * Cancel unpaid orders whose stock has been held long enough (2 hours by
+	 * default; filter sidcraft_commerce_unpaid_hold_hours). A payment that
+	 * still arrives later is noted on the order by its gateway.
 	 */
 	public static function release_abandoned() {
+		$hours = max( 1, (int) apply_filters( 'sidcraft_commerce_unpaid_hold_hours', 2 ) );
 		$ids = get_posts(
 			array(
 				'post_type'      => Post_Types::ORDER,
 				'post_status'    => 'sidccofo-pending',
-				'posts_per_page' => 20,
+				'posts_per_page' => 50,
 				'fields'         => 'ids',
+				'no_found_rows'  => true,
 				'date_query'     => array(
 					array(
 						'column' => 'post_date_gmt',
-						'before' => '24 hours ago',
+						'before' => gmdate( 'Y-m-d H:i:s', time() - $hours * HOUR_IN_SECONDS ),
 					),
 				),
 				// Subscription renewals wait for their own grace period (Subscriptions::run).
@@ -952,7 +974,8 @@ class Order {
 		foreach ( $ids as $id ) {
 			$order = self::get( (int) $id );
 			if ( $order && 'sidccofo-pending' === $order->get_status() ) {
-				$order->set_status( 'sidccofo-cancelled', __( 'Payment was not completed within 24 hours. Reserved stock was returned.', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
+				/* translators: %d: hours. */
+				$order->set_status( 'sidccofo-cancelled', sprintf( _n( 'Unpaid for %d hour. Reserved stock was returned.', 'Unpaid for %d hours. Reserved stock was returned.', $hours, 'sidcraft-commerce-for-sidcraft-page-builder' ), $hours ) );
 			}
 		}
 	}

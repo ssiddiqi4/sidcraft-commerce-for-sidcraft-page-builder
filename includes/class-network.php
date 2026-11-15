@@ -298,6 +298,13 @@ class Network {
 						'order'            => 'ASC',
 						'suppress_filters' => true, // Every language, untouched by translation plugins.
 						'no_found_rows'    => true,
+						// Not the hidden products behind event tickets: they belong to this store's events.
+						'meta_query'       => Post_Types::PRODUCT === $type ? array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Batched admin copy.
+							array(
+								'key'     => '_sidccofo_ev_event',
+								'compare' => 'NOT EXISTS',
+							),
+						) : array(),
 					)
 				) as $post ) {
 					$out[] = self::export( $post );

@@ -90,10 +90,16 @@
 					keep[ k ] = data.fragments[ k ];
 				}
 			} );
-			sessionStorage.setItem( STORE_KEY, JSON.stringify( { hash: data.cart_hash, fragments: keep } ) );
+			sessionStorage.setItem( STORE_KEY, JSON.stringify( { key: cacheKey(), time: Date.now(), fragments: keep } ) );
 		} catch ( e ) {
 			/* Private mode or full storage: fragments simply refetch. */
 		}
+	}
+
+	// What the cached mini cart depends on: the cart (its hash cookie) and the currency.
+	function cacheKey() {
+		var suffix = config.cookieSuffix || '';
+		return ( getCookie( 'sidccofo_cart_hash' + suffix ) || '' ) + '|' + ( getCookie( 'sidccofo_currency' + suffix ) || '' );
 	}
 
 	function bumpCount() {
@@ -107,7 +113,8 @@
 	/**
 	 * Fill cart placeholders on page load (pages are cached with "0").
 	 *  - No sidccofo_items_in_cart cookie → empty cart → no request.
-	 *  - sessionStorage copy matches sidccofo_cart_hash → reuse, no request.
+	 *  - sessionStorage copy matches the cart hash and currency cookies and is
+	 *    under 10 minutes old → reuse, no request.
 	 *  - Otherwise → one GET /cart.
 	 */
 	function refresh( force ) {
@@ -117,11 +124,11 @@
 		if ( ! force && ! getCookie( 'sidccofo_items_in_cart' + ( config.cookieSuffix || '' ) ) ) {
 			return Promise.resolve();
 		}
-		var hash = getCookie( 'sidccofo_cart_hash' + ( config.cookieSuffix || '' ) );
 		if ( ! force ) {
 			try {
 				var cached = JSON.parse( sessionStorage.getItem( STORE_KEY ) || 'null' );
-				if ( cached && cached.hash && cached.hash === hash ) {
+				// Reused for 10 minutes; after that one request picks up price changes.
+				if ( cached && cached.key === cacheKey() && Date.now() - ( cached.time || 0 ) < 600000 ) {
 					applyFragments( cached.fragments );
 					return Promise.resolve();
 				}

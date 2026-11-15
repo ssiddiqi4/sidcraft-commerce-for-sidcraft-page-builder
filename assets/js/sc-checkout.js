@@ -325,6 +325,11 @@
 				}
 			}
 			form.dataset.scFree = free ? '1' : '';
+			// A store without payment methods can still take orders that cost nothing.
+			var place = form.querySelector( '[data-sc-place-order][data-sc-no-gateways]' );
+			if ( place ) {
+				place.disabled = ! free;
+			}
 			syncGateway( form );
 		} );
 	}

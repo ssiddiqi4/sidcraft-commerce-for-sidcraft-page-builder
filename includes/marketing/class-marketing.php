@@ -165,7 +165,7 @@ class Marketing {
 		if ( '' !== (string) $request->get_param( 'website' ) ) {
 			return rest_ensure_response( array( 'message' => self::thanks_message() ) );
 		}
-		if ( ! self::rate_ok( 'sub', 5, HOUR_IN_SECONDS ) ) {
+		if ( ! \SidcraftCommerce\rate_limit( 'sub', 5, HOUR_IN_SECONDS ) ) {
 			return new \WP_Error( 'sidccofo_rate', __( 'Too many tries. Please try again later.', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'status' => 429 ) );
 		}
 		$email = Subscribers::normalize( (string) $request->get_param( 'email' ) );
@@ -318,25 +318,6 @@ class Marketing {
 	public function js_config( $config ) {
 		$config['marketing'] = array( 'capture' => (bool) setting( 'marketing_abandoned', 1 ) );
 		return $config;
-	}
-
-	/**
-	 * Simple per-IP rate limit.
-	 *
-	 * @param string $what   Bucket.
-	 * @param int    $max    Tries.
-	 * @param int    $window Seconds.
-	 * @return bool
-	 */
-	public static function rate_ok( $what, $max, $window ) {
-		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		$key = 'sidccofo_rl_' . $what . '_' . md5( $ip );
-		$n   = (int) get_transient( $key );
-		if ( $n >= $max ) {
-			return false;
-		}
-		set_transient( $key, $n + 1, $window );
-		return true;
 	}
 
 	/*

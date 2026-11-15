@@ -129,8 +129,10 @@ final class Sidcraft_Commerce_Install {
 		}
 		// 1.1.0: digital downloads — new setting defaults and the My downloads
 		// page. On init, where translations may load.
-		// Sites of a network the activation loop didn't reach still get their cleanup job.
-		if ( is_multisite() && ! wp_next_scheduled( 'sidcraft_commerce_cleanup' ) ) {
+		// The hourly job comes back if it was lost (cron reset, site moved, a
+		// network site the activation loop didn't reach): renewals, reminders and
+		// cleanups depend on it. wp_next_scheduled() reads the autoloaded cron option.
+		if ( ! wp_next_scheduled( 'sidcraft_commerce_cleanup' ) ) {
 			wp_schedule_event( time() + HOUR_IN_SECONDS, 'hourly', 'sidcraft_commerce_cleanup' );
 		}
 		$version = (string) get_option( 'sidcraft_commerce_version', '0' );

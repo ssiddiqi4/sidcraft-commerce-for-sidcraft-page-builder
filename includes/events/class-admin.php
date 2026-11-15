@@ -652,6 +652,13 @@ class Admin {
 			'hide_auto'       => empty( $raw['hide_auto'] ) ? 0 : 1,
 			'attendee_info'   => in_array( $mode, array( 'buyer', 'name', 'name_email', 'name_email_phone' ), true ) ? $mode : 'name',
 		);
+		// Ticket types become products anyone can buy, and Zoom meetings use the
+		// store's account: only store managers set those (an Author or Editor
+		// can still write the event itself).
+		$manager = current_user_can( manage_cap() );
+		if ( ! $manager ) {
+			unset( $meta['zoom_auto'] );
+		}
 		foreach ( $meta as $key => $value ) {
 			update_post_meta( $post_id, '_sidccofo_ev_' . $key, $value );
 		}
@@ -687,7 +694,9 @@ class Admin {
 				'product_id'    => absint( $row['product_id'] ?? 0 ),
 			);
 		}
-		update_post_meta( $post_id, '_sidccofo_ev_tickets', $tickets );
+		if ( $manager ) {
+			update_post_meta( $post_id, '_sidccofo_ev_tickets', $tickets );
+		}
 
 		// Attendee fields.
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized per field below.
@@ -1368,7 +1377,7 @@ class Admin {
 		header( 'Content-Disposition: attachment; filename="attendees-' . sanitize_title( $event->get_name() ) . '.csv"' );
 		$out = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Streaming CSV.
 		fwrite( $out, "\xEF\xBB\xBF" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- UTF-8 BOM for Excel.
-		fputcsv( $out, $head );
+		fputcsv( $out, $head, ',', '"', '\\' );
 		$safe = static function ( $v ) {
 			$v = (string) $v;
 			return preg_match( '/^[=+\-@\t\r]/', $v ) ? "'" . $v : $v; // No spreadsheet formulas.
@@ -1396,7 +1405,7 @@ class Admin {
 			foreach ( $fields as $field ) {
 				$line[] = $values[ $field['id'] ] ?? '';
 			}
-			fputcsv( $out, array_map( $safe, $line ) );
+			fputcsv( $out, array_map( $safe, $line ), ',', '"', '\\' );
 		}
 		fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		exit;

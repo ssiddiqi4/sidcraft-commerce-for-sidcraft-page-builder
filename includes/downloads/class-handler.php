@@ -137,9 +137,13 @@ class Handler {
 
 		if ( is_user_logged_in() ) {
 			$user = wp_get_current_user();
-			$mine = ( $customer && $customer === (int) $user->ID ) || ( ! $customer && strtolower( (string) $user->user_email ) === strtolower( $order->get_email() ) );
+			$mine = ( $customer && $customer === (int) $user->ID ) || ( ! $customer && \SidcraftCommerce\Accounts::email_verified( (int) $user->ID ) && strtolower( (string) $user->user_email ) === strtolower( $order->get_email() ) );
 			if ( ! $mine && ! $staff && Downloads::get( 'require_login' ) ) {
 				self::fail( __( 'This download belongs to another account.', 'sidcraft-commerce-for-sidcraft-page-builder' ), 403 );
+			}
+			// Someone else's link: being logged in doesn't replace the email check guests get.
+			if ( ! $mine && ! $staff && Downloads::get( 'verify_email' ) ) {
+				$this->verify_email( $order );
 			}
 			return;
 		}
@@ -439,7 +443,11 @@ class Handler {
 			status_header( 206 );
 			header( 'Content-Range: bytes ' . $start . '-' . $end . '/' . $size );
 		}
-		header( 'Content-Length: ' . ( $end - $start + 1 ) );
+		header( 'Content-Length: ' . ( $size > 0 ? $end - $start + 1 : 0 ) );
+		if ( 0 === $size ) {
+			fclose( $handle );
+			exit; // An empty file: nothing to send.
+		}
 
 		if ( $start > 0 ) {
 			fseek( $handle, $start );
