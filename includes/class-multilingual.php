@@ -22,6 +22,10 @@
 
 namespace SidcraftCommerce;
 
+// The wpml_* hooks below are WPML's own documented API (also served by
+// Polylang), so they keep WPML's names rather than this plugin's prefix.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+
 use SidcraftCommerce\Data\Post_Types;
 
 defined( 'ABSPATH' ) || exit;
@@ -642,3 +646,4 @@ class Multilingual {
 		return array_values( array_unique( $metas ) );
 	}
 }
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound

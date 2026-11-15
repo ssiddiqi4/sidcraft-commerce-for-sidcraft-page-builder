@@ -125,19 +125,39 @@ class Network {
 				$settings = (array) get_option( 'sidcraft_commerce_settings', array() );
 				$statuses = Post_Types::stock_statuses();
 				$since    = gmdate( 'Y-m-d H:i:s', time() - 30 * DAY_IN_SECONDS );
-				$in       = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
-				// phpcs:disable WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Report over this store's orders; placeholders built above.
-				$row = $wpdb->get_row(
+				// One row per status; the statuses that count as sales are added up below.
+				// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Report over this store's orders.
+				$rows = (array) $wpdb->get_results(
 					$wpdb->prepare(
-						"SELECT COUNT(*) AS orders, COALESCE( SUM( CAST( t.meta_value AS DECIMAL(20,4) ) / COALESCE( NULLIF( CAST( r.meta_value AS DECIMAL(20,8) ), 0 ), 1 ) ), 0 ) AS sales
-						FROM {$wpdb->posts} p
-						LEFT JOIN {$wpdb->postmeta} t ON t.post_id = p.ID AND t.meta_key = '_sidccofo_total'
-						LEFT JOIN {$wpdb->postmeta} r ON r.post_id = p.ID AND r.meta_key = '_sidccofo_exchange_rate'
-						WHERE p.post_type = %s AND p.post_status IN ($in) AND p.post_date_gmt >= %s",
-						array_merge( array( Post_Types::ORDER ), $statuses, array( $since ) )
+						'SELECT p.post_status AS status, COUNT(*) AS orders, COALESCE( SUM( CAST( t.meta_value AS DECIMAL(20,4) ) / COALESCE( NULLIF( CAST( r.meta_value AS DECIMAL(20,8) ), 0 ), 1 ) ), 0 ) AS sales
+						FROM %i p
+						LEFT JOIN %i t ON t.post_id = p.ID AND t.meta_key = %s
+						LEFT JOIN %i r ON r.post_id = p.ID AND r.meta_key = %s
+						WHERE p.post_type = %s AND p.post_date_gmt >= %s
+						GROUP BY p.post_status',
+						$wpdb->posts,
+						$wpdb->postmeta,
+						'_sidccofo_total',
+						$wpdb->postmeta,
+						'_sidccofo_exchange_rate',
+						Post_Types::ORDER,
+						$since
 					)
 				);
-				$pending = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = %s AND post_status = 'sidccofo-pending'", Post_Types::ORDER ) );
+				$row     = (object) array(
+					'orders' => 0,
+					'sales'  => 0.0,
+				);
+				$pending = 0;
+				foreach ( $rows as $r ) {
+					if ( in_array( $r->status, $statuses, true ) ) {
+						$row->orders += (int) $r->orders;
+						$row->sales  += (float) $r->sales;
+					}
+					if ( 'sidccofo-pending' === $r->status ) {
+						$pending = (int) $r->orders;
+					}
+				}
 				// phpcs:enable
 				$counts = wp_count_posts( Post_Types::PRODUCT );
 				return array(

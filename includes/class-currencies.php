@@ -481,8 +481,8 @@ class Currencies {
 		$sections['currencies'] = array(
 			'tab'    => 'general',
 			'title'  => __( 'Currencies', 'sidcraft-commerce-for-sidcraft-page-builder' ),
-			/* translators: %s: store currency code. */
-			'intro'  => sprintf( __( 'Sell in more currencies besides %s. Prices, shipping rates, coupon amounts and gift card balances stay in %s; shoppers see and pay them converted at your rate, and each order is charged and kept in the shopper’s currency. Add the Currency Switcher Unit (or [sidccofo_currency_switcher]) so shoppers can choose.', 'sidcraft-commerce-for-sidcraft-page-builder' ), self::base(), self::base() ),
+			/* translators: %1$s: store currency code. */
+			'intro'  => sprintf( __( 'Sell in more currencies besides %1$s. Prices, shipping rates, coupon amounts and gift card balances stay in %1$s; shoppers see and pay them converted at your rate, and each order is charged and kept in the shopper’s currency. Add the Currency Switcher Unit (or [sidccofo_currency_switcher]) so shoppers can choose.', 'sidcraft-commerce-for-sidcraft-page-builder' ), self::base() ),
 			'fields' => array(
 				'currencies'          => array(
 					__( 'More currencies', 'sidcraft-commerce-for-sidcraft-page-builder' ),

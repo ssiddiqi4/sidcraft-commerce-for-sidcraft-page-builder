@@ -5,7 +5,7 @@ Tags: e-commerce, shop, checkout, cart, digital-products
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -212,6 +212,11 @@ Settings, sessions, temporary data, chats, the email log and remembered carts ar
 
 == Changelog ==
 
+= 2.0.1 =
+* Fixed: WordPress Plugin Check reports. Mailing-list, campaign-statistics and network-report queries use fixed SQL with placeholders only; links on the subscribe and unsubscribe pages are escaped; translator notes fixed.
+* Fixed: the “has tag” mailing-list segment missed subscribers whose tag contains an underscore.
+* Readme: shorter upgrade notices.
+
 = 2.0.0 =
 * New: Email marketing. Mailing list with the Newsletter Signup Unit and a checkout opt-in (double opt-in, tags, CSV import and export); campaigns to customer groups, sent now or scheduled, with open and click counts; automatic welcome, abandoned-cart, order follow-up and win-back emails; one-click unsubscribe.
 * New: Live chat. A chat button on your pages and an inbox under Store → Live chat; visitors leave a message by email while you're away. Off until turned on under Settings → Modules.
@@ -247,20 +252,23 @@ Older versions and full details: see changelog.txt.
 
 == Upgrade Notice ==
 
+= 2.0.1 =
+Plugin Check fixes and a mailing-list segment fix. No template changes.
+
 = 2.0.0 =
-Adds email marketing (on) and live chat (off until turned on under Settings → Modules). Important security and bug fixes: order screen "Update order" works again, gift cards can't be double-spent, PayPal returns are checked against their order, and checkout-made accounts no longer receive other guest orders. Template changed: units/checkout.php; compare theme overrides of it.
+Adds email marketing and live chat (off until turned on in Settings → Modules). Important security and bug fixes for gift cards, PayPal returns and guest orders. Template changed: units/checkout.php; compare theme overrides of it.
 
 = 1.9.0 =
 Adds per-combination variants: a grid of option combinations, each with its own SKU, price, sale price, stock and image. Template changed: units/item-options.php; compare theme overrides of it.
 
 = 1.8.0 =
-Adds choice SKUs and images, upsells and cross-sells, product tags, coupon exclusions, external products, category images, tax classes and per-item shipping. Fixes items with options staying in the cart after checkout. Templates changed: units/item-options.php, units/add-to-cart.php, units/cart-panel.php, loop/product-card.php, quick-view.php; new units/product-categories.php. Compare theme overrides of those templates.
+Adds choice SKUs and images, upsells and cross-sells, product tags, external products, tax classes and per-item shipping. Several templates changed (see the changelog); compare your theme overrides.
 
 = 1.7.0 =
-Adds Store → Settings → Modules to turn off Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates. Everything stays on as before. Templates changed: units/coupon-form.php and units/gift-card-redeem.php (hidden when their module is off); compare theme overrides of those templates.
+Adds Store → Settings → Modules to turn off Events, Subscriptions, Gift cards, Coupons, Reward points and Affiliates; everything stays on as before. Templates changed: units/coupon-form.php, units/gift-card-redeem.php.
 
 = 1.6.0 =
-Adds subscriptions (repeat billing) and a My subscriptions page. Templates changed: units/checkout.php (free-trial card choice), units/order-confirmation.php (pay a renewal), units/cart-panel.php, units/checkout-summary.php, emails/order.php; new units/subscriptions.php and emails/subscription.php. Compare theme overrides of those templates.
+Adds subscriptions (repeat billing) and a My subscriptions page. Checkout, order confirmation, cart and email templates changed (see the changelog); compare your theme overrides.
 
 = 1.5.0 =
 Adds several currencies, WPML / Polylang translations and Multisite stores. Templates changed: units/checkout.php (payment notice per currency) and the new units/currency-switcher.php; compare theme overrides of units/checkout.php.

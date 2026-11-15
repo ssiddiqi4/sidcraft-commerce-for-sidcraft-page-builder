@@ -348,11 +348,11 @@ class Marketing {
 		}
 		if ( 'confirm' === $action ) {
 			$ok = Subscribers::confirm( $row );
-			wp_die( esc_html( $ok ? __( 'Thanks! Your subscription is confirmed.', 'sidcraft-commerce-for-sidcraft-page-builder' ) : __( 'This address was unsubscribed. Sign up again on our website to get our emails.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ), esc_html( $title ), array( 'response' => 200, 'link_url' => home_url( '/' ), 'link_text' => __( 'Back to the shop', 'sidcraft-commerce-for-sidcraft-page-builder' ) ) );
+			wp_die( esc_html( $ok ? __( 'Thanks! Your subscription is confirmed.', 'sidcraft-commerce-for-sidcraft-page-builder' ) : __( 'This address was unsubscribed. Sign up again on our website to get our emails.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ), esc_html( $title ), array( 'response' => 200, 'link_url' => esc_url( home_url( '/' ) ), 'link_text' => esc_html__( 'Back to the shop', 'sidcraft-commerce-for-sidcraft-page-builder' ) ) );
 		}
 		if ( 'unsubscribe' === $action ) {
 			Subscribers::set_status( (int) $row->id, 'unsubscribed' );
-			wp_die( esc_html__( 'You’re unsubscribed and won’t get our marketing emails any more. Order emails still arrive as usual.', 'sidcraft-commerce-for-sidcraft-page-builder' ), esc_html( $title ), array( 'response' => 200, 'link_url' => home_url( '/' ), 'link_text' => __( 'Back to the shop', 'sidcraft-commerce-for-sidcraft-page-builder' ) ) );
+			wp_die( esc_html__( 'You’re unsubscribed and won’t get our marketing emails any more. Order emails still arrive as usual.', 'sidcraft-commerce-for-sidcraft-page-builder' ), esc_html( $title ), array( 'response' => 200, 'link_url' => esc_url( home_url( '/' ) ), 'link_text' => esc_html__( 'Back to the shop', 'sidcraft-commerce-for-sidcraft-page-builder' ) ) );
 		}
 	}
 

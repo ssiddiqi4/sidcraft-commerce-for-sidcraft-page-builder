@@ -300,38 +300,47 @@ class Subscribers {
 	}
 
 	/**
-	 * SQL WHERE for a segment (always subscribed only).
+	 * Values for the segment conditions in segment SQL (see in_segment()):
+	 * orders from–to, spent over, last order from–before, tag (or '').
 	 *
-	 * @param string $segment Segment key.
-	 * @param string $value   Its value (amount, days or tag).
-	 * @return string Prepared SQL fragment.
+	 * Every segment uses the same fixed SQL with these bounds, so no SQL is
+	 * ever built from variables.
+	 *
+	 * @param string $segment Segment.
+	 * @param string $value   Value.
+	 * @return array
 	 */
-	public static function segment_where( $segment, $value ) {
+	public static function segment_args( $segment, $value ) {
 		global $wpdb;
-		$where = "status = 'subscribed'";
+		$orders = array( 0, 4294967295 );
+		$spent  = -1.0;
+		$last   = array( 0, PHP_INT_MAX );
+		$tag    = '';
+		$days   = time() - max( 1, (int) $value ) * DAY_IN_SECONDS;
 		switch ( $segment ) {
 			case 'customers':
-				$where .= ' AND orders > 0';
+				$orders[0] = 1;
 				break;
 			case 'prospects':
-				$where .= ' AND orders = 0';
+				$orders[1] = 0;
 				break;
 			case 'spent_over':
-				$where .= $wpdb->prepare( ' AND spent > %f', (float) $value );
+				$spent = (float) $value;
 				break;
 			case 'inactive':
-				$where .= $wpdb->prepare( ' AND orders > 0 AND last_order < %d', time() - max( 1, (int) $value ) * DAY_IN_SECONDS );
+				$orders[0] = 1;
+				$last[1]   = $days;
 				break;
 			case 'recent':
-				$where .= $wpdb->prepare( ' AND last_order >= %d', time() - max( 1, (int) $value ) * DAY_IN_SECONDS );
+				$last[0] = $days;
 				break;
 			case 'tag':
-				// Tags are stored as "a,b,c": match a whole tag (portable, unlike FIND_IN_SET).
-				$tag    = $wpdb->esc_like( sanitize_title( (string) $value ) );
-				$where .= $wpdb->prepare( ' AND (tags = %s OR tags LIKE %s OR tags LIKE %s OR tags LIKE %s)', $tag, $tag . ',%', '%,' . $tag, '%,' . $tag . ',%' );
+				$tag = sanitize_title( (string) $value );
 				break;
 		}
-		return $where;
+		// Tags are stored as "a,b,c": match a whole tag (portable, unlike FIND_IN_SET).
+		$like = $wpdb->esc_like( $tag );
+		return array( $orders[0], $orders[1], $spent, $last[0], $last[1], $tag, $tag, $like . ',%', '%,' . $like, '%,' . $like . ',%' );
 	}
 
 	/**
@@ -345,9 +354,26 @@ class Subscribers {
 	 */
 	public static function in_segment( $segment, $value, $after, $limit ) {
 		global $wpdb;
-		$where = self::segment_where( $segment, $value );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table; $where is prepared in segment_where().
-		return (array) $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i WHERE {$where} AND id > %d ORDER BY id ASC LIMIT %d", self::table(), (int) $after, (int) $limit ) );
+		$a = self::segment_args( $segment, $value );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Custom table.
+		return (array) $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM %i WHERE status = 'subscribed' AND orders >= %d AND orders <= %d AND spent > %f AND last_order >= %d AND last_order < %d AND ( %s = '' OR tags = %s OR tags LIKE %s OR tags LIKE %s OR tags LIKE %s ) AND id > %d ORDER BY id ASC LIMIT %d",
+				self::table(),
+				$a[0],
+				$a[1],
+				$a[2],
+				$a[3],
+				$a[4],
+				$a[5],
+				$a[6],
+				$a[7],
+				$a[8],
+				$a[9],
+				(int) $after,
+				(int) $limit
+			)
+		);
 	}
 
 	/**
@@ -359,9 +385,24 @@ class Subscribers {
 	 */
 	public static function count_segment( $segment, $value ) {
 		global $wpdb;
-		$where = self::segment_where( $segment, $value );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table; $where is prepared in segment_where().
-		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE {$where}", self::table() ) );
+		$a = self::segment_args( $segment, $value );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Custom table.
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM %i WHERE status = 'subscribed' AND orders >= %d AND orders <= %d AND spent > %f AND last_order >= %d AND last_order < %d AND ( %s = '' OR tags = %s OR tags LIKE %s OR tags LIKE %s OR tags LIKE %s )",
+				self::table(),
+				$a[0],
+				$a[1],
+				$a[2],
+				$a[3],
+				$a[4],
+				$a[5],
+				$a[6],
+				$a[7],
+				$a[8],
+				$a[9]
+			)
+		);
 	}
 
 	/**
@@ -387,19 +428,16 @@ class Subscribers {
 	 */
 	public static function query( array $args ) {
 		global $wpdb;
-		$where = '1=1';
-		if ( in_array( $args['status'] ?? '', self::STATUSES, true ) ) {
-			$where .= $wpdb->prepare( ' AND status = %s', $args['status'] );
-		}
-		if ( '' !== (string) ( $args['search'] ?? '' ) ) {
-			$like   = '%' . $wpdb->esc_like( (string) $args['search'] ) . '%';
-			$where .= $wpdb->prepare( ' AND (email LIKE %s OR first_name LIKE %s OR tags LIKE %s)', $like, $like, $like );
-		}
+		$status = in_array( $args['status'] ?? '', self::STATUSES, true ) ? (string) $args['status'] : '';
+		$search = (string) ( $args['search'] ?? '' );
+		$like   = '%' . $wpdb->esc_like( $search ) . '%';
 		$per    = max( 1, (int) ( $args['per_page'] ?? 50 ) );
 		$offset = max( 0, ( (int) ( $args['page'] ?? 1 ) - 1 ) * $per );
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table; $where is prepared above.
-		$rows  = (array) $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i WHERE {$where} ORDER BY id DESC LIMIT %d OFFSET %d", self::table(), $per, $offset ) );
-		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE {$where}", self::table() ) );
+		$table  = self::table();
+		// Empty status or search: that condition is skipped ('' = '').
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Custom table.
+		$rows  = (array) $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i WHERE ( %s = '' OR status = %s ) AND ( %s = '' OR email LIKE %s OR first_name LIKE %s OR tags LIKE %s ) ORDER BY id DESC LIMIT %d OFFSET %d", $table, $status, $status, $search, $like, $like, $like, $per, $offset ) );
+		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE ( %s = '' OR status = %s ) AND ( %s = '' OR email LIKE %s OR first_name LIKE %s OR tags LIKE %s )", $table, $status, $status, $search, $like, $like, $like ) );
 		// phpcs:enable
 		return array( $rows, $total );
 	}

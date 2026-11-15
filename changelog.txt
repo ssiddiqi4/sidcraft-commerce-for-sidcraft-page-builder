@@ -1,5 +1,10 @@
 === Sidcraft Commerce for Sidcraft Page Builder: full changelog ===
 
+= 2.0.1 =
+* Fixed: WordPress Plugin Check reports. Mailing-list, campaign-statistics and network-report queries use fixed SQL with placeholders only; links on the subscribe and unsubscribe pages are escaped; translator notes fixed.
+* Fixed: the “has tag” mailing-list segment missed subscribers whose tag contains an underscore.
+* Readme: shorter upgrade notices.
+
 = 2.0.0 =
 * New: Email marketing module (Store → Mailing list, Store → Email campaigns, Settings → Marketing). Newsletter Signup Unit and checkout opt-in, double opt-in, tags, CSV import/export; campaigns to segments, sent now or scheduled, in batches, with open and click counts; automatic welcome, abandoned-cart, order follow-up and win-back emails; unsubscribe links and one-click List-Unsubscribe headers; personal data export and erase.
 * New: Live chat module (Store → Live chat, Settings → Live chat). Chat button on all or only store pages, inbox with unread counts, offline messages emailed to the store, replies by email, personal data export and erase. Off until you turn it on under Settings → Modules.

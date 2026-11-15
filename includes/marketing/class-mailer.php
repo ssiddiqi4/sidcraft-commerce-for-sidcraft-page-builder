@@ -234,13 +234,12 @@ class Mailer {
 	 */
 	public static function record( $kind, $log_id ) {
 		global $wpdb;
-		$column = 'click' === $kind ? 'clicked' : 'opened';
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table; column from a fixed list.
-		$wpdb->query( $wpdb->prepare( "UPDATE %i SET {$column} = %d WHERE id = %d AND {$column} = 0", self::log_table(), time(), (int) $log_id ) );
-		if ( 'clicked' === $column ) {
-			// A click means it was opened, even with images off.
-			$wpdb->query( $wpdb->prepare( 'UPDATE %i SET opened = %d WHERE id = %d AND opened = 0', self::log_table(), time(), (int) $log_id ) );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Custom table.
+		if ( 'click' === $kind ) {
+			$wpdb->query( $wpdb->prepare( 'UPDATE %i SET clicked = %d WHERE id = %d AND clicked = 0', self::log_table(), time(), (int) $log_id ) );
 		}
+		// An open, or a click (which means it was opened, even with images off).
+		$wpdb->query( $wpdb->prepare( 'UPDATE %i SET opened = %d WHERE id = %d AND opened = 0', self::log_table(), time(), (int) $log_id ) );
 		// phpcs:enable
 	}
 
@@ -252,10 +251,10 @@ class Mailer {
 	 */
 	public static function stats( $ref ) {
 		global $wpdb;
-		$op = '%' === substr( $ref, -1 ) ? 'LIKE' : '=';
-		$v  = '%' === substr( $ref, -1 ) ? $wpdb->esc_like( substr( $ref, 0, -1 ) ) . '%' : $ref;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table; operator from a fixed pair.
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT COUNT(*) AS sent, SUM(opened > 0) AS opened, SUM(clicked > 0) AS clicked, SUM(failed) AS failed FROM %i WHERE ref {$op} %s", self::log_table(), $v ) );
+		// A ref ending in "%" is a prefix; anything else must match exactly (LIKE with no wildcards).
+		$v = '%' === substr( $ref, -1 ) ? $wpdb->esc_like( substr( $ref, 0, -1 ) ) . '%' : $wpdb->esc_like( $ref );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Custom table.
+		$row = $wpdb->get_row( $wpdb->prepare( 'SELECT COUNT(*) AS sent, SUM(opened > 0) AS opened, SUM(clicked > 0) AS clicked, SUM(failed) AS failed FROM %i WHERE ref LIKE %s', self::log_table(), $v ) );
 		return array(
 			'sent'    => (int) ( $row->sent ?? 0 ),
 			'opened'  => (int) ( $row->opened ?? 0 ),

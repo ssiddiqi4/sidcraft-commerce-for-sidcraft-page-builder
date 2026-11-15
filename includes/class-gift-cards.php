@@ -136,8 +136,8 @@ class Gift_Cards {
 		foreach ( $used as $row ) {
 			$card = Gift_Card::get( (int) ( $row['id'] ?? 0 ) );
 			if ( $card ) {
-				/* translators: %d: order number. */
 				// 'base': what was taken from the card (store currency); older orders only have 'amount'.
+				/* translators: %d: order number. */
 				$card->credit( (float) ( $row['base'] ?? $row['amount'] ), $order->get_id(), sprintf( __( 'Returned: order #%d was cancelled or refunded.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $order->get_id() ) );
 			}
 		}
