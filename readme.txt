@@ -9,7 +9,7 @@ Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Online store for Sidcraft Page Builder: cart, checkout, coupons, reviews; PayPal, Stripe, Apple Pay, Klarna, Razorpay and more.
+Online store for Sidcraft Page Builder: cart, checkout, coupons, reviews, PayPal, Stripe, Apple Pay and more.
 
 == Description ==
 
