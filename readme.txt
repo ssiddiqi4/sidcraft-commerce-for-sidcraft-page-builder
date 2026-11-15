@@ -165,7 +165,7 @@ Yes. Shop and product pages stay cacheable, the cart badge fills in after the pa
 
 = What if two people buy the last item? =
 
-The order reserves stock as it is created, and the reservation only succeeds while the stored quantity is still at least the amount being bought. The other buyer is told there is not enough stock. A pending order that is still unpaid after 24 hours is cancelled and the units go back. Cancelled and Refunded do the same for the units that order still holds.
+The order reserves stock as it is created, and the reservation only succeeds while the stored quantity is still at least the amount being bought. The other buyer is told there is not enough stock. A pending order that is still unpaid after 2 hours is cancelled and the units go back. Cancelled and Refunded do the same for the units that order still holds.
 
 = How do refunds and chargebacks work? =
 
