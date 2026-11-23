@@ -527,7 +527,7 @@ class Cart {
 		} elseif ( ! $product->is_in_stock() ) {
 			/* translators: %s: product name. */
 			$error = new \WP_Error( 'sidccofo_out_of_stock', sprintf( __( '“%s” is out of stock.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $product->get_name() ) );
-		} elseif ( $product->managing_stock() && $quantity > $product->get_stock_quantity() ) {
+		} elseif ( $product->managing_stock() && ! $product->allows_backorders() && $quantity > $product->get_stock_quantity() ) {
 			$error = new \WP_Error(
 				'sidccofo_not_enough_stock',
 				/* translators: 1: product name, 2: units left. */

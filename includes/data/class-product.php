@@ -733,6 +733,16 @@ class Product {
 	}
 
 	/**
+	 * Can be bought when stock has run out (backorders)? Set per product by
+	 * the Stock tools: 'yes' = allow, 'notify' = allow and tell the buyer.
+	 *
+	 * @return bool
+	 */
+	public function allows_backorders() {
+		return $this->managing_stock() && in_array( (string) $this->meta( '_sidccofo_backorders' ), array( 'yes', 'notify' ), true );
+	}
+
+	/**
 	 * Units in stock, or null when stock isn't tracked.
 	 *
 	 * @return int|null Units in stock, or null when stock isn't tracked.
@@ -748,7 +758,7 @@ class Product {
 	 */
 	public function is_in_stock() {
 		if ( $this->managing_stock() ) {
-			$in = $this->get_stock_quantity() > 0;
+			$in = $this->get_stock_quantity() > 0 || $this->allows_backorders();
 		} else {
 			$in = 'outofstock' !== $this->meta( '_sidccofo_stock_status' );
 		}
@@ -794,7 +804,7 @@ class Product {
 	 * @return int
 	 */
 	public function get_max_purchase_quantity() {
-		return $this->managing_stock() ? max( 0, (int) $this->get_stock_quantity() ) : -1;
+		return $this->managing_stock() && ! $this->allows_backorders() ? max( 0, (int) $this->get_stock_quantity() ) : -1;
 	}
 
 	/**
@@ -1107,7 +1117,14 @@ class Product {
 		if ( $this->is_in_stock() && $this->has_options() ) {
 			return __( 'Choose options', 'sidcraft-commerce-for-sidcraft-page-builder' );
 		}
-		return $this->is_in_stock() ? __( 'Add to cart', 'sidcraft-commerce-for-sidcraft-page-builder' ) : __( 'Out of stock', 'sidcraft-commerce-for-sidcraft-page-builder' );
+		$text = $this->is_in_stock() ? __( 'Add to cart', 'sidcraft-commerce-for-sidcraft-page-builder' ) : __( 'Out of stock', 'sidcraft-commerce-for-sidcraft-page-builder' );
+		/**
+		 * Filter the button text ("Pre-order", "Back-order"…).
+		 *
+		 * @param string  $text    Text.
+		 * @param Product $product Product.
+		 */
+		return (string) apply_filters( 'sidcraft_commerce_button_text', $text, $this );
 	}
 
 	/**
@@ -1141,7 +1158,17 @@ class Product {
 
 		global $wpdb;
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Conditional stock update; update_post_meta cannot express "only if enough remains".
-		if ( $delta < 0 ) {
+		if ( $delta < 0 && $this->allows_backorders() ) {
+			// Backorders: stock may go below zero (the units owed).
+			$wpdb->query(
+				$wpdb->prepare(
+					"UPDATE {$wpdb->postmeta} SET meta_value = CAST(meta_value AS SIGNED) - %d WHERE post_id = %d AND meta_key = %s",
+					abs( $delta ),
+					$this->get_id(),
+					'_sidccofo_stock'
+				)
+			);
+		} elseif ( $delta < 0 ) {
 			$need    = abs( $delta );
 			$updated = $wpdb->query(
 				$wpdb->prepare(
@@ -1243,7 +1270,7 @@ class Product {
 		$changed  = (bool) update_post_meta( $id, '_sidccofo_on_sale', $on_sale ? 1 : 0 ) || $changed;
 		update_post_meta( $id, '_sidccofo_dated_rules', Price_Rules::has_dates( $product->get_price_rules() ) ? 1 : 0 );
 		if ( $product->managing_stock() ) {
-			$changed = (bool) update_post_meta( $id, '_sidccofo_stock_status', $product->get_stock_quantity() > 0 ? 'instock' : 'outofstock' ) || $changed;
+			$changed = (bool) update_post_meta( $id, '_sidccofo_stock_status', $product->get_stock_quantity() > 0 || $product->allows_backorders() ? 'instock' : 'outofstock' ) || $changed;
 		} elseif ( '' === $product->meta( '_sidccofo_stock_status' ) ) {
 			$changed = (bool) update_post_meta( $id, '_sidccofo_stock_status', 'instock' ) || $changed;
 		}

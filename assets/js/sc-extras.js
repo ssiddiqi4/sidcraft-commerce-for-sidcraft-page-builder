@@ -92,3 +92,30 @@
 		}
 	} );
 } )();
+
+/* --------------------------------------------------------------------
+ * Notify me when back in stock.
+ * ------------------------------------------------------------------ */
+( function () {
+	'use strict';
+	var cart = window.sidccofoCart;
+	if ( ! cart ) {
+		return;
+	}
+	document.addEventListener( 'submit', function ( e ) {
+		var form = e.target.closest && e.target.closest( '[data-sc-notify]' );
+		if ( ! form ) {
+			return;
+		}
+		e.preventDefault();
+		var msg = form.querySelector( '.sc-notify__msg' );
+		cart.api( 'stock/notify', 'POST', { product_id: form.dataset.product, email: form.email.value, website: form.website ? form.website.value : '' }, true )
+			.then( function ( data ) {
+				msg.textContent = data.message;
+				form.email.value = '';
+			} )
+			.catch( function ( err ) {
+				msg.textContent = err.message;
+			} );
+	} );
+} )();
