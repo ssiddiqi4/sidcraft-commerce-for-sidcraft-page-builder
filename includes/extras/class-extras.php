@@ -152,6 +152,7 @@ class Extras {
 	 */
 	public function boot() {
 		require_once __DIR__ . '/class-tool.php';
+		require_once __DIR__ . '/class-simple-unit.php';
 		foreach ( self::defs() as $id => $tool ) {
 			if ( ! self::on( $id ) ) {
 				continue;

@@ -246,3 +246,193 @@
 		document.addEventListener( 'DOMContentLoaded', sticky );
 	}
 } )();
+
+/* --------------------------------------------------------------------
+ * Live search.
+ * ------------------------------------------------------------------ */
+( function () {
+	'use strict';
+	var cart = window.sidccofoCart;
+	var ex = window.sidccofoExtras;
+	if ( ! cart || ! ex ) {
+		return;
+	}
+	var timers = new WeakMap();
+
+	document.addEventListener( 'input', function ( e ) {
+		var form = e.target.closest && e.target.closest( '[data-sc-search]' );
+		if ( ! form || e.target.name !== 's' ) {
+			return;
+		}
+		var list = form.querySelector( '.sc-search__list' );
+		clearTimeout( timers.get( form ) );
+		var q = e.target.value.trim();
+		if ( q.length < 2 ) {
+			list.hidden = true;
+			return;
+		}
+		timers.set( form, setTimeout( function () {
+			cart.api( 'search?q=' + encodeURIComponent( q ), 'GET', null, true ).then( function ( data ) {
+				list.innerHTML = '';
+				( data.results || [] ).forEach( function ( r ) {
+					var li = document.createElement( 'li' );
+					li.setAttribute( 'role', 'option' );
+					var a = document.createElement( 'a' );
+					a.href = r.url;
+					a.innerHTML = ( r.image ? '<img src="' + ex.esc( r.image ) + '" alt="" width="40" height="40">' : '' ) + '<span>' + ex.esc( r.name ) + '</span><small>' + ex.esc( r.price ) + '</small>';
+					li.appendChild( a );
+					list.appendChild( li );
+				} );
+				list.hidden = ! list.children.length;
+			} ).catch( function () {
+				list.hidden = true;
+			} );
+		}, 220 ) );
+	} );
+
+	document.addEventListener( 'click', function ( e ) {
+		document.querySelectorAll( '.sc-search__list' ).forEach( function ( l ) {
+			if ( ! l.parentNode.contains( e.target ) ) {
+				l.hidden = true;
+			}
+		} );
+	} );
+} )();
+
+/* --------------------------------------------------------------------
+ * Wishlist, compare, recently viewed.
+ * ------------------------------------------------------------------ */
+( function () {
+	'use strict';
+	var cart = window.sidccofoCart;
+	var ex = window.sidccofoExtras;
+	if ( ! cart || ! ex ) {
+		return;
+	}
+	var state = { wishlist: [], compare: [] };
+	var loaded = false;
+
+	function mark() {
+		document.querySelectorAll( '[data-sc-wish]' ).forEach( function ( b ) {
+			var on = state.wishlist.indexOf( Number( b.dataset.scWish ) ) > -1;
+			b.setAttribute( 'aria-pressed', on ? 'true' : 'false' );
+			b.classList.toggle( 'is-active', on );
+			var s = b.querySelector( '[aria-hidden]' );
+			if ( s ) {
+				s.textContent = on ? '♥' : '♡';
+			}
+		} );
+		document.querySelectorAll( '[data-sc-cmp]' ).forEach( function ( b ) {
+			var on = state.compare.indexOf( Number( b.dataset.scCmp ) ) > -1;
+			b.setAttribute( 'aria-pressed', on ? 'true' : 'false' );
+			b.classList.toggle( 'is-active', on );
+		} );
+	}
+
+	function loadState() {
+		return cart.api( 'wishlist', 'GET', null, true ).then( function ( d ) {
+			state.wishlist = ( d.wishlist || [] ).map( Number );
+			state.compare = ( d.compare || [] ).map( Number );
+			loaded = true;
+			mark();
+		} ).catch( function () {} );
+	}
+
+	function fill( box, url ) {
+		var ul = box.querySelector( '[data-sc-list-items]' );
+		cart.api( url, 'GET', null, true ).then( function ( d ) {
+			ul.innerHTML = d.html;
+			var empty = box.querySelector( '.sc-list__empty' );
+			if ( empty ) {
+				empty.hidden = d.count > 0;
+			}
+			if ( box.dataset.scList === 'recent' ) {
+				box.hidden = d.count === 0;
+			}
+			cart.refresh && cart.refresh();
+		} ).catch( function () {} );
+	}
+
+	function cookie( name, value ) {
+		var suffix = ( window.sidccofoCommerce || {} ).cookieSuffix;
+		var full = name + ( suffix ? '_' + suffix : '' );
+		if ( value === undefined ) {
+			var m = document.cookie.match( new RegExp( '(?:^|; )' + full + '=([^;]*)' ) );
+			return m ? decodeURIComponent( m[ 1 ] ) : '';
+		}
+		document.cookie = full + '=' + encodeURIComponent( value ) + ';path=/;max-age=' + 60 * 86400 + ';SameSite=Lax';
+	}
+
+	function recentIds() {
+		return cookie( 'sidccofo_recent' ).split( ',' ).map( Number ).filter( Boolean );
+	}
+
+	function table() {
+		var t = document.querySelector( '[data-sc-compare-table]' );
+		if ( t ) {
+			cart.api( 'compare/table', 'GET', null, true ).then( function ( d ) {
+				t.innerHTML = d.html;
+			} ).catch( function () {} );
+		}
+	}
+
+	ex.ready( function () {
+		var tracked = document.querySelector( '[data-sc-track-product]' );
+		if ( tracked ) {
+			var id = Number( tracked.dataset.scTrackProduct );
+			cookie( 'sidccofo_recent', [ id ].concat( recentIds().filter( function ( x ) {
+				return x !== id;
+			} ) ).slice( 0, 24 ).join( ',' ) );
+		}
+		if ( document.querySelector( '[data-sc-wish],[data-sc-cmp]' ) ) {
+			loadState();
+		}
+		document.querySelectorAll( '[data-sc-list="wishlist"]' ).forEach( function ( b ) {
+			fill( b, 'cards?list=wishlist' );
+		} );
+		document.querySelectorAll( '[data-sc-list="recent"]' ).forEach( function ( b ) {
+			var ids = recentIds();
+			if ( tracked ) {
+				ids = ids.filter( function ( x ) {
+					return x !== Number( tracked.dataset.scTrackProduct );
+				} );
+			}
+			ids = ids.slice( 0, parseInt( b.dataset.limit, 10 ) || 8 );
+			if ( ! ids.length ) {
+				b.hidden = true;
+				return;
+			}
+			fill( b, 'cards?ids=' + ids.join( ',' ) );
+		} );
+		table();
+	} );
+
+	document.addEventListener( 'click', function ( e ) {
+		var w = e.target.closest && e.target.closest( '[data-sc-wish]' );
+		if ( w ) {
+			cart.api( 'wishlist/toggle', 'POST', { product_id: Number( w.dataset.scWish ) } ).then( function ( d ) {
+				state.wishlist = d.wishlist.map( Number );
+				mark();
+				document.querySelectorAll( '[data-sc-list="wishlist"]' ).forEach( function ( b ) {
+					fill( b, 'cards?list=wishlist' );
+				} );
+			} ).catch( function () {} );
+			return;
+		}
+		var c = e.target.closest && e.target.closest( '[data-sc-cmp]' );
+		if ( c ) {
+			cart.api( 'compare/toggle', 'POST', { product_id: Number( c.dataset.scCmp ) } ).then( function ( d ) {
+				state.compare = d.compare.map( Number );
+				mark();
+				table();
+			} ).catch( function ( err ) {
+				window.alert( err.message );
+			} );
+			return;
+		}
+		var r = e.target.closest && e.target.closest( '[data-sc-compare-remove]' );
+		if ( r ) {
+			cart.api( 'compare/toggle', 'POST', { product_id: Number( r.dataset.scCompareRemove ) } ).then( table ).catch( function () {} );
+		}
+	} );
+} )();

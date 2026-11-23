@@ -38,3 +38,29 @@ html.sc-drawer-open { overflow: hidden; }
 .sc-notify__row { display: flex; gap: 8px; margin-top: 4px; }
 .sc-notify__row input[type="email"] { flex: 1; min-width: 0; }
 @media (prefers-reduced-motion: reduce) { .sc-drawer__panel, .sc-drawer__scrim { transition: none; } }
+
+/* Search and filters */
+.sc-search { position: relative; max-width: 520px; }
+.sc-search input[type="search"] { width: 100%; padding: 10px 14px; border: 1px solid var(--sc-border, #dcdcde); border-radius: 999px; }
+.sc-search__list { position: absolute; z-index: 50; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 4px; list-style: none; background: var(--sc-bg, #fff); border: 1px solid var(--sc-border, #dcdcde); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.15); }
+.sc-search__list[hidden] { display: none; }
+.sc-search__list a { display: flex; gap: 10px; align-items: center; padding: 8px; color: inherit; text-decoration: none; border-radius: 8px; }
+.sc-search__list a:hover, .sc-search__list a:focus { background: rgba(0,0,0,.06); }
+.sc-search__list img { border-radius: 6px; object-fit: cover; }
+.sc-search__list small { margin-left: auto; color: var(--sc-muted, #646970); }
+.sc-filters fieldset { border: 0; padding: 0; margin: 0 0 14px; }
+.sc-filters legend { font-weight: 600; margin-bottom: 6px; }
+.sc-filters__row { display: flex; gap: 6px; align-items: center; }
+.sc-filters__row input { width: 90px; }
+.sc-filters__opt { display: block; padding: 2px 0; }
+
+/* Wishlist / compare */
+.sc-heart { background: none; border: 1px solid var(--sc-border, #dcdcde); border-radius: 999px; padding: 6px 12px; cursor: pointer; color: inherit; font: inherit; }
+.sc-heart.is-active { color: #c0392b; border-color: currentColor; }
+.sc-atc__extras { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; width: 100%; }
+.sc-compare__scroll { overflow-x: auto; }
+.sc-compare__table { border-collapse: collapse; width: 100%; min-width: 560px; }
+.sc-compare__table th, .sc-compare__table td { border: 1px solid var(--sc-border, #dcdcde); padding: 10px; text-align: left; vertical-align: top; }
+.sc-compare__table thead img { width: 90px; height: 90px; object-fit: cover; display: block; border-radius: 8px; }
+.sc-link { background: none; border: 0; padding: 0; color: var(--sc-accent, #2563eb); cursor: pointer; text-decoration: underline; font: inherit; }
+.sc-list__title { margin: 0 0 12px; }
