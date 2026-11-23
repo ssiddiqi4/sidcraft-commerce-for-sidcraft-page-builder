@@ -634,3 +634,68 @@
 		} );
 	} );
 } )();
+
+/* --------------------------------------------------------------------
+ * Questions and photo reviews.
+ * ------------------------------------------------------------------ */
+( function () {
+	'use strict';
+	var cart = window.sidccofoCart;
+	var config = window.sidccofoCommerce || {};
+	if ( ! cart ) {
+		return;
+	}
+	document.addEventListener( 'submit', function ( e ) {
+		var form = e.target.closest && e.target.closest( '[data-sc-ask]' );
+		if ( ! form ) {
+			return;
+		}
+		e.preventDefault();
+		var msg = form.querySelector( '.sc-qa__msg' );
+		cart.api( 'questions', 'POST', { product_id: form.dataset.product, question: form.question.value, name: form.name.value, email: form.email.value, website: form.website.value }, true )
+			.then( function ( d ) {
+				msg.textContent = d.message;
+				form.reset();
+			} ).catch( function ( err ) {
+				msg.textContent = err.message;
+			} );
+	} );
+
+	document.addEventListener( 'change', function ( e ) {
+		var input = e.target.closest && e.target.closest( '[data-sc-photo]' );
+		if ( ! input ) {
+			return;
+		}
+		var box = input.closest( '.sc-rv-photos' );
+		var hidden = box.querySelector( 'input[name="photo_ids"]' );
+		var list = box.querySelector( '[data-sc-photo-list]' );
+		var ids = hidden.value ? hidden.value.split( ',' ) : [];
+		Array.prototype.slice.call( input.files, 0, 3 - ids.length ).forEach( function ( file ) {
+			var fd = new FormData();
+			fd.append( 'photo', file );
+			fetch( String( config.api || '/wp-json/sidcraft-commerce/v1/' ) + 'reviews/photo', { method: 'POST', body: fd, credentials: 'same-origin' } )
+				.then( function ( r ) {
+					return r.json().then( function ( j ) {
+						if ( ! r.ok ) {
+							throw new Error( j.message );
+						}
+						return j;
+					} );
+				} )
+				.then( function ( j ) {
+					ids.push( j.id );
+					hidden.value = ids.join( ',' );
+					var img = document.createElement( 'img' );
+					img.src = j.url;
+					img.width = 48;
+					img.height = 48;
+					img.alt = '';
+					list.appendChild( img );
+				} )
+				.catch( function ( err ) {
+					window.alert( err.message );
+				} );
+		} );
+		input.value = '';
+	} );
+} )();

@@ -80,3 +80,9 @@ html.sc-drawer-open { overflow: hidden; }
 .sc-slot { padding: 6px 10px; border: 1px solid var(--sc-border, #b5b5bd); border-radius: 6px; background: none; cursor: pointer; color: inherit; }
 .sc-slot.is-picked { background: var(--sc-accent, #2563eb); color: #fff; border-color: transparent; }
 .sc-booking__msg { color: #b32d2e; margin: 6px 0 0; }
+
+/* Q&A and review photos */
+.sc-qa { margin-top: 28px; }
+.sc-qa__item { padding: 10px 0; border-bottom: 1px solid var(--sc-border, #eee); }
+.sc-qa__form textarea { width: 100%; }
+.sc-review__photos img, .sc-rv-photos__list img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; margin-right: 6px; }
