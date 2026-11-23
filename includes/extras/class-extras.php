@@ -169,6 +169,41 @@ class Extras {
 		add_filter( 'sidcraft_commerce_settings_tabs', array( $this, 'tab' ) );
 		add_filter( 'sidcraft_commerce_settings_sections', array( $this, 'section' ) );
 		add_action( 'rest_api_init', array( $this, 'routes' ) );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'register_assets' ), 6 );
+	}
+
+	/**
+	 * Register the shared front-end script and style (printed only when a tool asks).
+	 */
+	public static function register_assets() {
+		if ( wp_script_is( 'sidccofo-extras', 'registered' ) ) {
+			return;
+		}
+		$url = SIDCRAFT_COMMERCE_URL . 'assets/';
+		wp_register_style( 'sidccofo-extras', $url . 'css/sc-extras.css', array( 'sidccofo-commerce' ), SIDCRAFT_COMMERCE_VERSION );
+		wp_register_script(
+			'sidccofo-extras',
+			$url . 'js/sc-extras.js',
+			array( 'sidccofo-cart' ),
+			SIDCRAFT_COMMERCE_VERSION,
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
+	}
+
+	/**
+	 * Ask for the shared script and style (and the cart script they build on).
+	 */
+	public static function enqueue() {
+		self::register_assets();
+		\SidcraftCommerce\Plugin::instance()->assets->require_assets(
+			array(
+				'styles'  => array( 'sidccofo-commerce', 'sidccofo-extras' ),
+				'scripts' => array( 'sidccofo-cart', 'sidccofo-extras' ),
+			)
+		);
 	}
 
 	/**

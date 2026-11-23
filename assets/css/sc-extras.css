@@ -1,0 +1,8 @@
+/* Sidcraft Commerce: store tools. Uses the same custom properties as sc-commerce.css. */
+.sc-choice { margin: 0 0 16px; padding: 12px 14px; border: 1px solid var(--sc-border, #dcdcde); border-radius: var(--sc-radius, 8px); }
+.sc-choice > legend, .sc-choice__title { font-weight: 600; padding: 0 6px; }
+.sc-choice__opt { display: flex; gap: 10px; align-items: flex-start; padding: 8px 4px; cursor: pointer; }
+.sc-choice__opt small { display: block; color: var(--sc-muted, #646970); }
+.sc-choice__opt input { margin-top: 4px; }
+[aria-busy="true"] { opacity: .7; transition: opacity .15s; }
+.sc-visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

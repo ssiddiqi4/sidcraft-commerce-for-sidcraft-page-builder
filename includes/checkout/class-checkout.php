@@ -241,6 +241,16 @@ class Checkout {
 	protected static function place( array $input, Cart $cart ) {
 		self::$input = $input;
 
+		/**
+		 * Fires first when a checkout is submitted, before anything is read.
+		 * Store tools use it to save what the buyer picked (delivery method,
+		 * date, donation…) in the cart, so totals use the submitted values.
+		 *
+		 * @param array $input Unslashed request params.
+		 * @param Cart  $cart  Cart.
+		 */
+		do_action( 'sidcraft_commerce_checkout_input', $input, $cart );
+
 		if ( $cart->is_empty() ) {
 			return new \WP_Error( 'sidccofo_empty_cart', __( 'Your cart is empty.', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'status' => 400 ) );
 		}
