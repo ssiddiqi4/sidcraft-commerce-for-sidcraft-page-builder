@@ -699,3 +699,95 @@
 		input.value = '';
 	} );
 } )();
+
+/* --------------------------------------------------------------------
+ * Social-proof popups and product personalisation.
+ * ------------------------------------------------------------------ */
+( function () {
+	'use strict';
+	var cart = window.sidccofoCart;
+	var ex = window.sidccofoExtras;
+	var config = window.sidccofoCommerce || {};
+	if ( ! cart || ! ex ) {
+		return;
+	}
+
+	ex.ready( function () {
+		var box = document.querySelector( '[data-sc-proof]' );
+		if ( box && ! sessionStorage.getItem( 'sidccofo_proof_off' ) ) {
+			cart.api( 'social/recent', 'GET', null, true ).then( function ( d ) {
+				var items = d.items || [];
+				if ( ! items.length ) {
+					return;
+				}
+				var i = Math.floor( Math.random() * items.length );
+				var every = ( parseInt( box.dataset.every, 10 ) || 12 ) * 1000;
+				function show() {
+					var it = items[ i++ % items.length ];
+					box.innerHTML = '<a href="' + ex.esc( it.url ) + '">' + ( it.image ? '<img src="' + ex.esc( it.image ) + '" alt="" width="48" height="48">' : '' ) + '<span><strong>' + ex.esc( it.name ) + '</strong>' + ( it.place ? ' · ' + ex.esc( it.place ) : '' ) + '<br>' + ex.esc( it.product ) + '<br><small>' + ex.esc( it.ago ) + '</small></span></a><button type="button" aria-label="Close" data-sc-proof-close>×</button>';
+					box.hidden = false;
+					setTimeout( function () {
+						box.hidden = true;
+					}, 6000 );
+				}
+				setTimeout( function () {
+					show();
+					setInterval( show, every );
+				}, 4000 );
+			} ).catch( function () {} );
+			box.addEventListener( 'click', function ( e ) {
+				if ( e.target.closest( '[data-sc-proof-close]' ) ) {
+					box.hidden = true;
+					sessionStorage.setItem( 'sidccofo_proof_off', '1' );
+				}
+			} );
+		}
+
+		// Personalise: text mirrors into the preview.
+		var preview = document.querySelector( '[data-sc-cust-preview]' );
+		var text = document.querySelector( 'input[name*="personal-text"]' );
+		if ( preview && text ) {
+			text.addEventListener( 'input', function () {
+				preview.textContent = text.value;
+			} );
+		}
+		var file = document.querySelector( '[data-sc-cust-file]' );
+		if ( file ) {
+			file.addEventListener( 'change', function () {
+				var field = document.querySelector( 'input[name*="personal-image"]' );
+				var status = document.querySelector( '[data-sc-cust-status]' );
+				if ( ! file.files[ 0 ] || ! field ) {
+					return;
+				}
+				var fd = new FormData();
+				fd.append( 'file', file.files[ 0 ] );
+				status.textContent = '…';
+				fetch( String( config.api || '/wp-json/sidcraft-commerce/v1/' ) + 'customiser/upload', { method: 'POST', body: fd, credentials: 'same-origin' } )
+					.then( function ( r ) {
+						return r.json().then( function ( j ) {
+							if ( ! r.ok ) {
+								throw new Error( j.message );
+							}
+							return j;
+						} );
+					} )
+					.then( function ( j ) {
+						field.value = j.url;
+						status.textContent = '✓';
+					} )
+					.catch( function ( err ) {
+						status.textContent = err.message;
+					} );
+			} );
+		}
+	} );
+
+	document.addEventListener( 'click', function ( e ) {
+		if ( e.target.closest && e.target.closest( '[data-sc-chart-open]' ) ) {
+			var d = document.querySelector( '[data-sc-chart]' );
+			if ( d && d.showModal ) {
+				d.showModal();
+			}
+		}
+	} );
+} )();
