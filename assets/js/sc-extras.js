@@ -503,3 +503,51 @@
 		} );
 	} );
 } )();
+
+/* --------------------------------------------------------------------
+ * Pay what you want (price first, then add) and quote requests.
+ * ------------------------------------------------------------------ */
+( function () {
+	'use strict';
+	var cart = window.sidccofoCart;
+	if ( ! cart ) {
+		return;
+	}
+	document.addEventListener( 'click', function ( e ) {
+		var button = e.target.closest && e.target.closest( '[data-sc-atc-form] [data-sc-add-to-cart]' );
+		if ( ! button ) {
+			return;
+		}
+		var price = button.closest( 'form' ).querySelector( '[data-sc-pwyw]' );
+		if ( ! price || button.dataset.scPwywDone ) {
+			return;
+		}
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var qty = button.closest( 'form' ).querySelector( 'input[name="quantity"]' );
+		cart.api( 'extras/cart', 'POST', { key: 'pwyw', value: price.dataset.scPwyw + ':' + price.value } ).then( function () {
+			return cart.add( price.dataset.scPwyw, qty ? parseInt( qty.value, 10 ) : 1, button );
+		} ).catch( function ( err ) {
+			var n = button.closest( 'form' ).querySelector( '.sc-atc__notice' );
+			if ( n ) {
+				n.textContent = err.message;
+			}
+		} );
+	}, true );
+
+	document.addEventListener( 'submit', function ( e ) {
+		var form = e.target.closest && e.target.closest( '[data-sc-quote]' );
+		if ( ! form ) {
+			return;
+		}
+		e.preventDefault();
+		var msg = form.querySelector( '.sc-quote__msg' );
+		cart.api( 'quote', 'POST', { product_id: form.dataset.product, name: form.name.value, email: form.email.value, message: form.message.value, website: form.website.value }, true )
+			.then( function ( d ) {
+				msg.textContent = d.message;
+				form.reset();
+			} ).catch( function ( err ) {
+				msg.textContent = err.message;
+			} );
+	} );
+} )();
