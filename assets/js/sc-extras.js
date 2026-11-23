@@ -119,3 +119,130 @@
 			} );
 	} );
 } )();
+
+/* --------------------------------------------------------------------
+ * Cart drawer and sticky add-to-cart bar.
+ * ------------------------------------------------------------------ */
+( function () {
+	'use strict';
+	var cart = window.sidccofoCart;
+	var cfg = ( window.sidccofoCommerce || {} ).drawer || {};
+	if ( ! cart ) {
+		return;
+	}
+	var lastFocus = null;
+
+	function drawer() {
+		return document.getElementById( 'sc-drawer' );
+	}
+
+	function open() {
+		var d = drawer();
+		if ( ! d ) {
+			return;
+		}
+		lastFocus = document.activeElement;
+		d.hidden = false;
+		document.documentElement.classList.add( 'sc-drawer-open' );
+		requestAnimationFrame( function () {
+			d.classList.add( 'is-open' );
+			var close = d.querySelector( '.sc-drawer__close' );
+			if ( close ) {
+				close.focus();
+			}
+		} );
+	}
+
+	function close() {
+		var d = drawer();
+		if ( ! d || d.hidden ) {
+			return;
+		}
+		d.classList.remove( 'is-open' );
+		document.documentElement.classList.remove( 'sc-drawer-open' );
+		setTimeout( function () {
+			d.hidden = true;
+		}, 200 );
+		if ( lastFocus && lastFocus.focus ) {
+			lastFocus.focus();
+		}
+	}
+
+	document.addEventListener( 'sc:added_to_cart', function () {
+		if ( cfg.open !== false ) {
+			open();
+		}
+	} );
+
+	document.addEventListener( 'click', function ( e ) {
+		var t = e.target;
+		if ( ! t.closest ) {
+			return;
+		}
+		if ( t.closest( '[data-sc-drawer-close]' ) ) {
+			close();
+			return;
+		}
+		var mini = t.closest( '.sc-mini-cart' );
+		if ( mini && cfg.mini !== false && drawer() ) {
+			e.preventDefault();
+			open();
+			return;
+		}
+		var item = t.closest( '.sc-drawer__item' );
+		if ( item ) {
+			var qty = t.closest( '[data-sc-drawer-qty]' );
+			var rm = t.closest( '[data-sc-drawer-remove]' );
+			if ( qty || rm ) {
+				var current = parseInt( ( item.querySelector( '.sc-drawer__qty' ) || {} ).textContent, 10 ) || 0;
+				var next = rm ? 0 : Math.max( 0, current + parseInt( qty.dataset.scDrawerQty, 10 ) );
+				item.setAttribute( 'aria-busy', 'true' );
+				cart.update( item.dataset.productId, next, '', item.dataset.lineKey ).catch( function () {} );
+			}
+		}
+	} );
+
+	document.addEventListener( 'keydown', function ( e ) {
+		if ( e.key === 'Escape' ) {
+			close();
+		}
+		// Keep Tab inside the open drawer.
+		var d = drawer();
+		if ( e.key === 'Tab' && d && ! d.hidden ) {
+			var f = d.querySelectorAll( 'a[href], button:not([disabled]), input' );
+			if ( f.length ) {
+				var first = f[ 0 ];
+				var last = f[ f.length - 1 ];
+				if ( e.shiftKey && document.activeElement === first ) {
+					e.preventDefault();
+					last.focus();
+				} else if ( ! e.shiftKey && document.activeElement === last ) {
+					e.preventDefault();
+					first.focus();
+				}
+			}
+		}
+	} );
+
+	/* Sticky bar: show it when the real Add to cart button is out of view. */
+	function sticky() {
+		var bar = document.querySelector( '[data-sc-sticky]' );
+		var btn = document.querySelector( '[data-sc-atc-form] [data-sc-add-to-cart]' );
+		if ( ! bar || ! btn || ! ( 'IntersectionObserver' in window ) ) {
+			return;
+		}
+		new IntersectionObserver( function ( entries ) {
+			var visible = entries[ 0 ].isIntersecting;
+			var below = entries[ 0 ].boundingClientRect.top < 0;
+			bar.hidden = visible || ! below;
+		} ).observe( btn );
+		bar.querySelector( '[data-sc-sticky-add]' ).addEventListener( 'click', function () {
+			btn.click();
+		} );
+	}
+	if ( document.readyState !== 'loading' ) {
+		sticky();
+	} else {
+		document.addEventListener( 'DOMContentLoaded', sticky );
+	}
+} )();
