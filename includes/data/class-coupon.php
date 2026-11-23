@@ -329,14 +329,12 @@ class Coupon {
 			array(
 				'post_type'        => Post_Types::ORDER,
 				'post_status'      => 'any',
-				'posts_per_page'   => $this->get_per_customer_limit() + 1,
+				'posts_per_page'   => $this->get_per_customer_limit() + 2, // One more, in case the excluded order is among them.
 				'fields'           => 'ids',
 				'no_found_rows'    => true,
 				'cache_results'    => false,
 				'update_post_meta_cache' => false,
 				'update_post_term_cache' => false,
-				'post__not_in'     => $exclude ? array( (int) $exclude ) : array(),
-				'suppress_filters' => true,
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Only when a per-customer limit is set.
 				'meta_query'       => array(
 					array(
@@ -351,6 +349,7 @@ class Coupon {
 				),
 			)
 		);
+		$ids                      = array_values( array_diff( array_map( 'intval', $ids ), array( (int) $exclude ) ) );
 		self::$usage_memo[ $key ] = count( $ids );
 		return self::$usage_memo[ $key ];
 	}

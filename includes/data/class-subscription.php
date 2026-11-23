@@ -171,7 +171,6 @@ class Subscription {
 				'post_status'      => 'any', // Status is kept in meta.
 				'posts_per_page'   => 100,
 				'fields'           => 'ids',
-				'suppress_filters' => true,
 				'meta_key'         => '_sidccofo_sub_customer', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- One customer's subscriptions.
 				'meta_value'       => (int) $user_id, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- One customer's subscriptions.
 			)
@@ -226,7 +225,6 @@ class Subscription {
 					'posts_per_page'   => (int) $limit,
 					'fields'           => 'ids',
 					'orderby'          => array( $sort => 'ASC' ),
-					'suppress_filters' => true,
 					'meta_query'       => $query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Bounded cron batch.
 				)
 			)

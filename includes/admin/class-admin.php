@@ -280,8 +280,7 @@ class Admin {
 				array(
 					'post_type'      => Post_Types::COUPON,
 					'post_status'    => 'publish',
-					'post__not_in'   => array( (int) $post_id ),
-					'posts_per_page' => 1,
+					'posts_per_page' => 2,
 					'fields'         => 'ids',
 					'no_found_rows'  => true,
 					'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Few coupons; on save only.
@@ -292,6 +291,7 @@ class Admin {
 					),
 				)
 			);
+			$other = array_values( array_diff( array_map( 'intval', (array) $other ), array( (int) $post_id ) ) );
 			if ( $other ) {
 				remove_action( 'save_post_' . Post_Types::COUPON, array( $this, 'save_coupon' ), 10 );
 				wp_update_post(
