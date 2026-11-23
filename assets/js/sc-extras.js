@@ -551,3 +551,86 @@
 			} );
 	} );
 } )();
+
+/* --------------------------------------------------------------------
+ * Bookings: date picker, free slots, nights.
+ * ------------------------------------------------------------------ */
+( function () {
+	'use strict';
+	var cart = window.sidccofoCart;
+	var ex = window.sidccofoExtras;
+	if ( ! cart || ! ex ) {
+		return;
+	}
+	function pick( box, value ) {
+		var msg = box.querySelector( '[data-sc-book-msg]' );
+		return cart.api( 'extras/cart', 'POST', { key: 'booking', value: box.dataset.scBooking + '|' + value } ).then( function () {
+			msg.textContent = '';
+			return true;
+		} ).catch( function ( err ) {
+			msg.textContent = err.message;
+			return false;
+		} );
+	}
+	ex.ready( function () {
+		document.querySelectorAll( '[data-sc-booking]' ).forEach( function ( box ) {
+			var date = box.querySelector( '[data-sc-book-date]' );
+			var slots = box.querySelector( '[data-sc-book-slots]' );
+			if ( date ) {
+				date.addEventListener( 'change', function () {
+					slots.innerHTML = '';
+					if ( ! date.value ) {
+						return;
+					}
+					cart.api( 'bookings/slots?product=' + box.dataset.scBooking + '&date=' + date.value, 'GET', null, true ).then( function ( d ) {
+						if ( ! d.slots.length ) {
+							slots.textContent = 'No free times on this day.';
+						}
+						d.slots.forEach( function ( s ) {
+							var b = document.createElement( 'button' );
+							b.type = 'button';
+							b.className = 'sc-slot';
+							b.textContent = s.time + ' – ' + s.end;
+							b.addEventListener( 'click', function () {
+								pick( box, date.value + '|' + s.time ).then( function ( ok ) {
+									if ( ok ) {
+										slots.querySelectorAll( '.sc-slot' ).forEach( function ( x ) {
+											x.classList.remove( 'is-picked' );
+										} );
+										b.classList.add( 'is-picked' );
+									}
+								} );
+							} );
+							slots.appendChild( b );
+						} );
+					} ).catch( function () {} );
+				} );
+			}
+			var from = box.querySelector( '[data-sc-book-from]' );
+			var to = box.querySelector( '[data-sc-book-to]' );
+			if ( from && to ) {
+				var change = function () {
+					if ( ! from.value || ! to.value ) {
+						return;
+					}
+					var nights = Math.round( ( Date.parse( to.value ) - Date.parse( from.value ) ) / 86400000 );
+					var out = box.querySelector( '[data-sc-book-nights]' );
+					if ( nights < 1 ) {
+						out.textContent = 'Check-out must be after check-in.';
+						return;
+					}
+					pick( box, from.value + '|' + to.value ).then( function ( ok ) {
+						out.textContent = ok ? nights + ' night' + ( nights > 1 ? 's' : '' ) : '';
+						var q = box.closest( 'form' ) && box.closest( 'form' ).querySelector( 'input[name="quantity"]' );
+						if ( ok && q ) {
+							q.value = nights;
+							q.readOnly = true;
+						}
+					} );
+				};
+				from.addEventListener( 'change', change );
+				to.addEventListener( 'change', change );
+			}
+		} );
+	} );
+} )();

@@ -72,3 +72,11 @@ html.sc-drawer-open { overflow: hidden; }
 .sc-bundle__items li { display: flex; gap: 10px; justify-content: space-between; }
 .sc-bundle__sum { font-weight: 600; margin: 0 0 10px; }
 .sc-bump { margin: 0 0 16px; padding: 12px 14px; border: 2px dashed var(--sc-accent, #2563eb); border-radius: var(--sc-radius, 8px); background: rgba(37,99,235,.05); }
+
+/* Bookings */
+.sc-booking { margin: 0 0 14px; padding: 12px 14px; border: 1px solid var(--sc-border, #dcdcde); border-radius: var(--sc-radius, 8px); }
+.sc-booking label { display: inline-block; margin-right: 10px; }
+.sc-booking__slots { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.sc-slot { padding: 6px 10px; border: 1px solid var(--sc-border, #b5b5bd); border-radius: 6px; background: none; cursor: pointer; color: inherit; }
+.sc-slot.is-picked { background: var(--sc-accent, #2563eb); color: #fff; border-color: transparent; }
+.sc-booking__msg { color: #b32d2e; margin: 6px 0 0; }
