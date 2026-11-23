@@ -462,3 +462,44 @@
 		} );
 	} );
 } )();
+
+/* --------------------------------------------------------------------
+ * Checkout field conditions: show a field only when another has a value.
+ * ------------------------------------------------------------------ */
+( function () {
+	'use strict';
+	var rules = ( window.sidccofoCommerce || {} ).fieldRules;
+	var ex = window.sidccofoExtras;
+	if ( ! rules || ! ex ) {
+		return;
+	}
+	function value( form, key ) {
+		var el = form.querySelector( '[name="' + key + '"]:checked' ) || form.querySelector( '[name="' + key + '"]' );
+		return el ? el.value : '';
+	}
+	function apply( form ) {
+		Object.keys( rules ).forEach( function ( key ) {
+			var parts = String( rules[ key ] ).split( '=' );
+			var field = form.querySelector( '#sc-' + key );
+			if ( ! field ) {
+				return;
+			}
+			var wrap = field.closest( '.sc-field' );
+			var show = value( form, parts[ 0 ].trim() ) === ( parts[ 1 ] || '' ).trim();
+			if ( wrap ) {
+				wrap.hidden = ! show;
+			}
+			field.disabled = ! show;
+		} );
+	}
+	ex.ready( function () {
+		var form = document.querySelector( '[data-sc-checkout]' );
+		if ( ! form ) {
+			return;
+		}
+		apply( form );
+		form.addEventListener( 'change', function () {
+			apply( form );
+		} );
+	} );
+} )();

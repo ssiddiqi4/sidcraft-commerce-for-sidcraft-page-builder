@@ -370,7 +370,29 @@ class Cart {
 	 *
 	 * @return array[]
 	 */
+	/**
+	 * True while the cart is pricing its lines (so a price filter can tell the
+	 * cart from a product page: pay-what-you-want prices apply only here).
+	 *
+	 * @var bool
+	 */
+	public static $building = false;
+
 	protected function build_items() {
+		self::$building = true;
+		try {
+			return $this->build_items_inner();
+		} finally {
+			self::$building = false;
+		}
+	}
+
+	/**
+	 * See build_items().
+	 *
+	 * @return array
+	 */
+	protected function build_items_inner() {
 		$lines = array();
 		$this->prime_products();
 		// Quantity discounts count every unit of a product that is really in
