@@ -115,6 +115,7 @@ class Order {
 			'_sidccofo_coupon_code'    => (string) ( $args['coupon_code'] ?? '' ),
 			'_sidccofo_shipping'       => (string) $args['shipping'],
 			'_sidccofo_gift_card_total' => (string) ( $args['gift_card_total'] ?? 0 ),
+			'_sidccofo_fees'           => array_values( (array) ( $args['fees'] ?? array() ) ),
 			'_sidccofo_total'          => (string) $args['total'],
 			'_sidccofo_tax'            => (string) ( $args['tax'] ?? 0 ),
 			'_sidccofo_tax_label'      => (string) ( $args['tax_label'] ?? '' ),
@@ -289,6 +290,15 @@ class Order {
 	 */
 	public function get_coupon_code() {
 		return (string) $this->meta( '_sidccofo_coupon_code' );
+	}
+
+	/**
+	 * Extra charges and credits on this order (see Cart::get_fees()).
+	 *
+	 * @return array[] Each: id, label, amount.
+	 */
+	public function get_fees() {
+		return array_values( array_filter( $this->meta_array( '_sidccofo_fees' ), 'is_array' ) );
 	}
 
 	/**

@@ -986,7 +986,7 @@ class Cart {
 	 * @return array [ shipping (quote), tax (Tax::calculate result) ].
 	 */
 	protected function totals() {
-		$key = md5( wp_json_encode( array( $this->raw(), $this->gift_raw(), $this->session->get( 'location', array() ), $this->get_coupon_code(), \SidcraftCommerce\currency() ) ) );
+		$key = md5( wp_json_encode( array( $this->raw(), $this->gift_raw(), $this->session->get( 'location', array() ), $this->get_coupon_code(), \SidcraftCommerce\currency(), $this->session->get( 'extras', array() ) ) ) );
 		if ( null !== $this->totals && $this->totals['key'] === $key ) {
 			return $this->totals;
 		}
@@ -1098,8 +1098,73 @@ class Cart {
 	 * @return float
 	 */
 	public function get_total_before_gift_cards() {
-		$tax = $this->prices_include_tax() ? 0.0 : $this->get_tax();
-		return round_amount( apply_filters( 'sidcraft_commerce_cart_total', max( 0.0, $this->get_subtotal() - $this->get_discount() ) + $this->get_shipping() + $tax, $this ) );
+		$tax  = $this->prices_include_tax() ? 0.0 : $this->get_tax();
+		$fees = array_sum( wp_list_pluck( $this->get_fees(), 'amount' ) );
+		return round_amount( max( 0.0, apply_filters( 'sidcraft_commerce_cart_total', max( 0.0, $this->get_subtotal() - $this->get_discount() ) + $this->get_shipping() + $tax, $this ) + $fees ) );
+	}
+
+	/**
+	 * Extra charges and credits added by features and add-ons (a delivery
+	 * slot, a donation, a deposit's "due later" credit). Each row is
+	 * [ id, label, amount ] in the shopper's currency; a negative amount is a
+	 * credit. Fees are not taxed.
+	 *
+	 * @return array[]
+	 */
+	public function get_fees() {
+		$out = array();
+		/**
+		 * Add fees to the cart.
+		 *
+		 *     add_filter( 'sidcraft_commerce_cart_fees', function ( $fees, $cart ) {
+		 *         $fees[] = array( 'id' => 'wrap', 'label' => 'Gift wrap', 'amount' => 3.5 );
+		 *         return $fees;
+		 *     }, 10, 2 );
+		 *
+		 * @param array $fees Fees.
+		 * @param Cart  $cart Cart.
+		 */
+		foreach ( (array) apply_filters( 'sidcraft_commerce_cart_fees', array(), $this ) as $fee ) {
+			if ( empty( $fee['id'] ) || ! isset( $fee['amount'] ) || 0.0 === round_amount( (float) $fee['amount'] ) ) {
+				continue;
+			}
+			$out[] = array(
+				'id'     => sanitize_key( $fee['id'] ),
+				'label'  => sanitize_text_field( (string) ( $fee['label'] ?? $fee['id'] ) ),
+				'amount' => round_amount( (float) $fee['amount'] ),
+			);
+		}
+		return $out;
+	}
+
+	/**
+	 * Read a value an extra feature stored in the cart session.
+	 *
+	 * @param string $key      Key.
+	 * @param mixed  $fallback Default.
+	 * @return mixed
+	 */
+	public function extra( $key, $fallback = '' ) {
+		$all = (array) $this->session->get( 'extras', array() );
+		return array_key_exists( $key, $all ) ? $all[ $key ] : $fallback;
+	}
+
+	/**
+	 * Store a value for an extra feature (empty removes it).
+	 *
+	 * @param string $key   Key.
+	 * @param mixed  $value Value (scalar or array).
+	 */
+	public function set_extra( $key, $value ) {
+		$all = (array) $this->session->get( 'extras', array() );
+		if ( '' === $value || null === $value || array() === $value ) {
+			unset( $all[ sanitize_key( $key ) ] );
+		} else {
+			$all[ sanitize_key( $key ) ] = $value;
+		}
+		$this->session->set( 'extras', $all );
+		$this->totals = null;
+		$this->items  = null;
 	}
 
 	/*

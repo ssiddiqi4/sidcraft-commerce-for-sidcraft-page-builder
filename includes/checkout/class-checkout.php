@@ -415,6 +415,7 @@ class Checkout {
 				'shipping'       => $cart->get_shipping(),
 				'total'           => $cart->get_total(),
 				'gift_card_total' => $cart->get_gift_card_total(),
+				'fees'           => $cart->get_fees(),
 				'tax'            => $cart->get_tax(),
 				'tax_label'      => $cart->get_tax_details()['label'],
 				'tax_rate'       => $cart->get_tax_details()['rate'],

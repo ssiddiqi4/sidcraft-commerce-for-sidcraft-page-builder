@@ -108,6 +108,7 @@ final class Plugin {
 		( new Integrations\Sidcraft_Bridge( $this->units ) )->hooks();
 		( new Integrations\Builder_Products() )->hooks();
 		( new Events\Events() )->hooks();
+		( new Extras\Extras() )->boot();
 
 		if ( Modules::enabled( 'marketing' ) ) {
 			( new Marketing\Marketing() )->hooks();
@@ -251,6 +252,7 @@ final class Plugin {
 			'includes/admin/class-subscriptions-admin.php',
 			'includes/admin/class-marketing-admin.php',
 			'includes/admin/class-live-chat-admin.php',
+			'includes/extras/class-extras.php',
 		);
 		foreach ( $files as $file ) {
 			require_once SIDCRAFT_COMMERCE_PATH . $file;

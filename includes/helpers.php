@@ -619,6 +619,16 @@ function totals_rows_for( $source ) {
 		);
 	}
 
+	// Fees and credits (delivery slot, donation, deposit "due later"…).
+	foreach ( $source->get_fees() as $fee ) {
+		$rows[] = array(
+			'key'   => 'fee_' . $fee['id'],
+			'label' => $fee['label'],
+			'value' => format_price( $fee['amount'] ),
+			'class' => $fee['amount'] < 0 ? 'sc-totals__discount' : '',
+		);
+	}
+
 	if ( $is_cart ) {
 		$details = $source->get_tax_details();
 		$tax     = (float) $details['total'];
