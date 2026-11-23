@@ -145,7 +145,7 @@ class Dropship extends Tool {
 		$msg  = '';
 		$left = (array) get_post_meta( $id, '_sidccofo_ds_pending', true );
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- The private token is the credential.
-		if ( 'POST' === ( $_SERVER['REQUEST_METHOD'] ?? '' ) && in_array( $slug, $left, true ) ) {
+		if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) && in_array( $slug, $left, true ) ) {
 			// phpcs:disable WordPress.Security.NonceVerification.Missing
 			$left_after = array_values( array_diff( $left, array( $slug ) ) );
 			$result     = Shipments::add(

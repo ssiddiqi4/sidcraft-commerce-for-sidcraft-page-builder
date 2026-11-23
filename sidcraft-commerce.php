@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Sidcraft Commerce for Sidcraft Page Builder
  * Description:       An online store for Sidcraft Page Builder: products, digital downloads, event tickets, cart, checkout, coupons, reviews and PayPal payments. No WooCommerce needed.
- * Version:           2.0.1
+ * Version:           2.1.0
  * Requires at least: 6.3
  * Requires PHP:      7.4
  * Requires Plugins:  sidcraft-page-builder
@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
  * Constants. Everything else lives in /includes and loads only after the
  * Sidcraft check passes, so a missing builder never causes a fatal error.
  */
-define( 'SIDCRAFT_COMMERCE_VERSION', '2.0.1' );
+define( 'SIDCRAFT_COMMERCE_VERSION', '2.1.0' );
 define( 'SIDCRAFT_COMMERCE_FILE', __FILE__ );
 define( 'SIDCRAFT_COMMERCE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SIDCRAFT_COMMERCE_URL', plugin_dir_url( __FILE__ ) );

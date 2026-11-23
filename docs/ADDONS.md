@@ -253,3 +253,12 @@ tells them apart.
 | `sidcraft_commerce_checkout_after_fields( $cart )` | Print checkout markup after the customer's details. |
 
 Templates live in `templates/events/` and `templates/emails/tickets.php`.
+
+## Store tools hooks (2.1.0)
+
+- `sidcraft_commerce_cart_fees` (filter): add a charge or credit to the cart:
+  `$fees[] = array( 'id' => 'wrap', 'label' => 'Gift wrap', 'amount' => 3.5 );` (negative = credit). Fees are saved on the order (`$order->get_fees()`), shown in totals and are not taxed.
+- `sidcraft_commerce_extra_keys` (filter): whitelist a key for `POST /extras/cart`; value `key => callback( $value, $cart )` returns the sanitized value to keep in the cart session (read it with `$cart->extra( 'key' )`) or a `WP_Error`. Add `data-sc-extra="key"` to an input inside the checkout or cart and the totals refresh on change.
+- `sidcraft_commerce_checkout_input` (action): fires first when a checkout is submitted, with the input and the cart.
+- `sidcraft_commerce_quantity_rules`, `sidcraft_commerce_button_text` (filters): the quantity box limits and Add to cart text of a product.
+- `sidcraft_commerce_tool_enabled` (filter): force a store tool on or off.

@@ -42,7 +42,7 @@ function sidcraft_commerce_uninstall() {
 	if ( defined( 'SIDCRAFT_COMMERCE_REMOVE_ALL_DATA' ) && SIDCRAFT_COMMERCE_REMOVE_ALL_DATA ) {
 		// The mailing list is the store's own record of who agreed to emails: kept unless everything goes.
 		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $wpdb->prefix . 'sidccofo_subscribers' ) );
-		foreach ( array( 'sidccofo_product', 'sidccofo_order', 'sidccofo_coupon', 'sidccofo_giftcard', 'sidccofo_sub', 'sidccofo_event', 'sidccofo_ticket', 'sidccofo_campaign' ) as $type ) {
+		foreach ( array( 'sidccofo_product', 'sidccofo_order', 'sidccofo_coupon', 'sidccofo_giftcard', 'sidccofo_sub', 'sidccofo_event', 'sidccofo_ticket', 'sidccofo_campaign', 'sidccofo_license', 'sidccofo_booking', 'sidccofo_quote' ) as $type ) {
 			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s", $type ) );
 			foreach ( $ids as $id ) {
 				wp_delete_post( (int) $id, true );
@@ -64,6 +64,13 @@ function sidcraft_commerce_uninstall() {
 			}
 			rmdir( $dir ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
 		}
+		foreach ( array( 'sidcraft_commerce_api_keys', 'sidcraft_commerce_webhooks', 'sidcraft_commerce_webhook_log', 'sidcraft_commerce_invoice_seq', 'sidccofo_pending_memberships' ) as $option ) {
+			delete_option( $option );
+		}
+		foreach ( array( 'sidccofo_wishlist', 'sidccofo_memberships', 'sidccofo_vendor_ledger', 'sidccofo_tax_exempt' ) as $meta_key ) {
+			delete_metadata( 'user', 0, $meta_key, '', true );
+		}
+		remove_role( 'sidccofo_vendor' );
 		foreach ( (array) get_option( 'sidcraft_commerce_pages', array() ) as $page_id ) {
 			wp_delete_post( (int) $page_id, true );
 		}
