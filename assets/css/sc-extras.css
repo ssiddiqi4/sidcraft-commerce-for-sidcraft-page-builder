@@ -64,3 +64,11 @@ html.sc-drawer-open { overflow: hidden; }
 .sc-compare__table thead img { width: 90px; height: 90px; object-fit: cover; display: block; border-radius: 8px; }
 .sc-link { background: none; border: 0; padding: 0; color: var(--sc-accent, #2563eb); cursor: pointer; text-decoration: underline; font: inherit; }
 .sc-list__title { margin: 0 0 12px; }
+
+/* Bundles and order bump */
+.sc-bundle { margin-top: 18px; padding: 14px 16px; border: 1px dashed var(--sc-border, #b5b5bd); border-radius: var(--sc-radius, 8px); }
+.sc-bundle__title { margin: 0 0 8px; font-size: 16px; }
+.sc-bundle__items { margin: 0 0 8px; padding-left: 18px; }
+.sc-bundle__items li { display: flex; gap: 10px; justify-content: space-between; }
+.sc-bundle__sum { font-weight: 600; margin: 0 0 10px; }
+.sc-bump { margin: 0 0 16px; padding: 12px 14px; border: 2px dashed var(--sc-accent, #2563eb); border-radius: var(--sc-radius, 8px); background: rgba(37,99,235,.05); }

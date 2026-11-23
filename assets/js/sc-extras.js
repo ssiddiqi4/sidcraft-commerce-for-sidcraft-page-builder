@@ -436,3 +436,29 @@
 		}
 	} );
 } )();
+
+/* --------------------------------------------------------------------
+ * Bundles: add every product of a set, one after the other.
+ * ------------------------------------------------------------------ */
+( function () {
+	'use strict';
+	var cart = window.sidccofoCart;
+	if ( ! cart ) {
+		return;
+	}
+	document.addEventListener( 'click', function ( e ) {
+		var b = e.target.closest && e.target.closest( '[data-sc-bundle]' );
+		if ( ! b || b.getAttribute( 'aria-busy' ) === 'true' ) {
+			return;
+		}
+		var ids = b.dataset.scBundle.split( ',' );
+		b.setAttribute( 'aria-busy', 'true' );
+		ids.reduce( function ( p, id ) {
+			return p.then( function () {
+				return cart.add( id, 1, null );
+			} );
+		}, Promise.resolve() ).finally( function () {
+			b.removeAttribute( 'aria-busy' );
+		} );
+	} );
+} )();
