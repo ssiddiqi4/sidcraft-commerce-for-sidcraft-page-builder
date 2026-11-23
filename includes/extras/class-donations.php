@@ -34,15 +34,14 @@ class Donations extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'donations',
-			__( 'Donations, pay what you want and quotes', $d ),
+			__( 'Donations, pay what you want and quotes', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'don_on'      => array( __( 'Donation box at checkout', $d ), 'checkbox' ),
-				'don_label'   => array( __( 'Donation text', $d ), 'text', __( 'For example: Add a donation to our charity.', $d ) ),
-				'don_presets' => array( __( 'Preset amounts', $d ), 'text', __( 'Separated by commas, in the store currency. For example 5, 10, 25.', $d ) ),
-				'quote_to'    => array( __( 'Send quote requests to', $d ), 'email', __( 'Empty = the site admin email.', $d ) ),
+				'don_on'      => array( __( 'Donation box at checkout', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox' ),
+				'don_label'   => array( __( 'Donation text', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'For example: Add a donation to our charity.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'don_presets' => array( __( 'Preset amounts', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Separated by commas, in the store currency. For example 5, 10, 25.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'quote_to'    => array( __( 'Send quote requests to', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'email', __( 'Empty = the site admin email.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 		add_action( 'init', array( $this, 'register_quote_type' ) );
@@ -228,15 +227,14 @@ class Donations extends Tool {
 	 * @param \WP_Post $post Product.
 	 */
 	public function render_box( $post ) {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		wp_nonce_field( 'sidccofo_price_opts', '_sidccofo_po' );
 		$m = static function ( $k ) use ( $post ) {
 			return (string) get_post_meta( $post->ID, '_sidccofo_' . $k, true );
 		};
-		echo '<p><label><input type="checkbox" name="sidccofo_pwyw" value="1" ' . checked( '1' === $m( 'pwyw' ), true, false ) . '> ' . esc_html__( 'Pay what you want', $d ) . '</label></p>';
-		echo '<p><label>' . esc_html__( 'Lowest price', $d ) . '<br><input type="number" step="0.01" min="0" class="widefat" name="sidccofo_pwyw_min" value="' . esc_attr( $m( 'pwyw_min' ) ) . '"></label></p>';
-		echo '<p><label>' . esc_html__( 'Suggested price', $d ) . '<br><input type="number" step="0.01" min="0" class="widefat" name="sidccofo_pwyw_suggest" value="' . esc_attr( $m( 'pwyw_suggest' ) ) . '"></label></p><hr>';
-		echo '<p><label><input type="checkbox" name="sidccofo_quote_only" value="1" ' . checked( '1' === $m( 'quote_only' ), true, false ) . '> ' . esc_html__( 'Request a quote instead of buying', $d ) . '</label></p>';
+		echo '<p><label><input type="checkbox" name="sidccofo_pwyw" value="1" ' . checked( '1' === $m( 'pwyw' ), true, false ) . '> ' . esc_html__( 'Pay what you want', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</label></p>';
+		echo '<p><label>' . esc_html__( 'Lowest price', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input type="number" step="0.01" min="0" class="widefat" name="sidccofo_pwyw_min" value="' . esc_attr( $m( 'pwyw_min' ) ) . '"></label></p>';
+		echo '<p><label>' . esc_html__( 'Suggested price', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input type="number" step="0.01" min="0" class="widefat" name="sidccofo_pwyw_suggest" value="' . esc_attr( $m( 'pwyw_suggest' ) ) . '"></label></p><hr>';
+		echo '<p><label><input type="checkbox" name="sidccofo_quote_only" value="1" ' . checked( '1' === $m( 'quote_only' ), true, false ) . '> ' . esc_html__( 'Request a quote instead of buying', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</label></p>';
 	}
 
 	/**
@@ -287,8 +285,7 @@ class Donations extends Tool {
 			return $html;
 		}
 		Extras::enqueue();
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
-		return '<div class="sc-unit sc-unit--sidccofo-add-to-cart"><form class="sc-quote" data-sc-quote data-product="' . esc_attr( $p->get_id() ) . '"><h3>' . esc_html__( 'Request a quote', $d ) . '</h3><p><label>' . esc_html__( 'Your name', $d ) . '<br><input name="name" required autocomplete="name"></label></p><p><label>' . esc_html__( 'Email', $d ) . '<br><input type="email" name="email" required autocomplete="email"></label></p><p><label>' . esc_html__( 'Quantity or details', $d ) . '<br><textarea name="message" rows="3" required></textarea></label></p><input type="text" name="website" tabindex="-1" autocomplete="off" class="sc-visually-hidden" aria-hidden="true"><button class="sc-btn sc-btn--primary" type="submit">' . esc_html__( 'Send request', $d ) . '</button><p class="sc-quote__msg" role="status" aria-live="polite"></p></form></div>';
+		return '<div class="sc-unit sc-unit--sidccofo-add-to-cart"><form class="sc-quote" data-sc-quote data-product="' . esc_attr( $p->get_id() ) . '"><h3>' . esc_html__( 'Request a quote', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h3><p><label>' . esc_html__( 'Your name', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input name="name" required autocomplete="name"></label></p><p><label>' . esc_html__( 'Email', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input type="email" name="email" required autocomplete="email"></label></p><p><label>' . esc_html__( 'Quantity or details', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><textarea name="message" rows="3" required></textarea></label></p><input type="text" name="website" tabindex="-1" autocomplete="off" class="sc-visually-hidden" aria-hidden="true"><button class="sc-btn sc-btn--primary" type="submit">' . esc_html__( 'Send request', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button><p class="sc-quote__msg" role="status" aria-live="polite"></p></form></div>';
 	}
 
 	/**

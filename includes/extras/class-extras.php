@@ -74,62 +74,61 @@ class Extras {
 	 * @return array
 	 */
 	public static function labels() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		return array(
-			'offline' => array( __( 'Bank transfer, cheque and cash on delivery', $d ),
-				__( 'Payment methods that take no card: the order waits on hold (or processing for cash on delivery) until you mark it paid.', $d ) ),
-			'shipping' => array( __( 'Local pickup and rate tables', $d ),
-				__( 'Local pickup, rates by order total or by weight, and an extra handling fee, on top of the shipping zones.', $d ) ),
-			'vat' => array( __( 'EU VAT numbers and tax-exempt customers', $d ),
-				__( 'Checks VAT numbers (format, and the EU VIES service when your server can reach it), removes tax for valid business buyers in other EU countries, exempts customer groups, and reports tax collected by country.', $d ) ),
-			'invoices' => array( __( 'PDF invoices and packing slips', $d ),
-				__( 'Numbered PDF invoices and packing slips, attached to order emails and downloadable by you and your customers.', $d ) ),
-			'csv' => array( __( 'CSV import and export', $d ),
-				__( 'Import and export products (and their stock) as CSV; export orders and customers.', $d ) ),
-			'reports' => array( __( 'Sales reports', $d ),
-				__( 'Sales over time, best-sellers, coupons, refunds, revenue by country and customer value, under Store → Reports.', $d ) ),
-			'stock' => array( __( 'Stock alerts, backorders and pre-orders', $d ),
-				__( 'Low-stock emails to you, “Notify me when back in stock”, backorders, pre-orders and minimum, maximum and step quantities.', $d ) ),
-			'drawer' => array( __( 'Cart drawer and sticky add-to-cart', $d ),
-				__( 'A slide-out cart that opens after adding a product, and a bar that keeps the Add to cart button in view on product pages.', $d ) ),
-			'search' => array( __( 'Live search and product filters', $d ),
-				__( 'A search box that shows products as you type, and filters by price, category, tag, rating and stock for product grids.', $d ) ),
-			'wishlist' => array( __( 'Wishlist, compare and recently viewed', $d ),
-				__( 'Heart buttons and a wishlist page, side-by-side product comparison, and a “recently viewed” list.', $d ) ),
-			'bundles' => array( __( 'Bundles, frequently bought together and order bumps', $d ),
-				__( 'Fixed bundles at a bundle price, “bought together” offers on product pages, and a one-tick extra at checkout.', $d ) ),
-			'bookings' => array( __( 'Bookings and appointments', $d ),
-				__( 'Services and rentals sold by the time slot or by the night, with capacity, opening hours and calendar files.', $d ) ),
-			'memberships' => array( __( 'Memberships and content restriction', $d ),
-				__( 'Plans that unlock pages and posts for a period or for as long as a subscription runs, with drip release.', $d ) ),
-			'licenses' => array( __( 'Software licence keys', $d ),
-				__( 'Issue a licence key per purchase, with activation limits and a small API your software can call to check it.', $d ) ),
-			'fields' => array( __( 'Checkout field editor', $d ),
-				__( 'Add, rename, reorder and hide checkout fields, with conditions, from Settings.', $d ) ),
-			'deposits' => array( __( 'Deposits and partial payments', $d ),
-				__( 'Take part of the price now and the balance later, by product or for everything.', $d ) ),
-			'donations' => array( __( 'Pay what you want, donations and quote requests', $d ),
-				__( 'Products where the buyer picks the price, a donation box at checkout, and “Request a quote” instead of a price.', $d ) ),
-			'slots' => array( __( 'Delivery date and time slots', $d ),
-				__( 'Let customers pick a delivery or pickup date and time, with cut-off times, blocked days and a capacity per slot.', $d ) ),
-			'tracking' => array( __( 'Analytics events, product feeds and schema', $d ),
-				__( 'GA4, Meta and TikTok purchase and cart events, Google Merchant and Facebook product feeds, and product structured data.', $d ) ),
-			'api' => array( __( 'REST API and webhooks', $d ),
-				__( 'Read-only and write REST routes for products, orders and customers with API keys, plus outgoing webhooks for Zapier, Make and n8n.', $d ) ),
-			'social' => array( __( 'Social-proof popups', $d ),
-				__( '“Maria from Texas just bought…” popups built from real recent orders, with names shortened for privacy.', $d ) ),
-			'questions' => array( __( 'Product questions and photo reviews', $d ),
-				__( 'Questions and answers on product pages, and photos with reviews.', $d ) ),
-			'customiser' => array( __( 'Product personalisation', $d ),
-				__( 'Text, image upload and size charts on a product, with a live preview of the text, for engraving, printing and gifts.', $d ) ),
-			'dropship' => array( __( 'Suppliers and dropshipping', $d ),
-				__( 'Assign products to suppliers, email each supplier their lines of an order, and record their tracking numbers.', $d ) ),
-			'vendors' => array( __( 'Multi-vendor marketplace', $d ),
-				__( 'Vendors list their own products, see their own orders, and are paid a commission you set.', $d ) ),
-			'pos' => array( __( 'Point of sale', $d ),
-				__( 'A fast till screen in the admin for in-person sales, with barcode or SKU scanning and cash or card-on-terminal payments.', $d ) ),
-			'subs_plus' => array( __( 'Subscription extras', $d ),
-				__( 'Customers can pause and switch plans, failed renewals are retried with reminder emails, and renewals can be prorated.', $d ) ),
+			'offline' => array( __( 'Bank transfer, cheque and cash on delivery', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Payment methods that take no card: the order waits on hold (or processing for cash on delivery) until you mark it paid.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'shipping' => array( __( 'Local pickup and rate tables', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Local pickup, rates by order total or by weight, and an extra handling fee, on top of the shipping zones.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'vat' => array( __( 'EU VAT numbers and tax-exempt customers', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Checks VAT numbers (format, and the EU VIES service when your server can reach it), removes tax for valid business buyers in other EU countries, exempts customer groups, and reports tax collected by country.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'invoices' => array( __( 'PDF invoices and packing slips', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Numbered PDF invoices and packing slips, attached to order emails and downloadable by you and your customers.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'csv' => array( __( 'CSV import and export', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Import and export products (and their stock) as CSV; export orders and customers.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'reports' => array( __( 'Sales reports', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Sales over time, best-sellers, coupons, refunds, revenue by country and customer value, under Store → Reports.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'stock' => array( __( 'Stock alerts, backorders and pre-orders', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Low-stock emails to you, “Notify me when back in stock”, backorders, pre-orders and minimum, maximum and step quantities.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'drawer' => array( __( 'Cart drawer and sticky add-to-cart', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'A slide-out cart that opens after adding a product, and a bar that keeps the Add to cart button in view on product pages.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'search' => array( __( 'Live search and product filters', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'A search box that shows products as you type, and filters by price, category, tag, rating and stock for product grids.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'wishlist' => array( __( 'Wishlist, compare and recently viewed', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Heart buttons and a wishlist page, side-by-side product comparison, and a “recently viewed” list.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'bundles' => array( __( 'Bundles, frequently bought together and order bumps', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Fixed bundles at a bundle price, “bought together” offers on product pages, and a one-tick extra at checkout.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'bookings' => array( __( 'Bookings and appointments', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Services and rentals sold by the time slot or by the night, with capacity, opening hours and calendar files.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'memberships' => array( __( 'Memberships and content restriction', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Plans that unlock pages and posts for a period or for as long as a subscription runs, with drip release.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'licenses' => array( __( 'Software licence keys', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Issue a licence key per purchase, with activation limits and a small API your software can call to check it.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'fields' => array( __( 'Checkout field editor', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Add, rename, reorder and hide checkout fields, with conditions, from Settings.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'deposits' => array( __( 'Deposits and partial payments', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Take part of the price now and the balance later, by product or for everything.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'donations' => array( __( 'Pay what you want, donations and quote requests', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Products where the buyer picks the price, a donation box at checkout, and “Request a quote” instead of a price.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'slots' => array( __( 'Delivery date and time slots', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Let customers pick a delivery or pickup date and time, with cut-off times, blocked days and a capacity per slot.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'tracking' => array( __( 'Analytics events, product feeds and schema', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'GA4, Meta and TikTok purchase and cart events, Google Merchant and Facebook product feeds, and product structured data.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'api' => array( __( 'REST API and webhooks', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Read-only and write REST routes for products, orders and customers with API keys, plus outgoing webhooks for Zapier, Make and n8n.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'social' => array( __( 'Social-proof popups', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( '“Maria from Texas just bought…” popups built from real recent orders, with names shortened for privacy.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'questions' => array( __( 'Product questions and photo reviews', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Questions and answers on product pages, and photos with reviews.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'customiser' => array( __( 'Product personalisation', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Text, image upload and size charts on a product, with a live preview of the text, for engraving, printing and gifts.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'dropship' => array( __( 'Suppliers and dropshipping', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Assign products to suppliers, email each supplier their lines of an order, and record their tracking numbers.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'vendors' => array( __( 'Multi-vendor marketplace', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Vendors list their own products, see their own orders, and are paid a commission you set.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'pos' => array( __( 'Point of sale', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'A fast till screen in the admin for in-person sales, with barcode or SKU scanning and cash or card-on-terminal payments.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+			'subs_plus' => array( __( 'Subscription extras', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+				__( 'Customers can pause and switch plans, failed renewals are retried with reminder emails, and renewals can be prorated.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 		);
 	}
 
@@ -151,22 +150,8 @@ class Extras {
 	 * Load and hook every tool that is on.
 	 */
 	public function boot() {
-		require_once __DIR__ . '/class-tool.php';
-		require_once __DIR__ . '/class-simple-unit.php';
-		foreach ( self::defs() as $id => $tool ) {
-			if ( ! self::on( $id ) ) {
-				continue;
-			}
-			$file = __DIR__ . '/class-' . strtolower( str_replace( '_', '-', $tool[0] ) ) . '.php';
-			if ( ! is_readable( $file ) ) {
-				continue;
-			}
-			require_once $file;
-			$class = __NAMESPACE__ . '\\' . $tool[0];
-			if ( class_exists( $class ) ) {
-				( new $class() )->hooks();
-			}
-		}
+		// Tools build translated settings text, so they load on init (WordPress 6.7+ warns about translations earlier).
+		add_action( 'init', array( $this, 'load_tools' ), 1 );
 		add_filter( 'sidcraft_commerce_settings_tabs', array( $this, 'tab' ) );
 		add_filter( 'sidcraft_commerce_settings_sections', array( $this, 'section' ) );
 		add_action( 'rest_api_init', array( $this, 'routes' ) );
@@ -205,6 +190,28 @@ class Extras {
 				'scripts' => array( 'sidccofo-cart', 'sidccofo-extras' ),
 			)
 		);
+	}
+
+	/**
+	 * Load and hook every tool that is on.
+	 */
+	public function load_tools() {
+		require_once __DIR__ . '/class-tool.php';
+		require_once __DIR__ . '/class-simple-unit.php';
+		foreach ( self::defs() as $id => $tool ) {
+			if ( ! self::on( $id ) ) {
+				continue;
+			}
+			$file = __DIR__ . '/class-' . strtolower( str_replace( '_', '-', $tool[0] ) ) . '.php';
+			if ( ! is_readable( $file ) ) {
+				continue;
+			}
+			require_once $file;
+			$class = __NAMESPACE__ . '\\' . $tool[0];
+			if ( class_exists( $class ) ) {
+				( new $class() )->hooks();
+			}
+		}
 	}
 
 	/**

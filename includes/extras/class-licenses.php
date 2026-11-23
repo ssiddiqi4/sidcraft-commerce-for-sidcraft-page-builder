@@ -36,12 +36,11 @@ class Licenses extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'licenses',
-			__( 'Licence keys', $d ),
+			__( 'Licence keys', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'lic_prefix' => array( __( 'Key prefix', $d ), 'text', __( 'Optional, for example PRO. Keys then look like PRO-ABCD-1234-EFGH.', $d ) ),
+				'lic_prefix' => array( __( 'Key prefix', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Optional, for example PRO. Keys then look like PRO-ABCD-1234-EFGH.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 		add_action( 'init', array( $this, 'register_type' ) );
@@ -418,11 +417,10 @@ class Licenses extends Tool {
 	 * @param \WP_Post $post Product.
 	 */
 	public function render_product_box( $post ) {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		wp_nonce_field( 'sidccofo_license', '_sidccofo_lic' );
-		echo '<p><label><input type="checkbox" name="sidccofo_license" value="1" ' . checked( self::sells_key( $post->ID ), true, false ) . '> ' . esc_html__( 'Issue a licence key per unit sold', $d ) . '</label></p>';
-		echo '<p><label>' . esc_html__( 'Sites per key', $d ) . '<br><input type="number" min="1" class="widefat" name="sidccofo_license_sites" value="' . esc_attr( (string) max( 1, (int) get_post_meta( $post->ID, '_sidccofo_license_sites', true ) ) ) . '"></label></p>';
-		echo '<p><label>' . esc_html__( 'Valid for (days, 0 = forever)', $d ) . '<br><input type="number" min="0" class="widefat" name="sidccofo_license_days" value="' . esc_attr( (string) (int) get_post_meta( $post->ID, '_sidccofo_license_days', true ) ) . '"></label></p>';
+		echo '<p><label><input type="checkbox" name="sidccofo_license" value="1" ' . checked( self::sells_key( $post->ID ), true, false ) . '> ' . esc_html__( 'Issue a licence key per unit sold', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</label></p>';
+		echo '<p><label>' . esc_html__( 'Sites per key', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input type="number" min="1" class="widefat" name="sidccofo_license_sites" value="' . esc_attr( (string) max( 1, (int) get_post_meta( $post->ID, '_sidccofo_license_sites', true ) ) ) . '"></label></p>';
+		echo '<p><label>' . esc_html__( 'Valid for (days, 0 = forever)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input type="number" min="0" class="widefat" name="sidccofo_license_days" value="' . esc_attr( (string) (int) get_post_meta( $post->ID, '_sidccofo_license_days', true ) ) . '"></label></p>';
 	}
 
 	/**

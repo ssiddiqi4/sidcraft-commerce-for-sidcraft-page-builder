@@ -33,19 +33,18 @@ class Deposits extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'deposits',
-			__( 'Deposits', $d ),
+			__( 'Deposits', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
 				'dep_mode'    => array(
-					__( 'Offer deposits on', $d ),
+					__( 'Offer deposits on', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					array(
-						'all'     => __( 'Every order', $d ),
-						'product' => __( 'Only orders whose products allow it', $d ),
+						'all'     => __( 'Every order', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						'product' => __( 'Only orders whose products allow it', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					),
 				),
-				'dep_percent' => array( __( 'Deposit', $d ), 'text', __( 'Percent of the order total paid now (1–99).', $d ) ),
+				'dep_percent' => array( __( 'Deposit', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Percent of the order total paid now (1–99).', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 		add_filter( 'sidcraft_commerce_extra_keys', array( $this, 'keys' ) );

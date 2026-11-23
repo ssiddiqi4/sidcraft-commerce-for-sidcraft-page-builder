@@ -181,28 +181,27 @@ class Reports extends Tool {
 	 * Admin page.
 	 */
 	public function page() {
-		$d                 = 'sidcraft-commerce-for-sidcraft-page-builder';
 		list( $from, $to ) = $this->range();
 		$r                 = self::compute( $from, $to );
-		echo '<div class="wrap"><h1>' . esc_html__( 'Reports', $d ) . '</h1>';
+		echo '<div class="wrap"><h1>' . esc_html__( 'Reports', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h1>';
 		echo '<form method="get"><input type="hidden" name="post_type" value="' . esc_attr( Post_Types::PRODUCT ) . '"><input type="hidden" name="page" value="sidccofo-reports">';
-		echo '<label>' . esc_html__( 'From', $d ) . ' <input type="date" name="from" value="' . esc_attr( $from ) . '"></label> <label>' . esc_html__( 'To', $d ) . ' <input type="date" name="to" value="' . esc_attr( $to ) . '"></label> ';
-		echo '<button class="button button-primary">' . esc_html__( 'Show', $d ) . '</button> ';
+		echo '<label>' . esc_html__( 'From', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <input type="date" name="from" value="' . esc_attr( $from ) . '"></label> <label>' . esc_html__( 'To', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <input type="date" name="to" value="' . esc_attr( $to ) . '"></label> ';
+		echo '<button class="button button-primary">' . esc_html__( 'Show', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button> ';
 		$csv = wp_nonce_url( add_query_arg( array( 'action' => 'sidccofo_report_csv', 'from' => $from, 'to' => $to ), admin_url( 'admin-post.php' ) ), 'sidccofo_report_csv' );
-		echo '<a class="button" href="' . esc_url( $csv ) . '">' . esc_html__( 'Download CSV', $d ) . '</a></form>';
-		echo '<p class="description">' . sprintf( /* translators: %s: currency code. */ esc_html__( 'Paid orders, in %s.', $d ), esc_html( base_currency() ) ) . '</p>';
+		echo '<a class="button" href="' . esc_url( $csv ) . '">' . esc_html__( 'Download CSV', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</a></form>';
+		echo '<p class="description">' . sprintf( /* translators: %s: currency code. */ esc_html__( 'Paid orders, in %s.', 'sidcraft-commerce-for-sidcraft-page-builder' ), esc_html( base_currency() ) ) . '</p>';
 
 		echo '<div style="display:flex;flex-wrap:wrap;gap:12px;margin:12px 0">';
 		$cards = array(
-			__( 'Orders', $d )         => (string) $r['orders'],
-			__( 'Gross sales', $d )    => format_base( round_amount( $r['gross'] ) ),
-			__( 'Refunds', $d )        => format_base( round_amount( $r['refunds'] ) ),
-			__( 'Net sales', $d )      => format_base( round_amount( $r['net'] ) ),
-			__( 'Average order', $d )  => format_base( round_amount( $r['aov'] ) ),
-			__( 'Items sold', $d )     => (string) $r['items'],
-			__( 'Tax collected', $d )  => format_base( round_amount( $r['tax'] ) ),
-			__( 'Discounts given', $d ) => format_base( round_amount( $r['discount'] ) ),
-			__( 'Repeat customers', $d ) => (string) $r['repeat'],
+			__( 'Orders', 'sidcraft-commerce-for-sidcraft-page-builder' )         => (string) $r['orders'],
+			__( 'Gross sales', 'sidcraft-commerce-for-sidcraft-page-builder' )    => format_base( round_amount( $r['gross'] ) ),
+			__( 'Refunds', 'sidcraft-commerce-for-sidcraft-page-builder' )        => format_base( round_amount( $r['refunds'] ) ),
+			__( 'Net sales', 'sidcraft-commerce-for-sidcraft-page-builder' )      => format_base( round_amount( $r['net'] ) ),
+			__( 'Average order', 'sidcraft-commerce-for-sidcraft-page-builder' )  => format_base( round_amount( $r['aov'] ) ),
+			__( 'Items sold', 'sidcraft-commerce-for-sidcraft-page-builder' )     => (string) $r['items'],
+			__( 'Tax collected', 'sidcraft-commerce-for-sidcraft-page-builder' )  => format_base( round_amount( $r['tax'] ) ),
+			__( 'Discounts given', 'sidcraft-commerce-for-sidcraft-page-builder' ) => format_base( round_amount( $r['discount'] ) ),
+			__( 'Repeat customers', 'sidcraft-commerce-for-sidcraft-page-builder' ) => (string) $r['repeat'],
 		);
 		foreach ( $cards as $label => $value ) {
 			echo '<div style="background:#fff;border:1px solid #dcdcde;border-radius:6px;padding:10px 16px;min-width:140px"><div style="color:#646970;font-size:12px">' . esc_html( $label ) . '</div><div style="font-size:20px;font-weight:600">' . esc_html( $value ) . '</div></div>';
@@ -232,22 +231,22 @@ class Reports extends Tool {
 		foreach ( array_slice( $r['products'], 0, 10, true ) as $p ) {
 			$rows[] = array( $p['name'], $p['qty'], format_base( round_amount( $p['revenue'] ) ) );
 		}
-		$table( __( 'Best-selling products', $d ), array( __( 'Product', $d ), __( 'Units', $d ), __( 'Revenue', $d ) ), $rows );
+		$table( __( 'Best-selling products', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( __( 'Product', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Units', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Revenue', 'sidcraft-commerce-for-sidcraft-page-builder' ) ), $rows );
 		$rows = array();
 		foreach ( array_slice( $r['countries'], 0, 10, true ) as $c => $v ) {
 			$rows[] = array( '' !== $c ? Locations::country_name( $c ) : '—', $v['orders'], format_base( round_amount( $v['revenue'] ) ) );
 		}
-		$table( __( 'Revenue by country', $d ), array( __( 'Country', $d ), __( 'Orders', $d ), __( 'Revenue', $d ) ), $rows );
+		$table( __( 'Revenue by country', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( __( 'Country', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Orders', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Revenue', 'sidcraft-commerce-for-sidcraft-page-builder' ) ), $rows );
 		$rows = array();
 		foreach ( array_slice( $r['coupons'], 0, 10, true ) as $c => $v ) {
 			$rows[] = array( $c, $v['uses'], format_base( round_amount( $v['discount'] ) ) );
 		}
-		$table( __( 'Coupons used', $d ), array( __( 'Code', $d ), __( 'Orders', $d ), __( 'Discount given', $d ) ), $rows );
+		$table( __( 'Coupons used', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( __( 'Code', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Orders', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Discount given', 'sidcraft-commerce-for-sidcraft-page-builder' ) ), $rows );
 		$rows = array();
 		foreach ( array_slice( $r['customers'], 0, 10, true ) as $e => $v ) {
 			$rows[] = array( '' !== $v['name'] ? $v['name'] . ' (' . $e . ')' : $e, $v['orders'], format_base( round_amount( $v['spent'] ) ) );
 		}
-		$table( __( 'Top customers in this period', $d ), array( __( 'Customer', $d ), __( 'Orders', $d ), __( 'Spent', $d ) ), $rows );
+		$table( __( 'Top customers in this period', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( __( 'Customer', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Orders', 'sidcraft-commerce-for-sidcraft-page-builder' ), __( 'Spent', 'sidcraft-commerce-for-sidcraft-page-builder' ) ), $rows );
 		echo '</div>';
 	}
 

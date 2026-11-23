@@ -161,23 +161,22 @@ class Pos extends Tool {
 	 * The till.
 	 */
 	public function page() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		?>
 		<div class="wrap sc-pos">
-			<h1><?php esc_html_e( 'Point of sale', $d ); ?></h1>
+			<h1><?php esc_html_e( 'Point of sale', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></h1>
 			<div class="sc-pos__grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px">
 				<div>
-					<p><input type="search" id="sc-pos-q" class="large-text" placeholder="<?php esc_attr_e( 'Scan a barcode or type a name or SKU, then Enter', $d ); ?>" autofocus autocomplete="off"></p>
+					<p><input type="search" id="sc-pos-q" class="large-text" placeholder="<?php esc_attr_e( 'Scan a barcode or type a name or SKU, then Enter', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>" autofocus autocomplete="off"></p>
 					<ul id="sc-pos-results" style="margin:0;padding:0;list-style:none"></ul>
 				</div>
 				<div>
-					<table class="widefat striped"><thead><tr><th><?php esc_html_e( 'Item', $d ); ?></th><th><?php esc_html_e( 'Qty', $d ); ?></th><th><?php esc_html_e( 'Total', $d ); ?></th><th></th></tr></thead><tbody id="sc-pos-cart"></tbody></table>
-					<p style="font-size:20px"><strong><?php esc_html_e( 'Total', $d ); ?>: <span id="sc-pos-total">0.00</span></strong> <small><?php esc_html_e( '(before tax if prices exclude it)', $d ); ?></small></p>
-					<p><input type="email" id="sc-pos-email" placeholder="<?php esc_attr_e( 'Customer email (optional, for the order email)', $d ); ?>" class="regular-text"></p>
+					<table class="widefat striped"><thead><tr><th><?php esc_html_e( 'Item', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th><th><?php esc_html_e( 'Qty', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th><th><?php esc_html_e( 'Total', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></th><th></th></tr></thead><tbody id="sc-pos-cart"></tbody></table>
+					<p style="font-size:20px"><strong><?php esc_html_e( 'Total', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>: <span id="sc-pos-total">0.00</span></strong> <small><?php esc_html_e( '(before tax if prices exclude it)', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></small></p>
+					<p><input type="email" id="sc-pos-email" placeholder="<?php esc_attr_e( 'Customer email (optional, for the order email)', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>" class="regular-text"></p>
 					<p>
-						<button class="button button-primary button-hero" data-method="cash"><?php esc_html_e( 'Cash', $d ); ?></button>
-						<button class="button button-hero" data-method="card"><?php esc_html_e( 'Card (terminal)', $d ); ?></button>
-						<button class="button button-hero" data-method="other"><?php esc_html_e( 'Other', $d ); ?></button>
+						<button class="button button-primary button-hero" data-method="cash"><?php esc_html_e( 'Cash', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></button>
+						<button class="button button-hero" data-method="card"><?php esc_html_e( 'Card (terminal)', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></button>
+						<button class="button button-hero" data-method="other"><?php esc_html_e( 'Other', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></button>
 					</p>
 					<p id="sc-pos-msg" role="status"></p>
 				</div>

@@ -35,14 +35,13 @@ class Subscriptions_Plus extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'subs_plus',
-			__( 'Subscription extras', $d ),
+			__( 'Subscription extras', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'sp_pause_days' => array( __( 'Customers can pause for (days)', $d ), 'text', __( 'The next payment moves by this many days. 0 = no pausing.', $d ) ),
-				'sp_switch_to'  => array( __( 'Plans customers can switch to (product ids)', $d ), 'text', __( 'Subscription products, separated by commas. Empty = no switching.', $d ) ),
-				'sp_remind'     => array( __( 'Remind before renewal (days)', $d ), 'text', __( 'Email the customer this many days before an automatic renewal. 0 = off.', $d ) ),
+				'sp_pause_days' => array( __( 'Customers can pause for (days)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'The next payment moves by this many days. 0 = no pausing.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'sp_switch_to'  => array( __( 'Plans customers can switch to (product ids)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Subscription products, separated by commas. Empty = no switching.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'sp_remind'     => array( __( 'Remind before renewal (days)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Email the customer this many days before an automatic renewal. 0 = off.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 		add_action( 'sidcraft_commerce_subscription_actions', array( $this, 'buttons' ) );
@@ -59,7 +58,6 @@ class Subscriptions_Plus extends Tool {
 		if ( 'active' !== $sub->get_status() || ! $sub->get_next_payment() ) {
 			return;
 		}
-		$d    = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$days = (int) setting( 'sp_pause_days', 0 );
 		$form = static function ( $do, $label, $extra = '' ) use ( $sub ) {
 			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sc-subplus"><input type="hidden" name="action" value="' . esc_attr( Subscriptions_Plus::ACTION ) . '"><input type="hidden" name="subscription" value="' . esc_attr( (string) $sub->get_id() ) . '"><input type="hidden" name="do" value="' . esc_attr( $do ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped here.
@@ -68,7 +66,7 @@ class Subscriptions_Plus extends Tool {
 		};
 		if ( $days > 0 ) {
 			/* translators: %d: days. */
-			$form( 'pause', sprintf( __( 'Pause %d days', $d ), $days ) );
+			$form( 'pause', sprintf( __( 'Pause %d days', 'sidcraft-commerce-for-sidcraft-page-builder' ), $days ) );
 		}
 		$ids = array_filter( array_map( 'absint', preg_split( '/[\s,]+/', (string) setting( 'sp_switch_to', '' ) ) ) );
 		$cur = (int) $sub->get_item()['product_id'];
@@ -80,7 +78,7 @@ class Subscriptions_Plus extends Tool {
 			}
 		}
 		if ( '' !== $opt ) {
-			$form( 'switch', __( 'Switch plan', $d ), '<select name="plan" aria-label="' . esc_attr__( 'New plan', $d ) . '">' . $opt . '</select> ' );
+			$form( 'switch', __( 'Switch plan', 'sidcraft-commerce-for-sidcraft-page-builder' ), '<select name="plan" aria-label="' . esc_attr__( 'New plan', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '">' . $opt . '</select> ' );
 		}
 	}
 

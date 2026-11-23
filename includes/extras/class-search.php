@@ -29,16 +29,15 @@ class Search extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		Simple_Unit::add(
 			'sidccofo-search',
-			__( 'Product Search', $d ),
+			__( 'Product Search', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
 				'placeholder' => array(
 					'type'    => 'text',
-					'label'   => __( 'Placeholder', $d ),
+					'label'   => __( 'Placeholder', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					'section' => 'content',
-					'default' => __( 'Search products…', $d ),
+					'default' => __( 'Search products…', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 				),
 			),
 			array( $this, 'render_search' ),
@@ -46,13 +45,13 @@ class Search extends Tool {
 		);
 		Simple_Unit::add(
 			'sidccofo-filters',
-			__( 'Product Filters', $d ),
+			__( 'Product Filters', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'price'  => array( 'type' => 'switch', 'label' => __( 'Price range', $d ), 'section' => 'content', 'default' => true ),
-				'cats'   => array( 'type' => 'switch', 'label' => __( 'Categories', $d ), 'section' => 'content', 'default' => true ),
-				'tags'   => array( 'type' => 'switch', 'label' => __( 'Tags', $d ), 'section' => 'content', 'default' => false ),
-				'rating' => array( 'type' => 'switch', 'label' => __( 'Rating', $d ), 'section' => 'content', 'default' => true ),
-				'stock'  => array( 'type' => 'switch', 'label' => __( 'In stock only', $d ), 'section' => 'content', 'default' => true ),
+				'price'  => array( 'type' => 'switch', 'label' => __( 'Price range', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'section' => 'content', 'default' => true ),
+				'cats'   => array( 'type' => 'switch', 'label' => __( 'Categories', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'section' => 'content', 'default' => true ),
+				'tags'   => array( 'type' => 'switch', 'label' => __( 'Tags', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'section' => 'content', 'default' => false ),
+				'rating' => array( 'type' => 'switch', 'label' => __( 'Rating', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'section' => 'content', 'default' => true ),
+				'stock'  => array( 'type' => 'switch', 'label' => __( 'In stock only', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'section' => 'content', 'default' => true ),
 			),
 			array( $this, 'render_filters' ),
 			'filter'
@@ -154,7 +153,6 @@ class Search extends Tool {
 	 * @return string
 	 */
 	public function render_filters( $s ) {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only filters in the URL.
 		$min  = isset( $_GET['sc_min'] ) ? sanitize_text_field( wp_unslash( $_GET['sc_min'] ) ) : '';
 		$max  = isset( $_GET['sc_max'] ) ? sanitize_text_field( wp_unslash( $_GET['sc_max'] ) ) : '';
@@ -170,11 +168,11 @@ class Search extends Tool {
 			}
 		}
 		if ( $s['price'] ) {
-			$html .= '<fieldset><legend>' . esc_html__( 'Price', $d ) . '</legend><div class="sc-filters__row"><input type="number" min="0" step="any" name="sc_min" value="' . esc_attr( $min ) . '" placeholder="' . esc_attr__( 'Min', $d ) . '" aria-label="' . esc_attr__( 'Minimum price', $d ) . '"><span>–</span><input type="number" min="0" step="any" name="sc_max" value="' . esc_attr( $max ) . '" placeholder="' . esc_attr__( 'Max', $d ) . '" aria-label="' . esc_attr__( 'Maximum price', $d ) . '"></div></fieldset>';
+			$html .= '<fieldset><legend>' . esc_html__( 'Price', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</legend><div class="sc-filters__row"><input type="number" min="0" step="any" name="sc_min" value="' . esc_attr( $min ) . '" placeholder="' . esc_attr__( 'Min', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '" aria-label="' . esc_attr__( 'Minimum price', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '"><span>–</span><input type="number" min="0" step="any" name="sc_max" value="' . esc_attr( $max ) . '" placeholder="' . esc_attr__( 'Max', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '" aria-label="' . esc_attr__( 'Maximum price', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '"></div></fieldset>';
 		}
 		foreach ( array(
-			'cats' => array( Post_Types::CATEGORY, 'sc_cat', __( 'Category', $d ), $cat ),
-			'tags' => array( Post_Types::TAG, 'sc_tag', __( 'Tag', $d ), $tag ),
+			'cats' => array( Post_Types::CATEGORY, 'sc_cat', __( 'Category', 'sidcraft-commerce-for-sidcraft-page-builder' ), $cat ),
+			'tags' => array( Post_Types::TAG, 'sc_tag', __( 'Tag', 'sidcraft-commerce-for-sidcraft-page-builder' ), $tag ),
 		) as $key => $def ) {
 			if ( ! $s[ $key ] ) {
 				continue;
@@ -190,17 +188,17 @@ class Search extends Tool {
 			$html .= '</fieldset>';
 		}
 		if ( $s['rating'] ) {
-			$html .= '<fieldset><legend>' . esc_html__( 'Rating', $d ) . '</legend><select name="sc_rating" aria-label="' . esc_attr__( 'Minimum rating', $d ) . '"><option value="0">' . esc_html__( 'Any', $d ) . '</option>';
+			$html .= '<fieldset><legend>' . esc_html__( 'Rating', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</legend><select name="sc_rating" aria-label="' . esc_attr__( 'Minimum rating', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '"><option value="0">' . esc_html__( 'Any', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</option>';
 			foreach ( array( 4, 3, 2 ) as $r ) {
 				/* translators: %d: stars. */
-				$html .= '<option value="' . $r . '"' . selected( $rate, $r, false ) . '>' . esc_html( sprintf( __( '%d stars & up', $d ), $r ) ) . '</option>';
+				$html .= '<option value="' . $r . '"' . selected( $rate, $r, false ) . '>' . esc_html( sprintf( __( '%d stars & up', 'sidcraft-commerce-for-sidcraft-page-builder' ), $r ) ) . '</option>';
 			}
 			$html .= '</select></fieldset>';
 		}
 		if ( $s['stock'] ) {
-			$html .= '<label class="sc-filters__opt"><input type="checkbox" name="sc_stock" value="1"' . checked( $in, true, false ) . '> ' . esc_html__( 'In stock only', $d ) . '</label>';
+			$html .= '<label class="sc-filters__opt"><input type="checkbox" name="sc_stock" value="1"' . checked( $in, true, false ) . '> ' . esc_html__( 'In stock only', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</label>';
 		}
-		return $html . '<p><button class="sc-btn sc-btn--primary" type="submit">' . esc_html__( 'Apply filters', $d ) . '</button> <a class="sc-btn" href="' . esc_url( remove_query_arg( array( 'sc_min', 'sc_max', 'sc_cat', 'sc_tag', 'sc_rating', 'sc_stock', 'paged' ) ) ) . '">' . esc_html__( 'Clear', $d ) . '</a></p></form>';
+		return $html . '<p><button class="sc-btn sc-btn--primary" type="submit">' . esc_html__( 'Apply filters', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button> <a class="sc-btn" href="' . esc_url( remove_query_arg( array( 'sc_min', 'sc_max', 'sc_cat', 'sc_tag', 'sc_rating', 'sc_stock', 'paged' ) ) ) . '">' . esc_html__( 'Clear', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</a></p></form>';
 	}
 
 	/**
@@ -246,8 +244,9 @@ class Search extends Tool {
 				'value'   => 'instock',
 			);
 		}
-		if ( isset( $_GET['s'] ) && '' !== trim( (string) $_GET['s'] ) ) {
-			$args['s'] = sanitize_text_field( wp_unslash( $_GET['s'] ) );
+		$term = isset( $_GET['s'] ) ? trim( sanitize_text_field( wp_unslash( $_GET['s'] ) ) ) : '';
+		if ( '' !== $term ) {
+			$args['s'] = $term;
 		}
 		// phpcs:enable
 		if ( $meta ) {

@@ -35,21 +35,20 @@ class Vendors extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'vendors',
-			__( 'Marketplace vendors', $d ),
+			__( 'Marketplace vendors', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'ven_commission' => array( __( 'Your commission %', $d ), 'text', __( 'The share of each vendor sale you keep (0–100).', $d ) ),
-				'ven_publish'    => array( __( 'Vendors may publish products without approval', $d ), 'checkbox' ),
+				'ven_commission' => array( __( 'Your commission %', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'The share of each vendor sale you keep (0–100).', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'ven_publish'    => array( __( 'Vendors may publish products without approval', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox' ),
 			)
 		);
 		add_action( 'init', array( $this, 'role' ) );
 		add_filter( 'user_has_cap', array( $this, 'caps' ), 10, 4 );
 		add_filter( 'map_meta_cap', array( $this, 'only_products' ), 10, 4 );
 		add_action( 'sidcraft_commerce_order_status_changed', array( $this, 'on_status' ), 10, 3 );
-		$this->admin_page( 'sidccofo-vendor', __( 'Vendor dashboard', $d ), array( $this, 'dashboard' ), 'edit_posts' );
-		$this->admin_page( 'sidccofo-payouts', __( 'Vendor payouts', $d ), array( $this, 'payouts' ) );
+		$this->admin_page( 'sidccofo-vendor', __( 'Vendor dashboard', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( $this, 'dashboard' ), 'edit_posts' );
+		$this->admin_page( 'sidccofo-payouts', __( 'Vendor payouts', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( $this, 'payouts' ) );
 		add_action( 'admin_post_sidccofo_payout', array( $this, 'record_payout' ) );
 	}
 
@@ -211,24 +210,23 @@ class Vendors extends Tool {
 	 * Dashboard of the vendor who is looking (managers see a vendor picker).
 	 */
 	public function dashboard() {
-		$d      = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$me     = get_current_user_id();
 		$vendor = $me;
 		if ( current_user_can( manage_cap() ) ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only picker.
 			$vendor = isset( $_GET['vendor'] ) ? absint( $_GET['vendor'] ) : 0;
 			if ( ! self::is_vendor( $vendor ) ) {
-				echo '<div class="wrap"><h1>' . esc_html__( 'Vendor dashboard', $d ) . '</h1><p>' . esc_html__( 'Pick a vendor on Vendor payouts to see their dashboard.', $d ) . '</p></div>';
+				echo '<div class="wrap"><h1>' . esc_html__( 'Vendor dashboard', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h1><p>' . esc_html__( 'Pick a vendor on Vendor payouts to see their dashboard.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p></div>';
 				return;
 			}
 		} elseif ( ! self::is_vendor( $me ) ) {
 			return;
 		}
-		echo '<div class="wrap"><h1>' . esc_html__( 'Vendor dashboard', $d ) . '</h1><p><strong>' . esc_html__( 'Balance owed to you:', $d ) . '</strong> ' . esc_html( format_base( self::balance( $vendor ) ) ) . '</p><h2>' . esc_html__( 'Earnings', $d ) . '</h2><table class="widefat striped" style="max-width:700px"><thead><tr><th>' . esc_html__( 'Date', $d ) . '</th><th>' . esc_html__( 'Entry', $d ) . '</th><th>' . esc_html__( 'Amount', $d ) . '</th></tr></thead><tbody>';
+		echo '<div class="wrap"><h1>' . esc_html__( 'Vendor dashboard', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h1><p><strong>' . esc_html__( 'Balance owed to you:', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</strong> ' . esc_html( format_base( self::balance( $vendor ) ) ) . '</p><h2>' . esc_html__( 'Earnings', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h2><table class="widefat striped" style="max-width:700px"><thead><tr><th>' . esc_html__( 'Date', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th><th>' . esc_html__( 'Entry', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th><th>' . esc_html__( 'Amount', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th></tr></thead><tbody>';
 		foreach ( array_reverse( array_slice( array_filter( (array) get_user_meta( $vendor, self::LEDGER, true ), 'is_array' ), -30 ) ) as $e ) {
 			echo '<tr><td>' . esc_html( wp_date( 'Y-m-d', (int) $e['time'] ) ) . '</td><td>' . esc_html( ucfirst( $e['type'] ) . ( $e['note'] ? ' · ' . $e['note'] : '' ) ) . '</td><td>' . esc_html( format_base( 'payout' === $e['type'] ? -1 * (float) $e['amount'] : (float) $e['amount'] ) ) . '</td></tr>';
 		}
-		echo '</tbody></table><h2>' . esc_html__( 'To ship', $d ) . '</h2>';
+		echo '</tbody></table><h2>' . esc_html__( 'To ship', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h2>';
 		$ids = get_posts( array( 'post_type' => Post_Types::ORDER, 'post_status' => array( 'sidccofo-processing' ), 'posts_per_page' => 30, 'fields' => 'ids', 'no_found_rows' => true ) );
 		$any = false;
 		foreach ( $ids as $id ) {
@@ -246,7 +244,7 @@ class Vendors extends Tool {
 			echo '<small>' . esc_html( trim( ( $b['first_name'] ?? '' ) . ' ' . ( $b['last_name'] ?? '' ) . ', ' . ( $b['address_1'] ?? '' ) . ', ' . ( $b['postcode'] ?? '' ) . ' ' . ( $b['city'] ?? '' ) . ', ' . ( ! empty( $b['country'] ) ? Locations::country_name( $b['country'] ) : '' ) ) ) . '</small></div>';
 		}
 		if ( ! $any ) {
-			echo '<p>' . esc_html__( 'Nothing to ship.', $d ) . '</p>';
+			echo '<p>' . esc_html__( 'Nothing to ship.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>';
 		}
 		echo '</div>';
 	}
@@ -255,16 +253,15 @@ class Vendors extends Tool {
 	 * Payouts page (managers).
 	 */
 	public function payouts() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
-		echo '<div class="wrap"><h1>' . esc_html__( 'Vendor payouts', $d ) . '</h1><table class="widefat striped" style="max-width:800px"><thead><tr><th>' . esc_html__( 'Vendor', $d ) . '</th><th>' . esc_html__( 'Balance owed', $d ) . '</th><th>' . esc_html__( 'Record a payout', $d ) . '</th></tr></thead><tbody>';
+		echo '<div class="wrap"><h1>' . esc_html__( 'Vendor payouts', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h1><table class="widefat striped" style="max-width:800px"><thead><tr><th>' . esc_html__( 'Vendor', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th><th>' . esc_html__( 'Balance owed', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th><th>' . esc_html__( 'Record a payout', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th></tr></thead><tbody>';
 		$vendors = get_users( array( 'role' => self::ROLE, 'number' => 200 ) );
 		if ( ! $vendors ) {
-			echo '<tr><td colspan="3">' . esc_html__( 'No vendors yet. Give a user the Vendor role.', $d ) . '</td></tr>';
+			echo '<tr><td colspan="3">' . esc_html__( 'No vendors yet. Give a user the Vendor role.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</td></tr>';
 		}
 		foreach ( $vendors as $v ) {
 			echo '<tr><td><a href="' . esc_url( $this->page_url( 'sidccofo-vendor', array( 'vendor' => $v->ID ) ) ) . '">' . esc_html( $v->display_name ) . '</a></td><td>' . esc_html( format_base( self::balance( $v->ID ) ) ) . '</td><td><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="sidccofo_payout"><input type="hidden" name="vendor" value="' . esc_attr( (string) $v->ID ) . '">';
 			wp_nonce_field( 'sidccofo_payout_' . $v->ID );
-			echo '<input type="number" step="0.01" min="0.01" name="amount" style="width:100px" required> <button class="button">' . esc_html__( 'Paid', $d ) . '</button></form></td></tr>';
+			echo '<input type="number" step="0.01" min="0.01" name="amount" style="width:100px" required> <button class="button">' . esc_html__( 'Paid', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button></form></td></tr>';
 		}
 		echo '</tbody></table></div>';
 	}

@@ -35,12 +35,11 @@ class Bookings extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'bookings',
-			__( 'Bookings', $d ),
+			__( 'Bookings', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'book_notify' => array( __( 'Email new bookings to', $d ), 'email', __( 'Empty = the site admin email.', $d ) ),
+				'book_notify' => array( __( 'Email new bookings to', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'email', __( 'Empty = the site admin email.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 		add_action( 'init', array( $this, 'register_type' ) );
@@ -354,16 +353,15 @@ class Bookings extends Tool {
 			return;
 		}
 		Extras::enqueue();
-		$d     = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$mode  = self::mode( $product->get_id() );
 		$ahead = max( 1, (int) get_post_meta( $product->get_id(), '_sidccofo_book_days', true ) ?: 60 );
 		$min   = wp_date( 'Y-m-d' );
 		$max   = gmdate( 'Y-m-d', strtotime( $min . ' 12:00:00 +' . $ahead . ' days' ) );
 		echo '<div class="sc-booking" data-sc-booking="' . esc_attr( $product->get_id() ) . '" data-mode="' . esc_attr( $mode ) . '">';
 		if ( 'slot' === $mode ) {
-			echo '<label>' . esc_html__( 'Date', $d ) . ' <input type="date" data-sc-book-date min="' . esc_attr( $min ) . '" max="' . esc_attr( $max ) . '"></label><div class="sc-booking__slots" data-sc-book-slots aria-live="polite"></div>';
+			echo '<label>' . esc_html__( 'Date', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <input type="date" data-sc-book-date min="' . esc_attr( $min ) . '" max="' . esc_attr( $max ) . '"></label><div class="sc-booking__slots" data-sc-book-slots aria-live="polite"></div>';
 		} else {
-			echo '<label>' . esc_html__( 'Check-in', $d ) . ' <input type="date" data-sc-book-from min="' . esc_attr( $min ) . '" max="' . esc_attr( $max ) . '"></label> <label>' . esc_html__( 'Check-out', $d ) . ' <input type="date" data-sc-book-to min="' . esc_attr( $min ) . '" max="' . esc_attr( $max ) . '"></label><p class="sc-booking__nights" data-sc-book-nights></p>';
+			echo '<label>' . esc_html__( 'Check-in', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <input type="date" data-sc-book-from min="' . esc_attr( $min ) . '" max="' . esc_attr( $max ) . '"></label> <label>' . esc_html__( 'Check-out', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <input type="date" data-sc-book-to min="' . esc_attr( $min ) . '" max="' . esc_attr( $max ) . '"></label><p class="sc-booking__nights" data-sc-book-nights></p>';
 		}
 		echo '<p class="sc-booking__msg" data-sc-book-msg role="status"></p></div>';
 	}
@@ -561,21 +559,20 @@ class Bookings extends Tool {
 	 * @param \WP_Post $post Product.
 	 */
 	public function render_box( $post ) {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		wp_nonce_field( 'sidccofo_booking', '_sidccofo_bk' );
 		$m = static function ( $k ) use ( $post ) {
 			return (string) get_post_meta( $post->ID, '_sidccofo_' . $k, true );
 		};
-		echo '<p><label>' . esc_html__( 'Sold as', $d ) . ' <select name="sidccofo_booking">';
-		foreach ( array( '' => __( 'A normal product', $d ), 'slot' => __( 'Time slots (appointments, classes)', $d ), 'night' => __( 'Nights (rentals)', $d ) ) as $v => $l ) {
+		echo '<p><label>' . esc_html__( 'Sold as', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <select name="sidccofo_booking">';
+		foreach ( array( '' => __( 'A normal product', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'slot' => __( 'Time slots (appointments, classes)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'night' => __( 'Nights (rentals)', 'sidcraft-commerce-for-sidcraft-page-builder' ) ) as $v => $l ) {
 			echo '<option value="' . esc_attr( $v ) . '"' . selected( $m( 'booking' ), $v, false ) . '>' . esc_html( $l ) . '</option>';
 		}
-		echo '</select></label></p><p><label>' . esc_html__( 'Opening hours (time slots)', $d ) . '<br><input class="widefat" name="sidccofo_book_hours" placeholder="Mon-Fri 09:00-17:00; Sat 10:00-14:00" value="' . esc_attr( $m( 'book_hours' ) ) . '"></label></p>';
+		echo '</select></label></p><p><label>' . esc_html__( 'Opening hours (time slots)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input class="widefat" name="sidccofo_book_hours" placeholder="Mon-Fri 09:00-17:00; Sat 10:00-14:00" value="' . esc_attr( $m( 'book_hours' ) ) . '"></label></p>';
 		foreach ( array(
-			'book_duration' => __( 'Slot length (minutes)', $d ),
-			'book_capacity' => __( 'Bookings per slot or night', $d ),
-			'book_days'     => __( 'Bookable days ahead', $d ),
-			'book_notice'   => __( 'Minimum notice (hours)', $d ),
+			'book_duration' => __( 'Slot length (minutes)', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'book_capacity' => __( 'Bookings per slot or night', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'book_days'     => __( 'Bookable days ahead', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'book_notice'   => __( 'Minimum notice (hours)', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 		) as $k => $l ) {
 			echo '<p style="display:inline-block;margin-right:16px"><label>' . esc_html( $l ) . '<br><input type="number" min="0" name="sidccofo_' . esc_attr( $k ) . '" value="' . esc_attr( $m( $k ) ) . '"></label></p>';
 		}

@@ -57,27 +57,7 @@ https://www.youtube.com/watch?v=aO_uLuGiDO8
 [Download Opencart to Sidcraft Importer](https://canvasly.pro/Sidcraft-Commerce-vs-WooCommerce-vs-OpenCart.html)
 [Download WooCommerce to Sidcraft Commerce Migrator](https://canvasly.pro/sidcraft-commerce-woo-migrator-1.1.0.zip)
 
-= Store tools (new in 2.1.0) =
-
-Switch each on or off under Store → Settings → Store tools; a tool that is off loads nothing.
-
-* Payments without a card: bank transfer, cheque and cash on delivery, with instructions at checkout, on the order page and in the email.
-* Shipping: local pickup, rate tables by order total, weight or number of items, and a handling fee, on top of shipping zones.
-* Tax: EU VAT number check (format and the EU VIES service), reverse charge for business buyers in other EU countries, tax-exempt customers and roles, and a tax report by country and rate with CSV export.
-* PDF invoices (numbered, no gaps) and packing slips; the invoice is attached to the paid-order email.
-* CSV import and export of products and stock, CSV export of orders and customers, and a sales reports page (sales over time, best-sellers, coupons, revenue by country, top customers).
-* Stock: low-stock emails, "notify me when back in stock", backorders, pre-orders and minimum, maximum and step quantities.
-* Cart drawer that opens after adding, and a sticky add-to-cart bar on product pages.
-* Live product search (`[sidccofo_search]`) and product filters by price, category, tag, rating and stock (`[sidccofo_filters]`).
-* Wishlist, compare and recently viewed (heart and compare buttons, `[sidccofo_wishlist]`, `[sidccofo_compare]`, `[sidccofo_recently_viewed]`).
-* Bundles with a set discount, "bought together" blocks, and a one-tick order bump at checkout.
-* Bookings: time slots (appointments, classes) and nights (rentals) with opening hours, capacity, calendar files and a bookings list.
-* Memberships and content restriction with drip release; software licence keys with an activation API; checkout field editor with conditions; deposits and partial payments; pay what you want, donations and quote requests; delivery date and time slots with cut-off and capacity.
-* Analytics events (GA4, Meta Pixel, TikTok Pixel), Google Merchant and Meta product feeds, and product structured data.
-* REST API with keys (products, orders, customers) and signed webhooks for Zapier, Make and n8n.
-* Social-proof popups from real recent orders (names shortened), product questions and answers, photo reviews, product personalisation (text with live preview, picture upload, size chart).
-* Subscription extras: pause, switch plan with a proration credit, renewal reminders.
-* Suppliers and dropshipping (each supplier gets their lines and a private link for the tracking number), a multi-vendor marketplace with commissions and payouts, and a point of sale screen with barcode scanning and receipts.
+* Store tools (new in 2.1.0): 27 optional tools, switched on under Store → Settings → Store tools. See the FAQ "What are the store tools?" for the full list.
 
 Commerce Units for [Sidcraft](https://wordpress.org/plugins/sidcraft-page-builder): Product Grid, Add to Cart, Product Price, Stock Status, Product Rating, Product Reviews, Mini Cart, Cart, Checkout and Order Confirmation, plus a quick-view popup. Every Unit also works as a shortcode, e.g. `[sidccofo_product_grid source="on_sale" limit="8"]`.
 
@@ -236,6 +216,27 @@ BHD, JOD, KWD, OMR and TND are sent to payment providers in thousandths and disp
 = What happens to my data if I delete the plugin? =
 
 Settings, sessions, temporary data, chats, the email log and remembered carts are removed. Products, orders, coupons, gift cards, campaigns and the mailing list are kept, unless you add `define( 'SIDCRAFT_COMMERCE_REMOVE_ALL_DATA', true );` to wp-config.php before deleting the plugin.
+
+= What are the store tools? =
+Switch each on or off under Store → Settings → Store tools; a tool that is off loads nothing.
+
+* Payments without a card: bank transfer, cheque and cash on delivery, with instructions at checkout, on the order page and in the email.
+* Shipping: local pickup, rate tables by order total, weight or number of items, and a handling fee, on top of shipping zones.
+* Tax: EU VAT number check (format and the EU VIES service), reverse charge for business buyers in other EU countries, tax-exempt customers and roles, and a tax report by country and rate with CSV export.
+* PDF invoices (numbered, no gaps) and packing slips; the invoice is attached to the paid-order email.
+* CSV import and export of products and stock, CSV export of orders and customers, and a sales reports page (sales over time, best-sellers, coupons, revenue by country, top customers).
+* Stock: low-stock emails, "notify me when back in stock", backorders, pre-orders and minimum, maximum and step quantities.
+* Cart drawer that opens after adding, and a sticky add-to-cart bar on product pages.
+* Live product search (`[sidccofo_search]`) and product filters by price, category, tag, rating and stock (`[sidccofo_filters]`).
+* Wishlist, compare and recently viewed (heart and compare buttons, `[sidccofo_wishlist]`, `[sidccofo_compare]`, `[sidccofo_recently_viewed]`).
+* Bundles with a set discount, "bought together" blocks, and a one-tick order bump at checkout.
+* Bookings: time slots (appointments, classes) and nights (rentals) with opening hours, capacity, calendar files and a bookings list.
+* Memberships and content restriction with drip release; software licence keys with an activation API; checkout field editor with conditions; deposits and partial payments; pay what you want, donations and quote requests; delivery date and time slots with cut-off and capacity.
+* Analytics events (GA4, Meta Pixel, TikTok Pixel), Google Merchant and Meta product feeds, and product structured data.
+* REST API with keys (products, orders, customers) and signed webhooks for Zapier, Make and n8n.
+* Social-proof popups from real recent orders (names shortened), product questions and answers, photo reviews, product personalisation (text with live preview, picture upload, size chart).
+* Subscription extras: pause, switch plan with a proration credit, renewal reminders.
+* Suppliers and dropshipping (each supplier gets their lines and a private link for the tracking number), a multi-vendor marketplace with commissions and payouts, and a point of sale screen with barcode scanning and receipts.
 
 = Which store tools are on after updating to 2.1.0? =
 Most are off or harmless until you use them. Offline payments, rate tables, CSV, reports, invoices and the like only appear once you enable them or fill in their settings under Store → Settings → Store tools. Bookings, memberships, licence keys, deposits, delivery slots, social proof, personalisation, suppliers, vendors and the point of sale are off by default.

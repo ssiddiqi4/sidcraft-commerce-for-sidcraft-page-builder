@@ -31,14 +31,13 @@ class Cart_Drawer extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'drawer',
-			__( 'Cart drawer and sticky add-to-cart', $d ),
+			__( 'Cart drawer and sticky add-to-cart', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'drawer_open'   => array( __( 'Open the drawer after adding', $d ), 'checkbox' ),
-				'drawer_mini'   => array( __( 'Open the drawer from the mini cart', $d ), 'checkbox', __( 'Clicking the mini-cart icon opens the drawer instead of going to the cart page.', $d ) ),
-				'sticky_atc'    => array( __( 'Sticky add-to-cart bar on product pages', $d ), 'checkbox' ),
+				'drawer_open'   => array( __( 'Open the drawer after adding', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox' ),
+				'drawer_mini'   => array( __( 'Open the drawer from the mini cart', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Clicking the mini-cart icon opens the drawer instead of going to the cart page.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'sticky_atc'    => array( __( 'Sticky add-to-cart bar on product pages', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox' ),
 			)
 		);
 		add_action( 'wp_footer', array( $this, 'markup' ), 5 );

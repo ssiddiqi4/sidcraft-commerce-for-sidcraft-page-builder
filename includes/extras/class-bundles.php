@@ -35,31 +35,30 @@ class Bundles extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'bundles',
-			__( 'Bundles and order bump', $d ),
+			__( 'Bundles and order bump', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
 				'bundles'     => array(
-					__( 'Bundles', $d ),
+					__( 'Bundles', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					'table',
-					__( 'Products: ids of the products in the set, separated by commas (find the id in the products list). Percent: off the set. Fixed: off per set. Use one or the other.', $d ),
+					__( 'Products: ids of the products in the set, separated by commas (find the id in the products list). Percent: off the set. Fixed: off per set. Use one or the other.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					array(
-						'name'     => array( __( 'Bundle name', $d ), 'text', 'Starter kit' ),
-						'products' => array( __( 'Products (ids)', $d ), 'text', '12, 15, 18' ),
-						'percent'  => array( __( 'Percent off', $d ), 'amount', '10' ),
-						'fixed'    => array( __( 'Fixed off', $d ), 'amount', '' ),
+						'name'     => array( __( 'Bundle name', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'Starter kit' ),
+						'products' => array( __( 'Products (ids)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', '12, 15, 18' ),
+						'percent'  => array( __( 'Percent off', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'amount', '10' ),
+						'fixed'    => array( __( 'Fixed off', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'amount', '' ),
 					),
 				),
-				'bump_product' => array( __( 'Order bump product (id)', $d ), 'text', __( 'A product offered as a tick box at checkout. Empty = no bump.', $d ) ),
-				'bump_text'    => array( __( 'Order bump text', $d ), 'text', __( 'For example: Yes, add gift wrapping.', $d ) ),
-				'bump_percent' => array( __( 'Order bump discount %', $d ), 'text', __( 'Optional.', $d ) ),
+				'bump_product' => array( __( 'Order bump product (id)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'A product offered as a tick box at checkout. Empty = no bump.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'bump_text'    => array( __( 'Order bump text', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'For example: Yes, add gift wrapping.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'bump_percent' => array( __( 'Order bump discount %', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Optional.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 		Simple_Unit::add(
 			'sidccofo-bundle',
-			__( 'Product Bundle', $d ),
-			array( 'id' => array( 'type' => 'number', 'label' => __( 'Bundle number (row in Settings, starting at 1)', $d ), 'section' => 'content', 'default' => 1, 'min' => 1, 'max' => 200 ) ),
+			__( 'Product Bundle', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			array( 'id' => array( 'type' => 'number', 'label' => __( 'Bundle number (row in Settings, starting at 1)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'section' => 'content', 'default' => 1, 'min' => 1, 'max' => 200 ) ),
 			array( $this, 'render_unit' ),
 			'package'
 		);

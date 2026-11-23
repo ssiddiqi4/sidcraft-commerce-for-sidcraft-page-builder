@@ -37,14 +37,13 @@ class Wishlist extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d     = 'sidcraft-commerce-for-sidcraft-page-builder';
-		$prod  = array( 'type' => 'product', 'label' => __( 'Product', $d ), 'section' => 'content', 'default' => '' );
-		$limit = array( 'type' => 'number', 'label' => __( 'How many', $d ), 'section' => 'content', 'default' => 8, 'min' => 1, 'max' => 24 );
-		Simple_Unit::add( 'sidccofo-wishlist', __( 'Wishlist', $d ), array(), array( $this, 'render_wishlist' ), 'heart' );
-		Simple_Unit::add( 'sidccofo-compare', __( 'Compare Products', $d ), array(), array( $this, 'render_compare' ), 'columns' );
-		Simple_Unit::add( 'sidccofo-recently-viewed', __( 'Recently Viewed', $d ), array( 'limit' => $limit ), array( $this, 'render_recent' ), 'clock' );
-		Simple_Unit::add( 'sidccofo-wishlist-button', __( 'Wishlist Button', $d ), array( 'product_id' => $prod ), array( $this, 'render_heart' ), 'heart' );
-		Simple_Unit::add( 'sidccofo-compare-button', __( 'Compare Button', $d ), array( 'product_id' => $prod ), array( $this, 'render_compare_button' ), 'columns' );
+		$prod  = array( 'type' => 'product', 'label' => __( 'Product', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'section' => 'content', 'default' => '' );
+		$limit = array( 'type' => 'number', 'label' => __( 'How many', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'section' => 'content', 'default' => 8, 'min' => 1, 'max' => 24 );
+		Simple_Unit::add( 'sidccofo-wishlist', __( 'Wishlist', 'sidcraft-commerce-for-sidcraft-page-builder' ), array(), array( $this, 'render_wishlist' ), 'heart' );
+		Simple_Unit::add( 'sidccofo-compare', __( 'Compare Products', 'sidcraft-commerce-for-sidcraft-page-builder' ), array(), array( $this, 'render_compare' ), 'columns' );
+		Simple_Unit::add( 'sidccofo-recently-viewed', __( 'Recently Viewed', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'limit' => $limit ), array( $this, 'render_recent' ), 'clock' );
+		Simple_Unit::add( 'sidccofo-wishlist-button', __( 'Wishlist Button', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'product_id' => $prod ), array( $this, 'render_heart' ), 'heart' );
+		Simple_Unit::add( 'sidccofo-compare-button', __( 'Compare Button', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'product_id' => $prod ), array( $this, 'render_compare_button' ), 'columns' );
 		add_action( 'rest_api_init', array( $this, 'routes' ) );
 		add_action( 'wp_login', array( $this, 'merge_on_login' ), 10, 2 );
 		add_action( 'sidcraft_commerce_after_add_to_cart_button', array( $this, 'buttons_in_form' ), 20, 1 );
@@ -247,22 +246,21 @@ class Wishlist extends Tool {
 				$products[] = $p;
 			}
 		}
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		if ( ! $products ) {
-			return rest_ensure_response( array( 'html' => '<p>' . esc_html__( 'Add products to compare from their pages.', $d ) . '</p>' ) );
+			return rest_ensure_response( array( 'html' => '<p>' . esc_html__( 'Add products to compare from their pages.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>' ) );
 		}
 		$rows = array(
-			__( 'Price', $d )        => array(),
-			__( 'Rating', $d )       => array(),
-			__( 'Availability', $d ) => array(),
-			__( 'SKU', $d )          => array(),
+			__( 'Price', 'sidcraft-commerce-for-sidcraft-page-builder' )        => array(),
+			__( 'Rating', 'sidcraft-commerce-for-sidcraft-page-builder' )       => array(),
+			__( 'Availability', 'sidcraft-commerce-for-sidcraft-page-builder' ) => array(),
+			__( 'SKU', 'sidcraft-commerce-for-sidcraft-page-builder' )          => array(),
 		);
 		$specs = array();
 		foreach ( $products as $i => $p ) {
-			$rows[ __( 'Price', $d ) ][ $i ]        = wp_kses_post( $p->get_price_html() );
-			$rows[ __( 'Rating', $d ) ][ $i ]       = $p->get_review_count() ? esc_html( number_format_i18n( $p->get_average_rating(), 1 ) . ' (' . $p->get_review_count() . ')' ) : '—';
-			$rows[ __( 'Availability', $d ) ][ $i ] = esc_html( $p->is_in_stock() ? __( 'In stock', $d ) : __( 'Out of stock', $d ) );
-			$rows[ __( 'SKU', $d ) ][ $i ]          = esc_html( $p->get_sku() ? $p->get_sku() : '—' );
+			$rows[ __( 'Price', 'sidcraft-commerce-for-sidcraft-page-builder' ) ][ $i ]        = wp_kses_post( $p->get_price_html() );
+			$rows[ __( 'Rating', 'sidcraft-commerce-for-sidcraft-page-builder' ) ][ $i ]       = $p->get_review_count() ? esc_html( number_format_i18n( $p->get_average_rating(), 1 ) . ' (' . $p->get_review_count() . ')' ) : '—';
+			$rows[ __( 'Availability', 'sidcraft-commerce-for-sidcraft-page-builder' ) ][ $i ] = esc_html( $p->is_in_stock() ? __( 'In stock', 'sidcraft-commerce-for-sidcraft-page-builder' ) : __( 'Out of stock', 'sidcraft-commerce-for-sidcraft-page-builder' ) );
+			$rows[ __( 'SKU', 'sidcraft-commerce-for-sidcraft-page-builder' ) ][ $i ]          = esc_html( $p->get_sku() ? $p->get_sku() : '—' );
 			foreach ( $p->get_specs() as $spec ) {
 				$specs[ $spec['label'] ][ $i ] = esc_html( (string) $spec['value'] );
 			}
@@ -270,7 +268,7 @@ class Wishlist extends Tool {
 		$rows = array_merge( $rows, $specs );
 		$html = '<div class="sc-compare__scroll"><table class="sc-compare__table"><thead><tr><th></th>';
 		foreach ( $products as $p ) {
-			$html .= '<th scope="col"><a href="' . esc_url( $p->get_permalink() ) . '">' . $p->get_image( 'thumbnail' ) . '<span>' . esc_html( wp_strip_all_tags( $p->get_name() ) ) . '</span></a><button type="button" class="sc-link" data-sc-compare-remove="' . esc_attr( $p->get_id() ) . '">' . esc_html__( 'Remove', $d ) . '</button></th>';
+			$html .= '<th scope="col"><a href="' . esc_url( $p->get_permalink() ) . '">' . $p->get_image( 'thumbnail' ) . '<span>' . esc_html( wp_strip_all_tags( $p->get_name() ) ) . '</span></a><button type="button" class="sc-link" data-sc-compare-remove="' . esc_attr( $p->get_id() ) . '">' . esc_html__( 'Remove', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button></th>';
 		}
 		$html .= '</tr></thead><tbody>';
 		foreach ( $rows as $label => $cells ) {

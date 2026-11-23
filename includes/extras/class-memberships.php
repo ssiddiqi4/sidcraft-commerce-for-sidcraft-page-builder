@@ -31,23 +31,22 @@ class Memberships extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'memberships',
-			__( 'Memberships', $d ),
+			__( 'Memberships', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
 				'mem_plans' => array(
-					__( 'Plans', $d ),
+					__( 'Plans', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					'table',
-					__( 'Slug: letters and numbers (for example gold). Products: ids of the products that grant the plan. Days: access each paid order adds (0 = forever).', $d ),
+					__( 'Slug: letters and numbers (for example gold). Products: ids of the products that grant the plan. Days: access each paid order adds (0 = forever).', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					array(
-						'slug'     => array( __( 'Slug', $d ), 'text', 'gold' ),
-						'name'     => array( __( 'Name', $d ), 'text', 'Gold member' ),
-						'products' => array( __( 'Products (ids)', $d ), 'text', '12, 15' ),
-						'days'     => array( __( 'Days per order', $d ), 'amount', '30' ),
+						'slug'     => array( __( 'Slug', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'gold' ),
+						'name'     => array( __( 'Name', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'Gold member' ),
+						'products' => array( __( 'Products (ids)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', '12, 15' ),
+						'days'     => array( __( 'Days per order', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'amount', '30' ),
 					),
 				),
-				'mem_message' => array( __( 'Message for visitors without access', $d ), 'text', __( 'Shown instead of members-only content.', $d ) ),
+				'mem_message' => array( __( 'Message for visitors without access', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Shown instead of members-only content.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 		add_action( 'sidcraft_commerce_order_status_changed', array( $this, 'on_status' ), 10, 3 );
@@ -266,20 +265,19 @@ class Memberships extends Tool {
 	 * @return string
 	 */
 	protected function blocked_message( $post_id ) {
-		$d    = 'sidcraft-commerce-for-sidcraft-page-builder';
-		$msg  = '' !== trim( (string) setting( 'mem_message', '' ) ) ? (string) setting( 'mem_message', '' ) : __( 'This content is for members.', $d );
+		$msg  = '' !== trim( (string) setting( 'mem_message', '' ) ) ? (string) setting( 'mem_message', '' ) : __( 'This content is for members.', 'sidcraft-commerce-for-sidcraft-page-builder' );
 		$drip = (int) get_post_meta( $post_id, '_sidccofo_drip_days', true );
 		$out  = '<div class="sc-members-only"><p><strong>' . esc_html( $msg ) . '</strong></p>';
 		if ( $drip > 0 && is_user_logged_in() ) {
-			$out .= '<p>' . esc_html( sprintf( /* translators: %d: days. */ __( 'It opens %d days after you join.', $d ), $drip ) ) . '</p>';
+			$out .= '<p>' . esc_html( sprintf( /* translators: %d: days. */ __( 'It opens %d days after you join.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $drip ) ) . '</p>';
 		}
 		if ( ! is_user_logged_in() ) {
-			$out .= '<p><a class="sc-btn" href="' . esc_url( wp_login_url( (string) get_permalink( $post_id ) ) ) . '">' . esc_html__( 'Log in', $d ) . '</a></p>';
+			$out .= '<p><a class="sc-btn" href="' . esc_url( wp_login_url( (string) get_permalink( $post_id ) ) ) . '">' . esc_html__( 'Log in', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</a></p>';
 		}
 		$plans = self::plans();
 		foreach ( array_filter( (array) get_post_meta( $post_id, '_sidccofo_members_only', true ) ) as $slug ) {
 			if ( isset( $plans[ $slug ] ) && $plans[ $slug ]['products'] ) {
-				$out .= '<p><a class="sc-btn sc-btn--primary" href="' . esc_url( (string) get_permalink( $plans[ $slug ]['products'][0] ) ) . '">' . esc_html( sprintf( /* translators: %s: plan. */ __( 'Join: %s', $d ), $plans[ $slug ]['name'] ) ) . '</a></p>';
+				$out .= '<p><a class="sc-btn sc-btn--primary" href="' . esc_url( (string) get_permalink( $plans[ $slug ]['products'][0] ) ) . '">' . esc_html( sprintf( /* translators: %s: plan. */ __( 'Join: %s', 'sidcraft-commerce-for-sidcraft-page-builder' ), $plans[ $slug ]['name'] ) ) . '</a></p>';
 			}
 		}
 		return $out . '</div>';
@@ -334,18 +332,17 @@ class Memberships extends Tool {
 	 * @param \WP_Post $post Post.
 	 */
 	public function render_box( $post ) {
-		$d    = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$plans = self::plans();
 		wp_nonce_field( 'sidccofo_members', '_sidccofo_mem' );
 		if ( ! $plans ) {
-			echo '<p>' . esc_html__( 'Add a plan under Store → Settings → Store tools → Memberships first.', $d ) . '</p>';
+			echo '<p>' . esc_html__( 'Add a plan under Store → Settings → Store tools → Memberships first.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>';
 			return;
 		}
 		$have = array_filter( (array) get_post_meta( $post->ID, '_sidccofo_members_only', true ) );
 		foreach ( $plans as $slug => $plan ) {
 			echo '<p><label><input type="checkbox" name="sidccofo_members_only[]" value="' . esc_attr( $slug ) . '" ' . checked( in_array( $slug, $have, true ), true, false ) . '> ' . esc_html( $plan['name'] ) . '</label></p>';
 		}
-		echo '<p><label>' . esc_html__( 'Release after (days)', $d ) . '<br><input type="number" min="0" class="widefat" name="sidccofo_drip_days" value="' . esc_attr( (string) (int) get_post_meta( $post->ID, '_sidccofo_drip_days', true ) ) . '"></label></p>';
+		echo '<p><label>' . esc_html__( 'Release after (days)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input type="number" min="0" class="widefat" name="sidccofo_drip_days" value="' . esc_attr( (string) (int) get_post_meta( $post->ID, '_sidccofo_drip_days', true ) ) . '"></label></p>';
 	}
 
 	/**

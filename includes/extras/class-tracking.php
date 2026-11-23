@@ -36,18 +36,17 @@ class Tracking extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'tracking',
-			__( 'Analytics events, product feeds and schema', $d ),
+			__( 'Analytics events, product feeds and schema', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'trk_ga4'     => array( __( 'Google Analytics 4 measurement id', $d ), 'text', __( 'Like G-ABC123XYZ. Loads Google’s script from googletagmanager.com when filled in.', $d ) ),
-				'trk_meta'    => array( __( 'Meta (Facebook) Pixel id', $d ), 'text', __( 'Loads Meta’s script from connect.facebook.net when filled in.', $d ) ),
-				'trk_tiktok'  => array( __( 'TikTok Pixel id', $d ), 'text', __( 'Loads TikTok’s script from analytics.tiktok.com when filled in.', $d ) ),
-				'trk_consent' => array( __( 'Consent cookie name', $d ), 'text', __( 'Optional. If set, tracking scripts load only when this cookie exists and isn’t no, false, 0 or denied.', $d ) ),
-				'trk_schema'  => array( __( 'Product structured data (JSON-LD)', $d ), 'checkbox', __( 'Adds price, availability and rating for search engines. Turn off if another SEO plugin already does.', $d ) ),
-				'trk_feed'    => array( __( 'Product feeds', $d ), 'checkbox', __( 'Publishes /?sidccofo_feed=google and /?sidccofo_feed=csv. Only public product details are in them.', $d ) ),
-				'trk_brand'   => array( __( 'Brand name for feeds', $d ), 'text', __( 'Used when a product has no brand. Empty = the site name.', $d ) ),
+				'trk_ga4'     => array( __( 'Google Analytics 4 measurement id', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Like G-ABC123XYZ. Loads Google’s script from googletagmanager.com when filled in.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'trk_meta'    => array( __( 'Meta (Facebook) Pixel id', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Loads Meta’s script from connect.facebook.net when filled in.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'trk_tiktok'  => array( __( 'TikTok Pixel id', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Loads TikTok’s script from analytics.tiktok.com when filled in.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'trk_consent' => array( __( 'Consent cookie name', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Optional. If set, tracking scripts load only when this cookie exists and isn’t no, false, 0 or denied.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'trk_schema'  => array( __( 'Product structured data (JSON-LD)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Adds price, availability and rating for search engines. Turn off if another SEO plugin already does.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'trk_feed'    => array( __( 'Product feeds', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Publishes /?sidccofo_feed=google and /?sidccofo_feed=csv. Only public product details are in them.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'trk_brand'   => array( __( 'Brand name for feeds', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Used when a product has no brand. Empty = the site name.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 		add_action( 'wp_head', array( $this, 'head' ), 5 );

@@ -29,33 +29,32 @@ class Checkout_Fields extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'fields',
-			__( 'Checkout fields', $d ),
+			__( 'Checkout fields', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
 				'cf_fields' => array(
-					__( 'Extra fields', $d ),
+					__( 'Extra fields', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					'table',
-					__( 'Key: letters, numbers and underscores (for example gift_note). Type: text, textarea, email, tel, number, date or select. Required: yes. Choices: for select, separated by | . Show if: key=value of another field, for example country=US.', $d ),
+					__( 'Key: letters, numbers and underscores (for example gift_note). Type: text, textarea, email, tel, number, date or select. Required: yes. Choices: for select, separated by | . Show if: key=value of another field, for example country=US.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					array(
-						'key'      => array( __( 'Key', $d ), 'text', 'gift_note' ),
-						'label'    => array( __( 'Label', $d ), 'text', 'Gift message' ),
-						'type'     => array( __( 'Type', $d ), 'text', 'textarea' ),
-						'required' => array( __( 'Required', $d ), 'text', '' ),
-						'choices'  => array( __( 'Choices', $d ), 'text', '' ),
-						'show_if'  => array( __( 'Show if', $d ), 'text', '' ),
+						'key'      => array( __( 'Key', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'gift_note' ),
+						'label'    => array( __( 'Label', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'Gift message' ),
+						'type'     => array( __( 'Type', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'textarea' ),
+						'required' => array( __( 'Required', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', '' ),
+						'choices'  => array( __( 'Choices', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', '' ),
+						'show_if'  => array( __( 'Show if', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', '' ),
 					),
 				),
 				'cf_edit'   => array(
-					__( 'Change built-in fields', $d ),
+					__( 'Change built-in fields', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					'table',
-					__( 'Key: first_name, last_name, email, phone, address_1, address_2, city, postcode, state. Required: yes or no (empty keeps it). Hide: yes. The email field can’t be hidden.', $d ),
+					__( 'Key: first_name, last_name, email, phone, address_1, address_2, city, postcode, state. Required: yes or no (empty keeps it). Hide: yes. The email field can’t be hidden.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					array(
-						'key'      => array( __( 'Key', $d ), 'text', 'phone' ),
-						'label'    => array( __( 'New label', $d ), 'text', '' ),
-						'required' => array( __( 'Required', $d ), 'text', 'yes' ),
-						'hide'     => array( __( 'Hide', $d ), 'text', '' ),
+						'key'      => array( __( 'Key', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'phone' ),
+						'label'    => array( __( 'New label', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', '' ),
+						'required' => array( __( 'Required', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'yes' ),
+						'hide'     => array( __( 'Hide', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', '' ),
 					),
 				),
 			)

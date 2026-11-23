@@ -471,12 +471,11 @@ class Api extends Tool {
 	 * The page.
 	 */
 	public function page() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
-		echo '<div class="wrap"><h1>' . esc_html__( 'API & webhooks', $d ) . '</h1>';
+		echo '<div class="wrap"><h1>' . esc_html__( 'API & webhooks', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h1>';
 		$new = get_transient( 'sidccofo_new_key_' . get_current_user_id() );
 		if ( $new ) {
 			delete_transient( 'sidccofo_new_key_' . get_current_user_id() );
-			echo '<div class="notice notice-success"><p>' . esc_html__( 'Copy your new key now. It can’t be shown again:', $d ) . ' <code style="user-select:all">' . esc_html( (string) $new ) . '</code></p></div>';
+			echo '<div class="notice notice-success"><p>' . esc_html__( 'Copy your new key now. It can’t be shown again:', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <code style="user-select:all">' . esc_html( (string) $new ) . '</code></p></div>';
 		}
 		$post = static function ( $action, $fields ) {
 			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="sidccofo_api"><input type="hidden" name="do" value="' . esc_attr( $action ) . '">';
@@ -484,29 +483,29 @@ class Api extends Tool {
 			echo $fields; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by the caller.
 			echo '</form>';
 		};
-		echo '<h2>' . esc_html__( 'API keys', $d ) . '</h2><table class="widefat striped" style="max-width:800px"><thead><tr><th>' . esc_html__( 'Name', $d ) . '</th><th>' . esc_html__( 'Key', $d ) . '</th><th>' . esc_html__( 'Access', $d ) . '</th><th></th></tr></thead><tbody>';
+		echo '<h2>' . esc_html__( 'API keys', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h2><table class="widefat striped" style="max-width:800px"><thead><tr><th>' . esc_html__( 'Name', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th><th>' . esc_html__( 'Key', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th><th>' . esc_html__( 'Access', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th><th></th></tr></thead><tbody>';
 		foreach ( (array) get_option( self::KEYS, array() ) as $k ) {
 			echo '<tr><td>' . esc_html( $k['name'] ) . '</td><td><code>' . esc_html( $k['prefix'] ) . '…</code></td><td>' . esc_html( $k['perm'] ) . '</td><td>';
-			$post( 'revoke', '<input type="hidden" name="id" value="' . esc_attr( $k['id'] ) . '"><button class="button">' . esc_html__( 'Revoke', $d ) . '</button>' );
+			$post( 'revoke', '<input type="hidden" name="id" value="' . esc_attr( $k['id'] ) . '"><button class="button">' . esc_html__( 'Revoke', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button>' );
 			echo '</td></tr>';
 		}
 		echo '</tbody></table><p>';
-		$post( 'newkey', '<input name="name" placeholder="' . esc_attr__( 'Name (for example Zapier)', $d ) . '" required> <select name="perm"><option value="read">' . esc_html__( 'Read only', $d ) . '</option><option value="write">' . esc_html__( 'Read and write', $d ) . '</option></select> <button class="button button-primary">' . esc_html__( 'Create key', $d ) . '</button>' );
-		echo '</p><h2>' . esc_html__( 'Webhooks', $d ) . '</h2><table class="widefat striped" style="max-width:900px"><thead><tr><th>' . esc_html__( 'Name / URL', $d ) . '</th><th>' . esc_html__( 'Topics', $d ) . '</th><th>' . esc_html__( 'Last delivery', $d ) . '</th><th></th></tr></thead><tbody>';
+		$post( 'newkey', '<input name="name" placeholder="' . esc_attr__( 'Name (for example Zapier)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '" required> <select name="perm"><option value="read">' . esc_html__( 'Read only', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</option><option value="write">' . esc_html__( 'Read and write', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</option></select> <button class="button button-primary">' . esc_html__( 'Create key', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button>' );
+		echo '</p><h2>' . esc_html__( 'Webhooks', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h2><table class="widefat striped" style="max-width:900px"><thead><tr><th>' . esc_html__( 'Name / URL', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th><th>' . esc_html__( 'Topics', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th><th>' . esc_html__( 'Last delivery', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</th><th></th></tr></thead><tbody>';
 		$log = (array) get_option( 'sidcraft_commerce_webhook_log', array() );
 		foreach ( (array) get_option( self::HOOKS, array() ) as $h ) {
 			$l = $log[ $h['id'] ] ?? null;
 			echo '<tr><td><strong>' . esc_html( $h['name'] ) . '</strong><br><small>' . esc_html( $h['url'] ) . '</small></td><td>' . esc_html( implode( ', ', (array) $h['topics'] ) ) . '</td><td>' . ( $l ? esc_html( wp_date( 'Y-m-d H:i', (int) $l['time'] ) . ' · ' . $l['topic'] . ' · ' . $l['status'] ) : '—' ) . '</td><td>';
-			$post( 'delhook', '<input type="hidden" name="id" value="' . esc_attr( $h['id'] ) . '"><button class="button">' . esc_html__( 'Delete', $d ) . '</button>' );
+			$post( 'delhook', '<input type="hidden" name="id" value="' . esc_attr( $h['id'] ) . '"><button class="button">' . esc_html__( 'Delete', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button>' );
 			echo '</td></tr>';
 		}
-		echo '</tbody></table><h3>' . esc_html__( 'Add a webhook', $d ) . '</h3>';
+		echo '</tbody></table><h3>' . esc_html__( 'Add a webhook', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h3>';
 		$boxes = '';
 		foreach ( self::topics() as $t ) {
 			$boxes .= '<label style="margin-right:10px"><input type="checkbox" name="topics[]" value="' . esc_attr( $t ) . '"> ' . esc_html( $t ) . '</label>';
 		}
-		$post( 'addhook', '<p><input name="name" placeholder="' . esc_attr__( 'Name', $d ) . '" required> <input type="url" name="url" placeholder="https://hooks.example.com/…" size="45" required></p><p>' . $boxes . '</p><p><button class="button button-primary">' . esc_html__( 'Add webhook', $d ) . '</button></p>' );
-		echo '<p class="description">' . esc_html__( 'Every delivery is signed: header X-Sidcraft-Signature = HMAC-SHA256 (hex) of the request body with the webhook’s secret. Only public https/http addresses are called.', $d ) . '</p></div>';
+		$post( 'addhook', '<p><input name="name" placeholder="' . esc_attr__( 'Name', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '" required> <input type="url" name="url" placeholder="https://hooks.example.com/…" size="45" required></p><p>' . $boxes . '</p><p><button class="button button-primary">' . esc_html__( 'Add webhook', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button></p>' );
+		echo '<p class="description">' . esc_html__( 'Every delivery is signed: header X-Sidcraft-Signature = HMAC-SHA256 (hex) of the request body with the webhook’s secret. Only public https/http addresses are called.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p></div>';
 	}
 
 	/**

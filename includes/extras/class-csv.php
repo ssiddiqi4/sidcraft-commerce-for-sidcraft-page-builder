@@ -49,32 +49,31 @@ class Csv extends Tool {
 		if ( ! current_user_can( manage_cap() ) ) {
 			return;
 		}
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Result notice only.
 		$done = isset( $_GET['imported'] ) ? absint( $_GET['imported'] ) : -1;
 		$new  = isset( $_GET['created'] ) ? absint( $_GET['created'] ) : 0;
 		$bad  = isset( $_GET['skipped'] ) ? absint( $_GET['skipped'] ) : 0;
 		// phpcs:enable
-		echo '<div class="wrap"><h1>' . esc_html__( 'Import / Export', $d ) . '</h1>';
+		echo '<div class="wrap"><h1>' . esc_html__( 'Import / Export', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h1>';
 		if ( $done >= 0 ) {
 			/* translators: 1: rows updated, 2: products created, 3: rows skipped. */
-			echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Import finished: %1$d products updated, %2$d created, %3$d rows skipped.', $d ), $done, $new, $bad ) ) . '</p></div>';
+			echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Import finished: %1$d products updated, %2$d created, %3$d rows skipped.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $done, $new, $bad ) ) . '</p></div>';
 		}
-		echo '<h2>' . esc_html__( 'Export', $d ) . '</h2><p>';
+		echo '<h2>' . esc_html__( 'Export', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h2><p>';
 		foreach ( array(
-			'products'  => __( 'Products (CSV)', $d ),
-			'orders'    => __( 'Orders (CSV)', $d ),
-			'customers' => __( 'Customers (CSV)', $d ),
+			'products'  => __( 'Products (CSV)', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'orders'    => __( 'Orders (CSV)', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'customers' => __( 'Customers (CSV)', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 		) as $what => $label ) {
 			$url = wp_nonce_url( add_query_arg( array( 'action' => 'sidccofo_csv_export', 'what' => $what ), admin_url( 'admin-post.php' ) ), 'sidccofo_csv_export' );
 			echo '<a class="button" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a> ';
 		}
-		echo '</p><h2>' . esc_html__( 'Import products', $d ) . '</h2>';
-		echo '<p>' . esc_html__( 'Upload a CSV with these columns in the first row (any order, any may be left out):', $d ) . ' <code>' . esc_html( implode( ', ', self::columns() ) ) . '</code></p>';
-		echo '<p class="description">' . esc_html__( 'Rows are matched to products by id, then SKU; the rest create new products. Leave stock empty to stop tracking stock. image_url downloads the picture once, for new products or ones with no image.', $d ) . '</p>';
+		echo '</p><h2>' . esc_html__( 'Import products', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h2>';
+		echo '<p>' . esc_html__( 'Upload a CSV with these columns in the first row (any order, any may be left out):', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <code>' . esc_html( implode( ', ', self::columns() ) ) . '</code></p>';
+		echo '<p class="description">' . esc_html__( 'Rows are matched to products by id, then SKU; the rest create new products. Leave stock empty to stop tracking stock. image_url downloads the picture once, for new products or ones with no image.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>';
 		echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="sidccofo_csv_import">';
 		wp_nonce_field( 'sidccofo_csv_import' );
-		echo '<input type="file" name="csv" accept=".csv,text/csv" required> <button class="button button-primary">' . esc_html__( 'Import', $d ) . '</button></form></div>';
+		echo '<input type="file" name="csv" accept=".csv,text/csv" required> <button class="button button-primary">' . esc_html__( 'Import', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button></form></div>';
 	}
 
 	/**
@@ -321,7 +320,7 @@ class Csv extends Tool {
 		if ( '' !== $name ) {
 			$post['post_title'] = $name;
 		}
-		if ( isset( $d['description'] ) && ( $id ? array_key_exists( 'description', $d ) : true ) ) {
+		if ( isset( $d['description'] ) && ( $id ? array_key_exists( 'description', 'sidcraft-commerce-for-sidcraft-page-builder' ) : true ) ) {
 			$post['post_content'] = wp_kses_post( $d['description'] );
 		}
 		if ( isset( $d['short_description'] ) ) {

@@ -34,34 +34,33 @@ class Shipping_Methods extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'shipping',
-			__( 'Local pickup and rate tables', $d ),
+			__( 'Local pickup and rate tables', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'ship_pickup'         => array( __( 'Offer local pickup', $d ), 'checkbox', __( 'Customers can collect their order instead of having it shipped.', $d ) ),
-				'ship_pickup_label'   => array( __( 'Pickup option name', $d ), 'text' ),
-				'ship_pickup_cost'    => array( __( 'Pickup cost', $d ), 'text', __( '0 = free.', $d ) ),
-				'ship_pickup_address' => array( __( 'Pickup address and hours', $d ), 'textarea', __( 'Shown at checkout and kept on the order.', $d ) ),
+				'ship_pickup'         => array( __( 'Offer local pickup', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Customers can collect their order instead of having it shipped.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'ship_pickup_label'   => array( __( 'Pickup option name', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text' ),
+				'ship_pickup_cost'    => array( __( 'Pickup cost', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( '0 = free.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'ship_pickup_address' => array( __( 'Pickup address and hours', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'textarea', __( 'Shown at checkout and kept on the order.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 				'ship_table_basis'    => array(
-					__( 'Rate table is matched on', $d ),
+					__( 'Rate table is matched on', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					array(
-						'subtotal' => __( 'Order subtotal', $d ),
-						'weight'   => __( 'Order weight', $d ),
-						'units'    => __( 'Number of items', $d ),
+						'subtotal' => __( 'Order subtotal', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						'weight'   => __( 'Order weight', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						'units'    => __( 'Number of items', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					),
 				),
 				'ship_table'          => array(
-					__( 'Rate table', $d ),
+					__( 'Rate table', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					'table',
-					__( 'The first row where From ≤ value < To is used (leave To empty for no upper limit) and replaces the zone’s rate. A rate of 0 is free shipping. Amounts are in the store currency.', $d ),
+					__( 'The first row where From ≤ value < To is used (leave To empty for no upper limit) and replaces the zone’s rate. A rate of 0 is free shipping. Amounts are in the store currency.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					array(
-						'from' => array( __( 'From', $d ), 'amount', '0' ),
-						'to'   => array( __( 'To (below)', $d ), 'amount', '' ),
-						'rate' => array( __( 'Rate', $d ), 'amount', '5.00' ),
+						'from' => array( __( 'From', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'amount', '0' ),
+						'to'   => array( __( 'To (below)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'amount', '' ),
+						'rate' => array( __( 'Rate', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'amount', '5.00' ),
 					),
 				),
-				'ship_handling'       => array( __( 'Handling fee', $d ), 'text', __( 'Added to any shipping that is not free. 0 = none.', $d ) ),
+				'ship_handling'       => array( __( 'Handling fee', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Added to any shipping that is not free. 0 = none.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 

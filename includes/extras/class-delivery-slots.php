@@ -27,19 +27,18 @@ class Delivery_Slots extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'slots',
-			__( 'Delivery date and time slots', $d ),
+			__( 'Delivery date and time slots', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'slot_label'    => array( __( 'Heading', $d ), 'text', __( 'For example: Delivery date, or Pickup time.', $d ) ),
-				'slot_days'     => array( __( 'Days ahead', $d ), 'text', __( 'How far ahead a slot can be booked (default 14).', $d ) ),
-				'slot_lead'     => array( __( 'Earliest: days from today', $d ), 'text', __( '0 = today (if before the cut-off), 1 = tomorrow…', $d ) ),
-				'slot_cutoff'   => array( __( 'Cut-off hour for same-day slots', $d ), 'text', __( '0–23, site time. Orders after it can’t pick today.', $d ) ),
-				'slot_times'    => array( __( 'Time windows', $d ), 'textarea', __( 'One per line, for example 09:00-12:00. Empty = date only.', $d ) ),
-				'slot_closed'   => array( __( 'Closed days', $d ), 'text', __( 'Weekdays (Sun, Mon…) and dates (2026-12-25), separated by commas.', $d ) ),
-				'slot_capacity' => array( __( 'Orders per slot', $d ), 'text', __( '0 = no limit. With time windows the limit is per window, otherwise per day.', $d ) ),
-				'slot_required' => array( __( 'A slot must be chosen', $d ), 'checkbox' ),
+				'slot_label'    => array( __( 'Heading', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'For example: Delivery date, or Pickup time.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'slot_days'     => array( __( 'Days ahead', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'How far ahead a slot can be booked (default 14).', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'slot_lead'     => array( __( 'Earliest: days from today', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( '0 = today (if before the cut-off), 1 = tomorrow…', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'slot_cutoff'   => array( __( 'Cut-off hour for same-day slots', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( '0–23, site time. Orders after it can’t pick today.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'slot_times'    => array( __( 'Time windows', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'textarea', __( 'One per line, for example 09:00-12:00. Empty = date only.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'slot_closed'   => array( __( 'Closed days', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Weekdays (Sun, Mon…) and dates (2026-12-25), separated by commas.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'slot_capacity' => array( __( 'Orders per slot', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( '0 = no limit. With time windows the limit is per window, otherwise per day.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'slot_required' => array( __( 'A slot must be chosen', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox' ),
 			)
 		);
 		add_filter( 'sidcraft_commerce_extra_keys', array( $this, 'keys' ) );

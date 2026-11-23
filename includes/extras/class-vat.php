@@ -48,22 +48,21 @@ class Vat extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'vat',
-			__( 'EU VAT and tax exemptions', $d ),
+			__( 'EU VAT and tax exemptions', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
 				'vat_field'       => array(
-					__( 'VAT number field at checkout', $d ),
+					__( 'VAT number field at checkout', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					array(
-						'eu'     => __( 'Show for EU countries', $d ),
-						'always' => __( 'Show for everyone', $d ),
-						'off'    => __( 'Don’t show', $d ),
+						'eu'     => __( 'Show for EU countries', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						'always' => __( 'Show for everyone', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						'off'    => __( 'Don’t show', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					),
 				),
-				'vat_reverse'     => array( __( 'Reverse charge', $d ), 'checkbox', __( 'A valid EU VAT number from another EU country than the store’s removes tax (the store country is “Default country” under General).', $d ) ),
-				'vat_vies'        => array( __( 'Check numbers with VIES', $d ), 'checkbox', __( 'Asks the EU’s VIES service whether the number exists. If your server can’t reach it, numbers with a correct format are accepted.', $d ) ),
-				'vat_exempt_roles' => array( __( 'Tax-exempt roles', $d ), 'text', __( 'User roles that never pay tax, separated by commas (for example wholesale). You can also tick “Tax exempt” on a user’s profile.', $d ) ),
+				'vat_reverse'     => array( __( 'Reverse charge', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'A valid EU VAT number from another EU country than the store’s removes tax (the store country is “Default country” under General).', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'vat_vies'        => array( __( 'Check numbers with VIES', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Asks the EU’s VIES service whether the number exists. If your server can’t reach it, numbers with a correct format are accepted.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'vat_exempt_roles' => array( __( 'Tax-exempt roles', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'User roles that never pay tax, separated by commas (for example wholesale). You can also tick “Tax exempt” on a user’s profile.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 
@@ -78,7 +77,7 @@ class Vat extends Tool {
 		add_action( 'edit_user_profile', array( $this, 'profile' ) );
 		add_action( 'personal_options_update', array( $this, 'save_profile' ) );
 		add_action( 'edit_user_profile_update', array( $this, 'save_profile' ) );
-		$this->admin_page( 'sidccofo-tax-report', __( 'Tax report', $d ), array( $this, 'report_page' ) );
+		$this->admin_page( 'sidccofo-tax-report', __( 'Tax report', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( $this, 'report_page' ) );
 		add_action( 'admin_post_sidccofo_tax_csv', array( $this, 'report_csv' ) );
 	}
 

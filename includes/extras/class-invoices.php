@@ -32,17 +32,16 @@ class Invoices extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'invoices',
-			__( 'PDF invoices and packing slips', $d ),
+			__( 'PDF invoices and packing slips', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'inv_company' => array( __( 'Your company details', $d ), 'textarea', __( 'Name, address, tax or company number: printed at the top of invoices. One item per line.', $d ) ),
-				'inv_prefix'  => array( __( 'Invoice number prefix', $d ), 'text', __( 'For example INV-', $d ) ),
-				'inv_start'   => array( __( 'First invoice number', $d ), 'text', __( 'Used once, for the first invoice. Numbers then go up by one.', $d ) ),
-				'inv_footer'  => array( __( 'Footer text', $d ), 'textarea', __( 'Payment terms, bank details, thank-you note.', $d ) ),
-				'inv_attach'  => array( __( 'Attach to the paid-order email', $d ), 'checkbox', __( 'The customer gets the invoice as a PDF with their order email once the order is paid.', $d ) ),
-				'inv_link'    => array( __( 'Show a download link to customers', $d ), 'checkbox', __( 'On the order-received page, for paid orders.', $d ) ),
+				'inv_company' => array( __( 'Your company details', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'textarea', __( 'Name, address, tax or company number: printed at the top of invoices. One item per line.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'inv_prefix'  => array( __( 'Invoice number prefix', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'For example INV-', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'inv_start'   => array( __( 'First invoice number', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Used once, for the first invoice. Numbers then go up by one.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'inv_footer'  => array( __( 'Footer text', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'textarea', __( 'Payment terms, bank details, thank-you note.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'inv_attach'  => array( __( 'Attach to the paid-order email', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'The customer gets the invoice as a PDF with their order email once the order is paid.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'inv_link'    => array( __( 'Show a download link to customers', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'On the order-received page, for paid orders.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 		add_action( 'admin_post_sidccofo_invoice', array( $this, 'download' ) );

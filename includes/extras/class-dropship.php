@@ -22,6 +22,8 @@ use function SidcraftCommerce\setting;
 
 defined( 'ABSPATH' ) || exit;
 
+// phpcs:disable WordPress.Security.NonceVerification.Missing -- Public routes are rate limited and validated; admin forms verify their nonces.
+
 /**
  * Class Dropship
  */
@@ -29,19 +31,18 @@ class Dropship extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'dropship',
-			__( 'Suppliers', $d ),
+			__( 'Suppliers', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
 				'ds_suppliers' => array(
-					__( 'Suppliers', $d ),
+					__( 'Suppliers', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					'table',
-					__( 'Slug: letters and numbers. The email receives the orders for their products.', $d ),
+					__( 'Slug: letters and numbers. The email receives the orders for their products.', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					array(
-						'slug'  => array( __( 'Slug', $d ), 'text', 'acme' ),
-						'name'  => array( __( 'Name', $d ), 'text', 'Acme Wholesale' ),
-						'email' => array( __( 'Email', $d ), 'text', 'orders@acme.example' ),
+						'slug'  => array( __( 'Slug', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'acme' ),
+						'name'  => array( __( 'Name', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'Acme Wholesale' ),
+						'email' => array( __( 'Email', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', 'orders@acme.example' ),
 					),
 				),
 			)
@@ -141,7 +142,6 @@ class Dropship extends Tool {
 		if ( ! $order || ! isset( $sup[ $slug ] ) || ! hash_equals( self::token( $id, $slug ), $token ) ) {
 			wp_die( esc_html__( 'This link is not valid.', 'sidcraft-commerce-for-sidcraft-page-builder' ), '', array( 'response' => 403 ) );
 		}
-		$d    = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$msg  = '';
 		$left = (array) get_post_meta( $id, '_sidccofo_ds_pending', true );
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- The private token is the credential.
@@ -163,11 +163,11 @@ class Dropship extends Tool {
 				$msg = $result->get_error_message();
 			} else {
 				update_post_meta( $id, '_sidccofo_ds_pending', $left_after );
-				$msg  = __( 'Thank you. The tracking number was saved and the customer was told.', $d );
+				$msg  = __( 'Thank you. The tracking number was saved and the customer was told.', 'sidcraft-commerce-for-sidcraft-page-builder' );
 				$left = $left_after;
 			}
 		}
-		$opts = '<option value="">' . esc_html__( 'Other (type the name)', $d ) . '</option>';
+		$opts = '<option value="">' . esc_html__( 'Other (type the name)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</option>';
 		foreach ( Shipments::carriers() as $group => $list ) {
 			$opts .= '<optgroup label="' . esc_attr( (string) $group ) . '">';
 			foreach ( $list as $slug2 => $c ) {
@@ -176,9 +176,9 @@ class Dropship extends Tool {
 			$opts .= '</optgroup>';
 		}
 		$form = in_array( $slug, $left, true )
-			? '<form method="post"><p><label>' . esc_html__( 'Carrier', $d ) . '<br><select name="carrier">' . $opts . '</select></label></p><p><label>' . esc_html__( 'Carrier name (if other)', $d ) . '<br><input name="carrier_name"></label></p><p><label>' . esc_html__( 'Tracking number', $d ) . '<br><input name="number" required></label></p><p><button>' . esc_html__( 'Save tracking', $d ) . '</button></p></form>'
-			: '<p>' . esc_html__( 'Nothing left to ship for this order.', $d ) . '</p>';
-		wp_die( ( '' !== $msg ? '<p><strong>' . esc_html( $msg ) . '</strong></p>' : '' ) . '<h1>' . esc_html( sprintf( /* translators: %d: order. */ __( 'Order #%d', $d ), $id ) ) . '</h1>' . $form, esc_html__( 'Shipping', $d ), array( 'response' => 200 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped above.
+			? '<form method="post"><p><label>' . esc_html__( 'Carrier', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><select name="carrier">' . $opts . '</select></label></p><p><label>' . esc_html__( 'Carrier name (if other)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input name="carrier_name"></label></p><p><label>' . esc_html__( 'Tracking number', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input name="number" required></label></p><p><button>' . esc_html__( 'Save tracking', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button></p></form>'
+			: '<p>' . esc_html__( 'Nothing left to ship for this order.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>';
+		wp_die( ( '' !== $msg ? '<p><strong>' . esc_html( $msg ) . '</strong></p>' : '' ) . '<h1>' . esc_html( sprintf( /* translators: %d: order. */ __( 'Order #%d', 'sidcraft-commerce-for-sidcraft-page-builder' ), $id ) ) . '</h1>' . $form, esc_html__( 'Shipping', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'response' => 200 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped above.
 	}
 
 	/**

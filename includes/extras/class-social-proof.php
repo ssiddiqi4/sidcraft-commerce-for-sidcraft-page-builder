@@ -27,19 +27,18 @@ class Social_Proof extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'social',
-			__( 'Social-proof popups', $d ),
+			__( 'Social-proof popups', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'sp_days'     => array( __( 'Show orders from the last (days)', $d ), 'text', __( 'Default 7.', $d ) ),
-				'sp_city'     => array( __( 'Show the city instead of the country', $d ), 'checkbox' ),
-				'sp_every'    => array( __( 'Seconds between popups', $d ), 'text', __( 'Default 12.', $d ) ),
+				'sp_days'     => array( __( 'Show orders from the last (days)', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Default 7.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'sp_city'     => array( __( 'Show the city instead of the country', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox' ),
+				'sp_every'    => array( __( 'Seconds between popups', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Default 12.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 				'sp_pages'    => array(
-					__( 'Show on', $d ),
+					__( 'Show on', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					array(
-						'store' => __( 'Store pages (product, shop, cart)', $d ),
-						'all'   => __( 'Every page', $d ),
+						'store' => __( 'Store pages (product, shop, cart)', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+						'all'   => __( 'Every page', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 					),
 				),
 			)

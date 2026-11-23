@@ -33,14 +33,13 @@ class Stock_Alerts extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'stock',
-			__( 'Stock alerts, backorders and pre-orders', $d ),
+			__( 'Stock alerts, backorders and pre-orders', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'stock_low_default' => array( __( 'Low-stock warning at', $d ), 'text', __( 'Email the owner when a product that tracks stock falls to this many or fewer. 0 = off. A product can set its own number.', $d ) ),
-				'stock_alert_email' => array( __( 'Send warnings to', $d ), 'email', __( 'Empty = the site admin email.', $d ) ),
-				'stock_notify_me'   => array( __( '“Notify me when back in stock” form', $d ), 'checkbox', __( 'Shown on products that are out of stock. The email is used once and then deleted.', $d ) ),
+				'stock_low_default' => array( __( 'Low-stock warning at', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'text', __( 'Email the owner when a product that tracks stock falls to this many or fewer. 0 = off. A product can set its own number.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'stock_alert_email' => array( __( 'Send warnings to', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'email', __( 'Empty = the site admin email.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
+				'stock_notify_me'   => array( __( '“Notify me when back in stock” form', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox', __( 'Shown on products that are out of stock. The email is used once and then deleted.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
 		add_action( 'sidcraft_commerce_stock_changed', array( $this, 'changed' ), 10, 3 );
@@ -171,29 +170,28 @@ class Stock_Alerts extends Tool {
 	 * @param \WP_Post $post Product.
 	 */
 	public function render_box( $post ) {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		wp_nonce_field( 'sidccofo_stock_opts', '_sidccofo_stock_opts' );
 		$m = static function ( $k ) use ( $post ) {
 			return (string) get_post_meta( $post->ID, '_sidccofo_' . $k, true );
 		};
-		echo '<p><label>' . esc_html__( 'Backorders', $d ) . '<br><select name="sidccofo_backorders" class="widefat">';
-		foreach ( array( 'no' => __( 'Do not allow', $d ), 'notify' => __( 'Allow, and tell the buyer', $d ), 'yes' => __( 'Allow', $d ) ) as $v => $l ) {
+		echo '<p><label>' . esc_html__( 'Backorders', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><select name="sidccofo_backorders" class="widefat">';
+		foreach ( array( 'no' => __( 'Do not allow', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'notify' => __( 'Allow, and tell the buyer', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'yes' => __( 'Allow', 'sidcraft-commerce-for-sidcraft-page-builder' ) ) as $v => $l ) {
 			echo '<option value="' . esc_attr( $v ) . '"' . selected( $m( 'backorders' ) ?: 'no', $v, false ) . '>' . esc_html( $l ) . '</option>';
 		}
-		echo '</select></label><br><small>' . esc_html__( 'Needs “Manage stock” on. Stock may then go below zero.', $d ) . '</small></p>';
+		echo '</select></label><br><small>' . esc_html__( 'Needs “Manage stock” on. Stock may then go below zero.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</small></p>';
 		foreach ( array(
-			'low_stock' => __( 'Low-stock warning at', $d ),
-			'min_qty'   => __( 'Minimum per order', $d ),
-			'max_qty'   => __( 'Maximum per order', $d ),
-			'qty_step'  => __( 'Sell in multiples of', $d ),
+			'low_stock' => __( 'Low-stock warning at', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'min_qty'   => __( 'Minimum per order', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'max_qty'   => __( 'Maximum per order', 'sidcraft-commerce-for-sidcraft-page-builder' ),
+			'qty_step'  => __( 'Sell in multiples of', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 		) as $k => $l ) {
 			echo '<p><label>' . esc_html( $l ) . '<br><input type="number" min="0" step="1" class="widefat" name="sidccofo_' . esc_attr( $k ) . '" value="' . esc_attr( $m( $k ) ) . '"></label></p>';
 		}
-		echo '<p><label>' . esc_html__( 'Pre-order until', $d ) . '<br><input type="date" class="widefat" name="sidccofo_preorder_date" value="' . esc_attr( $m( 'preorder_date' ) ) . '"></label><br><small>' . esc_html__( 'Until this date the button says Pre-order and the page says when it ships.', $d ) . '</small></p>';
+		echo '<p><label>' . esc_html__( 'Pre-order until', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input type="date" class="widefat" name="sidccofo_preorder_date" value="' . esc_attr( $m( 'preorder_date' ) ) . '"></label><br><small>' . esc_html__( 'Until this date the button says Pre-order and the page says when it ships.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</small></p>';
 		$waiting = (array) get_post_meta( $post->ID, self::WAITING, true );
 		if ( $waiting ) {
 			/* translators: %d: number of people. */
-			echo '<p>' . esc_html( sprintf( _n( '%d person is waiting for this product.', '%d people are waiting for this product.', count( $waiting ), $d ), count( $waiting ) ) ) . '</p>';
+			echo '<p>' . esc_html( sprintf( _n( '%d person is waiting for this product.', '%d people are waiting for this product.', count( $waiting ), 'sidcraft-commerce-for-sidcraft-page-builder' ), count( $waiting ) ) ) . '</p>';
 		}
 	}
 

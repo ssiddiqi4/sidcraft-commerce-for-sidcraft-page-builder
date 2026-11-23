@@ -25,6 +25,8 @@ use function SidcraftCommerce\setting;
 
 defined( 'ABSPATH' ) || exit;
 
+// phpcs:disable WordPress.Security.NonceVerification.Missing -- Public routes are rate limited and validated; admin forms verify their nonces.
+
 /**
  * Class Questions
  */
@@ -41,17 +43,16 @@ class Questions extends Tool {
 
 	/** {@inheritDoc} */
 	public function hooks() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		$this->settings(
 			'questions',
-			__( 'Questions and photo reviews', $d ),
+			__( 'Questions and photo reviews', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 			array(
-				'qa_on'     => array( __( 'Questions and answers on product pages', $d ), 'checkbox' ),
-				'qa_photos' => array( __( 'Photos with reviews', $d ), 'checkbox' ),
-				'qa_email'  => array( __( 'Email new questions to', $d ), 'email', __( 'Empty = the site admin email.', $d ) ),
+				'qa_on'     => array( __( 'Questions and answers on product pages', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox' ),
+				'qa_photos' => array( __( 'Photos with reviews', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'checkbox' ),
+				'qa_email'  => array( __( 'Email new questions to', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'email', __( 'Empty = the site admin email.', 'sidcraft-commerce-for-sidcraft-page-builder' ) ),
 			)
 		);
-		Simple_Unit::add( 'sidccofo-questions', __( 'Product Questions', $d ), array( 'product_id' => array( 'type' => 'product', 'label' => __( 'Product', $d ), 'section' => 'content', 'default' => '' ) ), array( $this, 'render' ), 'help' );
+		Simple_Unit::add( 'sidccofo-questions', __( 'Product Questions', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( 'product_id' => array( 'type' => 'product', 'label' => __( 'Product', 'sidcraft-commerce-for-sidcraft-page-builder' ), 'section' => 'content', 'default' => '' ) ), array( $this, 'render' ), 'help' );
 		add_filter( 'sidcraft_commerce_render_sidccofo-product-reviews', array( $this, 'after_reviews' ), 10, 2 );
 		add_action( 'rest_api_init', array( $this, 'routes' ) );
 		add_filter( 'rest_request_before_callbacks', array( $this, 'capture' ), 10, 3 );
@@ -60,7 +61,7 @@ class Questions extends Tool {
 		add_action( 'sidcraft_commerce_review_after_text', array( $this, 'show_photos' ) );
 		add_action( 'sidcraft_commerce_cleanup', array( $this, 'cleanup' ) );
 		add_action( 'admin_post_sidccofo_answer', array( $this, 'answer' ) );
-		$this->admin_page( 'sidccofo-questions', __( 'Questions', $d ), array( $this, 'admin' ) );
+		$this->admin_page( 'sidccofo-questions', __( 'Questions', 'sidcraft-commerce-for-sidcraft-page-builder' ), array( $this, 'admin' ) );
 	}
 
 	/*
@@ -95,16 +96,15 @@ class Questions extends Tool {
 			return '';
 		}
 		Extras::enqueue();
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
-		$h = '<section class="sc-qa"><h3>' . esc_html__( 'Questions and answers', $d ) . '</h3>';
+		$h = '<section class="sc-qa"><h3>' . esc_html__( 'Questions and answers', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h3>';
 		$rows = $this->answered( $p->get_id() );
 		if ( ! $rows ) {
-			$h .= '<p class="sc-qa__empty">' . esc_html__( 'No questions yet.', $d ) . '</p>';
+			$h .= '<p class="sc-qa__empty">' . esc_html__( 'No questions yet.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>';
 		}
 		foreach ( $rows as $r ) {
-			$h .= '<div class="sc-qa__item"><p><strong>' . esc_html__( 'Q:', $d ) . '</strong> ' . esc_html( $r['q'] ) . ' <small>— ' . esc_html( $r['name'] ) . '</small></p>' . ( '' !== $r['a'] ? '<p><strong>' . esc_html__( 'A:', $d ) . '</strong> ' . esc_html( $r['a'] ) . '</p>' : '' ) . '</div>';
+			$h .= '<div class="sc-qa__item"><p><strong>' . esc_html__( 'Q:', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</strong> ' . esc_html( $r['q'] ) . ' <small>— ' . esc_html( $r['name'] ) . '</small></p>' . ( '' !== $r['a'] ? '<p><strong>' . esc_html__( 'A:', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</strong> ' . esc_html( $r['a'] ) . '</p>' : '' ) . '</div>';
 		}
-		return $h . '<form class="sc-qa__form" data-sc-ask data-product="' . esc_attr( $p->get_id() ) . '"><label>' . esc_html__( 'Ask a question', $d ) . '<br><textarea name="question" rows="3" required maxlength="1000"></textarea></label><p><label>' . esc_html__( 'Your name', $d ) . ' <input name="name" required maxlength="60"></label> <label>' . esc_html__( 'Email (not shown)', $d ) . ' <input type="email" name="email" required></label></p><input type="text" name="website" tabindex="-1" autocomplete="off" class="sc-visually-hidden" aria-hidden="true"><button class="sc-btn" type="submit">' . esc_html__( 'Send question', $d ) . '</button><p class="sc-qa__msg" role="status" aria-live="polite"></p></form></section>';
+		return $h . '<form class="sc-qa__form" data-sc-ask data-product="' . esc_attr( $p->get_id() ) . '"><label>' . esc_html__( 'Ask a question', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><textarea name="question" rows="3" required maxlength="1000"></textarea></label><p><label>' . esc_html__( 'Your name', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <input name="name" required maxlength="60"></label> <label>' . esc_html__( 'Email (not shown)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <input type="email" name="email" required></label></p><input type="text" name="website" tabindex="-1" autocomplete="off" class="sc-visually-hidden" aria-hidden="true"><button class="sc-btn" type="submit">' . esc_html__( 'Send question', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button><p class="sc-qa__msg" role="status" aria-live="polite"></p></form></section>';
 	}
 
 	/**
@@ -158,17 +158,16 @@ class Questions extends Tool {
 	 * Admin list and answer form.
 	 */
 	public function admin() {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
-		echo '<div class="wrap"><h1>' . esc_html__( 'Questions', $d ) . '</h1>';
+		echo '<div class="wrap"><h1>' . esc_html__( 'Questions', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</h1>';
 		$rows = get_comments( array( 'type' => self::TYPE, 'status' => 'all', 'number' => 100, 'orderby' => 'comment_date_gmt', 'order' => 'DESC' ) );
 		if ( ! $rows ) {
-			echo '<p>' . esc_html__( 'No questions yet.', $d ) . '</p>';
+			echo '<p>' . esc_html__( 'No questions yet.', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</p>';
 		}
 		foreach ( $rows as $c ) {
-			echo '<div style="background:#fff;border:1px solid #dcdcde;padding:12px 16px;margin:10px 0;max-width:800px"><p><strong>' . esc_html( wp_strip_all_tags( get_the_title( (int) $c->comment_post_ID ) ) ) . '</strong> · ' . esc_html( $c->comment_author . ' <' . $c->comment_author_email . '>' ) . ' · ' . ( '1' === $c->comment_approved ? esc_html__( 'Published', $d ) : esc_html__( 'Waiting', $d ) ) . '</p><p>' . esc_html( $c->comment_content ) . '</p>';
+			echo '<div style="background:#fff;border:1px solid #dcdcde;padding:12px 16px;margin:10px 0;max-width:800px"><p><strong>' . esc_html( wp_strip_all_tags( get_the_title( (int) $c->comment_post_ID ) ) ) . '</strong> · ' . esc_html( $c->comment_author . ' <' . $c->comment_author_email . '>' ) . ' · ' . ( '1' === $c->comment_approved ? esc_html__( 'Published', 'sidcraft-commerce-for-sidcraft-page-builder' ) : esc_html__( 'Waiting', 'sidcraft-commerce-for-sidcraft-page-builder' ) ) . '</p><p>' . esc_html( $c->comment_content ) . '</p>';
 			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="sidccofo_answer"><input type="hidden" name="id" value="' . esc_attr( (string) $c->comment_ID ) . '">';
 			wp_nonce_field( 'sidccofo_answer_' . $c->comment_ID );
-			echo '<textarea name="answer" rows="3" class="widefat" placeholder="' . esc_attr__( 'Your answer (shown with the question)', $d ) . '">' . esc_textarea( (string) get_comment_meta( $c->comment_ID, '_sidccofo_answer', true ) ) . '</textarea><p><button class="button button-primary" name="do" value="publish">' . esc_html__( 'Publish', $d ) . '</button> <button class="button" name="do" value="delete" onclick="return confirm(\'' . esc_js( __( 'Delete this question?', $d ) ) . '\')">' . esc_html__( 'Delete', $d ) . '</button></p></form></div>';
+			echo '<textarea name="answer" rows="3" class="widefat" placeholder="' . esc_attr__( 'Your answer (shown with the question)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '">' . esc_textarea( (string) get_comment_meta( $c->comment_ID, '_sidccofo_answer', true ) ) . '</textarea><p><button class="button button-primary" name="do" value="publish">' . esc_html__( 'Publish', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button> <button class="button" name="do" value="delete" onclick="return confirm(\'' . esc_js( __( 'Delete this question?', 'sidcraft-commerce-for-sidcraft-page-builder' ) ) . '\')">' . esc_html__( 'Delete', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</button></p></form></div>';
 		}
 		echo '</div>';
 	}

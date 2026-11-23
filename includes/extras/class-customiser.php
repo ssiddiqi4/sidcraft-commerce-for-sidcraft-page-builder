@@ -19,6 +19,8 @@ use function SidcraftCommerce\rate_limit;
 
 defined( 'ABSPATH' ) || exit;
 
+// phpcs:disable WordPress.Security.NonceVerification.Missing -- Public routes are rate limited and validated; admin forms verify their nonces.
+
 /**
  * Class Customiser
  */
@@ -43,7 +45,6 @@ class Customiser extends Tool {
 	 */
 	public function options( $groups, $product ) {
 		$id = $product->get_id();
-		$d  = 'sidcraft-commerce-for-sidcraft-page-builder';
 		if ( '' !== trim( (string) get_post_meta( $id, '_sidccofo_cust_text', true ) ) ) {
 			$groups[] = array(
 				'id'          => 'personal-text',
@@ -51,7 +52,7 @@ class Customiser extends Tool {
 				'type'        => 'text',
 				'required'    => (bool) get_post_meta( $id, '_sidccofo_cust_text_req', true ),
 				'maxlength'   => max( 1, min( 200, (int) get_post_meta( $id, '_sidccofo_cust_text_max', true ) ?: 30 ) ),
-				'placeholder' => __( 'Type your text', $d ),
+				'placeholder' => __( 'Type your text', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 				'choices'     => array(),
 			);
 		}
@@ -62,7 +63,7 @@ class Customiser extends Tool {
 				'type'        => 'text',
 				'required'    => false,
 				'maxlength'   => 300,
-				'placeholder' => __( 'Upload a picture below', $d ),
+				'placeholder' => __( 'Upload a picture below', 'sidcraft-commerce-for-sidcraft-page-builder' ),
 				'choices'     => array(),
 			);
 		}
@@ -165,15 +166,14 @@ class Customiser extends Tool {
 	 * @param \WP_Post $post Product.
 	 */
 	public function render_box( $post ) {
-		$d = 'sidcraft-commerce-for-sidcraft-page-builder';
 		wp_nonce_field( 'sidccofo_cust', '_sidccofo_cust' );
 		$m = static function ( $k ) use ( $post ) {
 			return (string) get_post_meta( $post->ID, '_sidccofo_' . $k, true );
 		};
-		echo '<p><label>' . esc_html__( 'Text field label (empty = none)', $d ) . '<br><input class="widefat" name="sidccofo_cust_text" placeholder="Engraving text" value="' . esc_attr( $m( 'cust_text' ) ) . '"></label></p>';
-		echo '<p><label>' . esc_html__( 'Max characters', $d ) . ' <input type="number" min="1" max="200" name="sidccofo_cust_text_max" value="' . esc_attr( $m( 'cust_text_max' ) ?: '30' ) . '"></label> <label><input type="checkbox" name="sidccofo_cust_text_req" value="1" ' . checked( '' !== $m( 'cust_text_req' ), true, false ) . '> ' . esc_html__( 'Required', $d ) . '</label></p>';
-		echo '<p><label>' . esc_html__( 'Picture upload label (empty = none)', $d ) . '<br><input class="widefat" name="sidccofo_cust_image" placeholder="Your logo" value="' . esc_attr( $m( 'cust_image' ) ) . '"></label></p>';
-		echo '<p><label>' . esc_html__( 'Size chart (HTML table or text, empty = none)', $d ) . '<br><textarea class="widefat" rows="5" name="sidccofo_cust_chart">' . esc_textarea( $m( 'cust_chart' ) ) . '</textarea></label></p>';
+		echo '<p><label>' . esc_html__( 'Text field label (empty = none)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input class="widefat" name="sidccofo_cust_text" placeholder="Engraving text" value="' . esc_attr( $m( 'cust_text' ) ) . '"></label></p>';
+		echo '<p><label>' . esc_html__( 'Max characters', 'sidcraft-commerce-for-sidcraft-page-builder' ) . ' <input type="number" min="1" max="200" name="sidccofo_cust_text_max" value="' . esc_attr( $m( 'cust_text_max' ) ?: '30' ) . '"></label> <label><input type="checkbox" name="sidccofo_cust_text_req" value="1" ' . checked( '' !== $m( 'cust_text_req' ), true, false ) . '> ' . esc_html__( 'Required', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '</label></p>';
+		echo '<p><label>' . esc_html__( 'Picture upload label (empty = none)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><input class="widefat" name="sidccofo_cust_image" placeholder="Your logo" value="' . esc_attr( $m( 'cust_image' ) ) . '"></label></p>';
+		echo '<p><label>' . esc_html__( 'Size chart (HTML table or text, empty = none)', 'sidcraft-commerce-for-sidcraft-page-builder' ) . '<br><textarea class="widefat" rows="5" name="sidccofo_cust_chart">' . esc_textarea( $m( 'cust_chart' ) ) . '</textarea></label></p>';
 	}
 
 	/**
