@@ -5,7 +5,7 @@ Tags: e-commerce, shop, checkout, cart, digital-products
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.0.1
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,55 +13,16 @@ Online store for Sidcraft Page Builder: cart, checkout, coupons, reviews, PayPal
 
 == Description ==
 
-Sidcraft Commerce turns [Sidcraft Page Builder](https://canvasly.pro) into a complete store. It needs only [Sidcraft Page Builder](https://wordpress.org/plugins/sidcraft-page-builder) — no WooCommerce or other e-commerce plugin.
+Sidcraft Commerce turns [Sidcraft Page Builder](https://canvasly.pro) into a complete store. It needs only [Sidcraft Page Builder](https://wordpress.org/plugins/sidcraft-page-builder): no WooCommerce or other e-commerce plugin.
 
-* Design products in [Sidcraft Page Builder](https://wordpress.org/plugins/sidcraft-page-builder): Add New Product opens the builder, and its Product data panel sets the price, sale price, SKU, stock, badge, categories, image and short description. Existing products get "Edit with Sidcraft Page Builder".
-* Products with prices, sale prices (shown above the struck-through regular price), SKU, stock tracking, featured flag and categories.
-* Verified-customer ratings and reviews: shoppers click a star, enter their order number and order email, and write a review. Reviews show with a "Verified purchase" badge, a rating breakdown and the average on the product page.
-* Image badges per product (HOT, POPULAR, Sale, Clearance) and an automatic "Sold Out" label on out-of-stock products.
-* Item options: sizes, extras, spice levels or special instructions on any product, each choice optionally adding to the price (for example "Large +4", "Extra cheese +1.50"). Choices show in the cart, checkout, emails and the order screen.
-* Coupons: a percentage off or a fixed amount off, with optional minimum spend, expiry date and usage limit.
-* Cart stored server-side per visitor; prices are always recalculated from the product.
-* Payments: PayPal with Pay in 4 (Pay Later) and Venmo; Stripe for cards, Apple Pay, Google Pay, Klarna, Afterpay / Clearpay and Affirm; Razorpay and PayU for India (UPI, cards, netbanking, wallets); Mercado Pago for Latin America (cards, Pix, boleto, OXXO, installments). Customers pay on each provider's secure page or buttons; card numbers never touch your site.
-* Digital downloads: sell e-books, music, software, courses or printables. Tick "Downloadable" on a product and add one or more files (upload them, pick them from the media library or link to files hosted elsewhere), with an optional download limit and expiry. Tick "Virtual" for products with nothing to ship: a cart of virtual products skips the shipping cost and the address fields.
-* Each buyer gets a private link per file on the order-received page, in the order emails and on a My downloads page (My Downloads Unit or `[sidccofo_downloads]`). Access starts when the order is paid (or when it is marked Completed), pauses when it is cancelled or refunded, and past buyers get files you add later. On the order screen, change downloads left and expiry, revoke or restore access, give access to another product's files, see the download history and email the links again. Store → Download log lists every order with downloads.
-* Download security: uploads go to a protected folder with random file names; files are only served from approved folders and in file types WordPress allows; force download (resumable), X-Sendfile / X-Accel-Redirect / X-LiteSpeed-Location or redirect; optional login or email confirmation before downloading; optional IP logging, included in WordPress's personal data export and erase tools.
-* Modules: turn off what your store doesn't use under Store → Settings → Modules — Events, Subscriptions, Gift cards, Coupons, Reward points, Affiliates, Email marketing and Live chat. Their menus, settings, Units and checkout fields go away; nothing is deleted.
-* Gift cards: sell them as products (preset amounts and/or a custom amount, recipient, message, optional send date) or issue them by hand. Recipients get an email with the code; customers redeem one or more cards in the cart or at checkout, and unused balance stays on the card.
-* Shipment tracking: add tracking numbers on the order screen. Links are built automatically for Australia Post, Canada Post, City-Link Express, DHL, DPD, Fastway South Africa, FedEx, OnTrac, Parcelforce, Polish carriers (Poczta Polska, InPost, DPD Polska, DHL Parcel Polska, GLS), Royal Mail, SAPO, TNT Express (consignment and reference), UPS and USPS, or use any carrier with a custom link.
-* Developers can add any payment method (a local bank, a regional wallet, a proprietary system) by extending one PHP class; settings, return and webhook URLs are provided. See docs/example-gateway.php.
-* Orders in the admin with statuses, history and stock reserved when the order is placed. Two buyers cannot both take the last unit. Cancelled and Refunded put the remaining units back. A dispute keeps them reserved until it is lost.
-* Partial refunds record the amount and return only the quantities you name. A refund that covers the order total marks the order Refunded. Stripe and PayPal refund and dispute notifications are applied once.
-* Guest checkout can create an account, and a later login with the same email attaches guest orders placed on 1.0.9 or newer.
-* Store → Export catalog downloads products, categories, prices, SKU, stock and item options as JSON, without the page-builder layout.
-* Order emails to the customer and the shop owner, including a “Your order has shipped” email with tracking links.
-* Events and tickets (new in 1.2.0): Events menu with date and time, venue, address and map, online details (Zoom, Google Meet, any link), organiser, WhatsApp chat and group links, and any number of ticket types.
-* Ticket and inventory control: event-wide capacity plus per-ticket limits, minimum and maximum per order, sales start and end, and tiered prices by attendee type (Adult, Child, Student, VIP…). Dynamic pricing rules per ticket: early-bird and late prices by date, demand prices ("after 75%"), and group rates ("qty 5").
-* Tickets are sold through hidden product placeholders, so the store's checkout, currency, taxes, coupons, gift cards, stock locking, refunds and every payment method work for tickets.
-* Attendee details at checkout: name, email and phone per ticket, plus custom fields (text, long text, email, phone, number, date, dropdown, choose one, checkboxes and file uploads, stored privately).
-* Automated delivery: paid orders issue tickets with unique codes, QR codes and/or Code 128 barcodes. Buyers get an email with embedded QR codes, PDF tickets and a calendar file; attendees can get their own copy; reminder emails go out before the event; optional WhatsApp Cloud API message.
-* Check-in: scan the QR code with any phone camera (staff see a Check in button), use the Check-in screen with the device camera or a USB scanner, or check in from the Attendees list. Cancelled or refunded orders cancel their tickets; partial refunds cancel just the refunded tickets.
-* Calendars: "Add to Google Calendar" and .ics links, plus a subscription feed that Google Calendar, Apple Calendar and Outlook keep in sync. Zoom meetings can be created automatically with a Zoom Server-to-Server OAuth app.
-* Display events with Units for Sidcraft Page Builder, Gutenberg blocks or shortcodes: Event List, Event Calendar, Event Details, Event Tickets, Event Map and My Tickets (`[sidccofo_event_list]`, `[sidccofo_event_calendar]`, `[sidccofo_event_tickets event_id="123"]`…). Attendees list with CSV export.
+* Design products in Sidcraft Page Builder: price, sale price, SKU, stock, badges, categories, item options and variants.
+* Cart, checkout, coupons, gift cards, verified-customer reviews, shipping zones, tax, multiple currencies and order emails.
+* Payments: PayPal, bank transfer, cheque and cash on delivery. With Sidcraft Builder Pro: Stripe, Razorpay, PayU and Mercado Pago.
+* Digital downloads, event tickets with QR check-in, subscriptions, email marketing and live chat.
+* Store tools (new in 2.1.0), each switched on or off under Store → Settings → Store tools: invoices, CSV import and export, reports, EU VAT, stock alerts, cart drawer, search and filters, wishlist, bundles, bookings, memberships, licence keys, deposits, delivery slots, analytics events and product feeds, REST API and webhooks, point of sale and more.
+* Pages stay cacheable, and themes can override any template from `templates/` in `yourtheme/sidcraft-commerce/`.
 
-* Several currencies: list more currencies with your rates (Store → Settings → Currencies). Shoppers pick one with the Currency Switcher Unit, or get the one for their country or language; prices, options, shipping, coupons, gift cards and reward points are shown and charged in it, and each order keeps its currency and rate. A product can have its own price per currency.
-* Translated stores with WPML or Polylang: products, categories, brands and events can be translated. Every language sells the same stock, shares reviews and fills the same cart line; shop pages open in the shopper's language and order emails go out in it.
-* Several stores on WordPress Multisite: network-activate it and each site is its own store, with its own cookies. Network Admin → Stores shows every store's orders and sales, the latest orders across stores, and copies settings, products (with images and downloadable files) and coupons between stores. WP-CLI: `wp sidcraft-commerce stores` and `wp sidcraft-commerce copy`.
-* Email marketing (new in 2.0.0): a mailing list with the Newsletter Signup Unit (`[sidccofo_newsletter]`) and an opt-in box at checkout, double opt-in, tags, CSV import and export. Email campaigns written in the WordPress editor go to everyone or to a group (customers, not yet customers, spent more than, no order for N days, ordered recently, tagged), now or at a set time, in batches. Automatic emails: welcome, abandoned cart (with a button that puts the cart back), order follow-up asking for a review, and win-back. Every email has an unsubscribe link and one-click unsubscribe headers; opens and clicks are counted. Only people who agreed get marketing email.
-* Live chat (new in 2.0.0): a chat button on your store pages and an inbox under Store → Live chat with unread counts, the visitor's account, orders and the page they started on. While nobody has the inbox open, visitors leave a message that is emailed to you, and you can answer by email too. Light: nothing loads from the server until a visitor opens the chat.
-* Subscriptions: bill any product every day, week, month or year, for a set number of payments or until cancelled, with an optional free trial and sign-up fee. Each renewal is an order. With Stripe in Sidcraft Pro the saved card is charged automatically; otherwise (or when a card is declined) the customer is emailed a link to pay with any payment method. Customers see, cancel and keep their subscriptions on a My subscriptions page (My Subscriptions Unit or `[sidccofo_subscriptions]`); Store → Subscriptions lists them, with the orders, history, next payment date and price of each.
-
-= Sell event tickets, deliver QR tickets, and check in guests =
-https://www.youtube.com/watch?v=aO_uLuGiDO8
-
-[Download Opencart to Sidcraft Importer](https://canvasly.pro/Sidcraft-Commerce-vs-WooCommerce-vs-OpenCart.html)
-[Download WooCommerce to Sidcraft Commerce Migrator](https://canvasly.pro/sidcraft-commerce-woo-migrator-1.1.0.zip)
-
-Commerce Units for [Sidcraft](https://wordpress.org/plugins/sidcraft-page-builder): Product Grid, Add to Cart, Product Price, Stock Status, Product Rating, Product Reviews, Mini Cart, Cart, Checkout and Order Confirmation, plus a quick-view popup. Every Unit also works as a shortcode, e.g. `[sidccofo_product_grid source="on_sale" limit="8"]`.
-
-Pages stay cacheable: assets load only where a Unit is used, the cart badge fills in after load, and Cart/Checkout pages are marked no-cache automatically.
-
-Themes can override any template by copying it from `templates/` into `yourtheme/sidcraft-commerce/`
+The FAQ entry "What does Sidcraft Commerce include?" lists every feature.
 
 == External services ==
 
@@ -82,6 +43,15 @@ Events (optional; used only when the store owner sets them up):
 * WhatsApp Cloud API (Meta) - only when enabled under Events → Settings, the buyer's phone number, first name, event name, date and ticket link are sent to graph.facebook.com when tickets are issued. Terms: https://www.whatsapp.com/legal/business-terms — privacy: https://www.whatsapp.com/legal/privacy-policy
 * WhatsApp links - "Chat on WhatsApp", "Share on WhatsApp" and group links are plain links to wa.me / chat.whatsapp.com, opened only when clicked.
 
+Store tools (optional; used only when the store owner enters the matching id or turns the tool on):
+
+* Google Analytics 4 - only when a measurement id is entered under Store tools, the visitor's browser loads www.googletagmanager.com/gtag/js and sends page views and the events view_item, add_to_cart, begin_checkout and purchase (product ids, names, prices, order total, currency) to Google. Terms: https://marketingplatform.google.com/about/analytics/terms/us/ — privacy: https://policies.google.com/privacy
+* Meta Pixel - only when a pixel id is entered, the visitor's browser loads connect.facebook.net/en_US/fbevents.js and sends page views and the same events to Meta. Terms: https://www.facebook.com/legal/terms — privacy: https://www.facebook.com/privacy/policy/
+* TikTok Pixel - only when a pixel id is entered, the visitor's browser loads analytics.tiktok.com and sends page views and the same events to TikTok. Terms: https://www.tiktok.com/legal/page/global/terms-of-service/en — privacy: https://www.tiktok.com/legal/page/global/privacy-policy/en
+* Consent: if you enter a consent cookie name, none of the three loads until that cookie exists and is not "no", "false", "0" or "denied".
+* EU VIES - when "Check numbers with VIES" is on and a buyer enters an EU VAT number at checkout, the number is sent from your server to ec.europa.eu (the European Commission's VAT Information Exchange System) to check it exists. The answer is cached for a day. Terms and privacy: https://commission.europa.eu/privacy-policy-websites-commission_en
+* Webhooks - only when you add a webhook under Store → API & webhooks, your server sends the event (order or product data) to the address you entered. You choose the receiver and are responsible for it.
+
 == Developers: add-ons ==
 
 Sidcraft Commerce is built to be extended by other plugins: a restaurant menu, bookings, a print shop. Add-ons can add item options in code, register their own order statuses (for example Preparing, Ready for pickup, Out for delivery, each with its own customer email), add checkout fields (pickup time, delivery notes), block ordering outside opening hours, add Units for Sidcraft Page Builder, settings sections and emails. The guide is in `docs/ADDONS.md`, with a complete restaurant example in `docs/example-addon.php`.
@@ -89,6 +59,13 @@ Sidcraft Commerce is built to be extended by other plugins: a restaurant menu, b
 == Developers: custom payment gateways ==
 
 Extend `\SidcraftCommerce\Payments\Gateway` (the equivalent of WooCommerce's WC_Payment_Gateway) and add it with the `sidcraft_commerce_gateways` filter. Implement `get_id()`, `get_default_title()` and `process_payment()`; return fields from `get_settings_fields()` and they appear on Store → Settings → Payments. `return_url()` and `webhook_url()` point at ready-made REST routes that call your `handle_return()` and `handle_webhook()`; `remote_json()` calls JSON APIs; `$order->payment_complete()` marks an order paid. A complete, commented example is in `docs/example-gateway.php`.
+
+== Other plugins from the same author ==
+
+* [Sidcraft Media Offload](https://wordpress.org/plugins/sidcraft-cloud-media-offload)
+* [Sidcraft Page Builder](https://wordpress.org/plugins/sidcraft-page-builder)
+* [Sidcraft Restaurant](https://wordpress.org/plugins/sidcraft-restaurant-for-sidcraft-commerce)
+* [VidCellar](https://wordpress.org/plugins/vidcellar-lite)
 
 == Installation ==
 
@@ -199,6 +176,96 @@ BHD, JOD, KWD, OMR and TND are sent to payment providers in thousandths and disp
 
 Settings, sessions, temporary data, chats, the email log and remembered carts are removed. Products, orders, coupons, gift cards, campaigns and the mailing list are kept, unless you add `define( 'SIDCRAFT_COMMERCE_REMOVE_ALL_DATA', true );` to wp-config.php before deleting the plugin.
 
+= What does Sidcraft Commerce include? =
+
+Sidcraft Commerce turns [Sidcraft Page Builder](https://canvasly.pro) into a complete store. It needs only [Sidcraft Page Builder](https://wordpress.org/plugins/sidcraft-page-builder) — no WooCommerce or other e-commerce plugin.
+
+* Design products in [Sidcraft Page Builder](https://wordpress.org/plugins/sidcraft-page-builder): Add New Product opens the builder, and its Product data panel sets the price, sale price, SKU, stock, badge, categories, image and short description. Existing products get "Edit with Sidcraft Page Builder".
+* Products with prices, sale prices (shown above the struck-through regular price), SKU, stock tracking, featured flag and categories.
+* Verified-customer ratings and reviews: shoppers click a star, enter their order number and order email, and write a review. Reviews show with a "Verified purchase" badge, a rating breakdown and the average on the product page.
+* Image badges per product (HOT, POPULAR, Sale, Clearance) and an automatic "Sold Out" label on out-of-stock products.
+* Item options: sizes, extras, spice levels or special instructions on any product, each choice optionally adding to the price (for example "Large +4", "Extra cheese +1.50"). Choices show in the cart, checkout, emails and the order screen.
+* Coupons: a percentage off or a fixed amount off, with optional minimum spend, expiry date and usage limit.
+* Cart stored server-side per visitor; prices are always recalculated from the product.
+* Payments: PayPal with Pay in 4 (Pay Later) and Venmo; Stripe for cards, Apple Pay, Google Pay, Klarna, Afterpay / Clearpay and Affirm; Razorpay and PayU for India (UPI, cards, netbanking, wallets); Mercado Pago for Latin America (cards, Pix, boleto, OXXO, installments). Customers pay on each provider's secure page or buttons; card numbers never touch your site.
+* Digital downloads: sell e-books, music, software, courses or printables. Tick "Downloadable" on a product and add one or more files (upload them, pick them from the media library or link to files hosted elsewhere), with an optional download limit and expiry. Tick "Virtual" for products with nothing to ship: a cart of virtual products skips the shipping cost and the address fields.
+* Each buyer gets a private link per file on the order-received page, in the order emails and on a My downloads page (My Downloads Unit or `[sidccofo_downloads]`). Access starts when the order is paid (or when it is marked Completed), pauses when it is cancelled or refunded, and past buyers get files you add later. On the order screen, change downloads left and expiry, revoke or restore access, give access to another product's files, see the download history and email the links again. Store → Download log lists every order with downloads.
+* Download security: uploads go to a protected folder with random file names; files are only served from approved folders and in file types WordPress allows; force download (resumable), X-Sendfile / X-Accel-Redirect / X-LiteSpeed-Location or redirect; optional login or email confirmation before downloading; optional IP logging, included in WordPress's personal data export and erase tools.
+* Modules: turn off what your store doesn't use under Store → Settings → Modules — Events, Subscriptions, Gift cards, Coupons, Reward points, Affiliates, Email marketing and Live chat. Their menus, settings, Units and checkout fields go away; nothing is deleted.
+* Gift cards: sell them as products (preset amounts and/or a custom amount, recipient, message, optional send date) or issue them by hand. Recipients get an email with the code; customers redeem one or more cards in the cart or at checkout, and unused balance stays on the card.
+* Shipment tracking: add tracking numbers on the order screen. Links are built automatically for Australia Post, Canada Post, City-Link Express, DHL, DPD, Fastway South Africa, FedEx, OnTrac, Parcelforce, Polish carriers (Poczta Polska, InPost, DPD Polska, DHL Parcel Polska, GLS), Royal Mail, SAPO, TNT Express (consignment and reference), UPS and USPS, or use any carrier with a custom link.
+* Developers can add any payment method (a local bank, a regional wallet, a proprietary system) by extending one PHP class; settings, return and webhook URLs are provided. See docs/example-gateway.php.
+* Orders in the admin with statuses, history and stock reserved when the order is placed. Two buyers cannot both take the last unit. Cancelled and Refunded put the remaining units back. A dispute keeps them reserved until it is lost.
+* Partial refunds record the amount and return only the quantities you name. A refund that covers the order total marks the order Refunded. Stripe and PayPal refund and dispute notifications are applied once.
+* Guest checkout can create an account, and a later login with the same email attaches guest orders placed on 1.0.9 or newer.
+* Store → Export catalog downloads products, categories, prices, SKU, stock and item options as JSON, without the page-builder layout.
+* Order emails to the customer and the shop owner, including a “Your order has shipped” email with tracking links.
+* Events and tickets (new in 1.2.0): Events menu with date and time, venue, address and map, online details (Zoom, Google Meet, any link), organiser, WhatsApp chat and group links, and any number of ticket types.
+* Ticket and inventory control: event-wide capacity plus per-ticket limits, minimum and maximum per order, sales start and end, and tiered prices by attendee type (Adult, Child, Student, VIP…). Dynamic pricing rules per ticket: early-bird and late prices by date, demand prices ("after 75%"), and group rates ("qty 5").
+* Tickets are sold through hidden product placeholders, so the store's checkout, currency, taxes, coupons, gift cards, stock locking, refunds and every payment method work for tickets.
+* Attendee details at checkout: name, email and phone per ticket, plus custom fields (text, long text, email, phone, number, date, dropdown, choose one, checkboxes and file uploads, stored privately).
+* Automated delivery: paid orders issue tickets with unique codes, QR codes and/or Code 128 barcodes. Buyers get an email with embedded QR codes, PDF tickets and a calendar file; attendees can get their own copy; reminder emails go out before the event; optional WhatsApp Cloud API message.
+* Check-in: scan the QR code with any phone camera (staff see a Check in button), use the Check-in screen with the device camera or a USB scanner, or check in from the Attendees list. Cancelled or refunded orders cancel their tickets; partial refunds cancel just the refunded tickets.
+* Calendars: "Add to Google Calendar" and .ics links, plus a subscription feed that Google Calendar, Apple Calendar and Outlook keep in sync. Zoom meetings can be created automatically with a Zoom Server-to-Server OAuth app.
+* Display events with Units for Sidcraft Page Builder, Gutenberg blocks or shortcodes: Event List, Event Calendar, Event Details, Event Tickets, Event Map and My Tickets (`[sidccofo_event_list]`, `[sidccofo_event_calendar]`, `[sidccofo_event_tickets event_id="123"]`…). Attendees list with CSV export.
+
+* Several currencies: list more currencies with your rates (Store → Settings → Currencies). Shoppers pick one with the Currency Switcher Unit, or get the one for their country or language; prices, options, shipping, coupons, gift cards and reward points are shown and charged in it, and each order keeps its currency and rate. A product can have its own price per currency.
+* Translated stores with WPML or Polylang: products, categories, brands and events can be translated. Every language sells the same stock, shares reviews and fills the same cart line; shop pages open in the shopper's language and order emails go out in it.
+* Several stores on WordPress Multisite: network-activate it and each site is its own store, with its own cookies. Network Admin → Stores shows every store's orders and sales, the latest orders across stores, and copies settings, products (with images and downloadable files) and coupons between stores. WP-CLI: `wp sidcraft-commerce stores` and `wp sidcraft-commerce copy`.
+* Email marketing (new in 2.0.0): a mailing list with the Newsletter Signup Unit (`[sidccofo_newsletter]`) and an opt-in box at checkout, double opt-in, tags, CSV import and export. Email campaigns written in the WordPress editor go to everyone or to a group (customers, not yet customers, spent more than, no order for N days, ordered recently, tagged), now or at a set time, in batches. Automatic emails: welcome, abandoned cart (with a button that puts the cart back), order follow-up asking for a review, and win-back. Every email has an unsubscribe link and one-click unsubscribe headers; opens and clicks are counted. Only people who agreed get marketing email.
+* Live chat (new in 2.0.0): a chat button on your store pages and an inbox under Store → Live chat with unread counts, the visitor's account, orders and the page they started on. While nobody has the inbox open, visitors leave a message that is emailed to you, and you can answer by email too. Light: nothing loads from the server until a visitor opens the chat.
+* Subscriptions: bill any product every day, week, month or year, for a set number of payments or until cancelled, with an optional free trial and sign-up fee. Each renewal is an order. With Stripe in Sidcraft Pro the saved card is charged automatically; otherwise (or when a card is declined) the customer is emailed a link to pay with any payment method. Customers see, cancel and keep their subscriptions on a My subscriptions page (My Subscriptions Unit or `[sidccofo_subscriptions]`); Store → Subscriptions lists them, with the orders, history, next payment date and price of each.
+
+**Sell event tickets, deliver QR tickets, and check in guests**
+https://www.youtube.com/watch?v=aO_uLuGiDO8
+
+[Download Opencart to Sidcraft Importer](https://canvasly.pro/Sidcraft-Commerce-vs-WooCommerce-vs-OpenCart.html)
+[Download WooCommerce to Sidcraft Commerce Migrator](https://canvasly.pro/sidcraft-commerce-woo-migrator-1.1.0.zip)
+
+* Store tools (new in 2.1.0): 27 optional tools, switched on under Store → Settings → Store tools. See the FAQ "What are the store tools?" for the full list.
+
+Commerce Units for [Sidcraft](https://wordpress.org/plugins/sidcraft-page-builder): Product Grid, Add to Cart, Product Price, Stock Status, Product Rating, Product Reviews, Mini Cart, Cart, Checkout and Order Confirmation, plus a quick-view popup. Every Unit also works as a shortcode, e.g. `[sidccofo_product_grid source="on_sale" limit="8"]`.
+
+Pages stay cacheable: assets load only where a Unit is used, the cart badge fills in after load, and Cart/Checkout pages are marked no-cache automatically.
+
+Themes can override any template by copying it from `templates/` into `yourtheme/sidcraft-commerce/`
+
+= What are the store tools? =
+Switch each on or off under Store → Settings → Store tools; a tool that is off loads nothing.
+
+* Payments without a card: bank transfer, cheque and cash on delivery, with instructions at checkout, on the order page and in the email.
+* Shipping: local pickup, rate tables by order total, weight or number of items, and a handling fee, on top of shipping zones.
+* Tax: EU VAT number check (format and the EU VIES service), reverse charge for business buyers in other EU countries, tax-exempt customers and roles, and a tax report by country and rate with CSV export.
+* PDF invoices (numbered, no gaps) and packing slips; the invoice is attached to the paid-order email.
+* CSV import and export of products and stock, CSV export of orders and customers, and a sales reports page (sales over time, best-sellers, coupons, revenue by country, top customers).
+* Stock: low-stock emails, "notify me when back in stock", backorders, pre-orders and minimum, maximum and step quantities.
+* Cart drawer that opens after adding, and a sticky add-to-cart bar on product pages.
+* Live product search (`[sidccofo_search]`) and product filters by price, category, tag, rating and stock (`[sidccofo_filters]`).
+* Wishlist, compare and recently viewed (heart and compare buttons, `[sidccofo_wishlist]`, `[sidccofo_compare]`, `[sidccofo_recently_viewed]`).
+* Bundles with a set discount, "bought together" blocks, and a one-tick order bump at checkout.
+* Bookings: time slots (appointments, classes) and nights (rentals) with opening hours, capacity, calendar files and a bookings list.
+* Memberships and content restriction with drip release; software licence keys with an activation API; checkout field editor with conditions; deposits and partial payments; pay what you want, donations and quote requests; delivery date and time slots with cut-off and capacity.
+* Analytics events (GA4, Meta Pixel, TikTok Pixel), Google Merchant and Meta product feeds, and product structured data.
+* REST API with keys (products, orders, customers) and signed webhooks for Zapier, Make and n8n.
+* Social-proof popups from real recent orders (names shortened), product questions and answers, photo reviews, product personalisation (text with live preview, picture upload, size chart).
+* Subscription extras: pause, switch plan with a proration credit, renewal reminders.
+* Suppliers and dropshipping (each supplier gets their lines and a private link for the tracking number), a multi-vendor marketplace with commissions and payouts, and a point of sale screen with barcode scanning and receipts.
+
+= Which store tools are on after updating to 2.1.0? =
+Most are off or harmless until you use them. Offline payments, rate tables, CSV, reports, invoices and the like only appear once you enable them or fill in their settings under Store → Settings → Store tools. Bookings, memberships, licence keys, deposits, delivery slots, social proof, personalisation, suppliers, vendors and the point of sale are off by default.
+
+= Do Stripe, Razorpay, PayU and Mercado Pago need Sidcraft Builder Pro? =
+Yes. PayPal Standard and the offline methods (bank transfer, cheque, cash on delivery) are in this plugin. Stripe, Razorpay, PayU and Mercado Pago are added by Sidcraft Builder Pro.
+
+= How does a deposit work? =
+At checkout the customer picks "pay a deposit now". The payment method charges only the deposit; the order records the balance, shows it on the order screen and in the emails, and you mark it paid when you have collected it.
+
+= How do I sell licence keys? =
+Turn on Licence keys under Store tools, tick "Issue a licence key per unit sold" on the product, and your software calls `POST /wp-json/sidcraft-commerce/v1/licenses/activate` (and `validate`, `deactivate`) with `key` and `site`.
+
+= How do I connect Zapier, Make or n8n? =
+Store → API & webhooks: create an API key (read or read and write) and add a webhook for the events you need. Deliveries are signed with HMAC-SHA256 in the header X-Sidcraft-Signature.
+
 == Screenshots ==
 
 1. Product grid with sale prices, badges (HOT, POPULAR, Sale, Clearance) and Sold Out labels.
@@ -211,6 +278,11 @@ Settings, sessions, temporary data, chats, the email log and remembered carts ar
 8. Sidcraft Commerce in action.
 
 == Changelog ==
+
+= 2.1.0 =
+* New: Store tools (Store → Settings → Store tools): bank transfer, cheque and cash on delivery; local pickup, rate tables and handling fee; EU VAT numbers, reverse charge, tax-exempt customers and a tax report; PDF invoices and packing slips; CSV import and export; sales reports; low-stock emails, back-in-stock notifications, backorders, pre-orders and quantity rules; cart drawer and sticky add-to-cart; live search and product filters; wishlist, compare and recently viewed; bundles and an order bump; bookings; memberships; licence keys; checkout field editor; deposits; pay what you want, donations and quote requests; delivery slots; analytics events, product feeds and structured data; REST API and webhooks; social-proof popups; product questions and photo reviews; personalisation; subscription pause, plan switch and reminders; suppliers and dropshipping; multi-vendor marketplace; point of sale.
+* New: fees and credits in the cart and on orders (`sidcraft_commerce_cart_fees`), a cart-extras route for checkout choices, and the hooks `sidcraft_commerce_checkout_input`, `sidcraft_commerce_quantity_rules`, `sidcraft_commerce_button_text`, `sidcraft_commerce_subscription_actions`, `sidcraft_commerce_review_form_fields` and `sidcraft_commerce_review_after_text`.
+* Templates: units/add-to-cart.php, units/subscriptions.php and single/reviews.php changed.
 
 = 2.0.1 =
 * Fixed: WordPress Plugin Check reports. Mailing-list, campaign-statistics and network-report queries use fixed SQL with placeholders only; links on the subscribe and unsubscribe pages are escaped; translator notes fixed.
@@ -251,6 +323,9 @@ Settings, sessions, temporary data, chats, the email log and remembered carts ar
 Older versions and full details: see changelog.txt.
 
 == Upgrade Notice ==
+
+= 2.1.0 =
+Adds 27 optional store tools (off or inert until enabled under Store → Settings → Store tools). Templates changed: units/add-to-cart.php, units/subscriptions.php, single/reviews.php; compare theme overrides.
 
 = 2.0.1 =
 Plugin Check fixes and a mailing-list segment fix. No template changes.

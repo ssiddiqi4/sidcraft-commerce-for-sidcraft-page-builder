@@ -349,7 +349,8 @@
 			var input = step.parentNode.querySelector( '.sc-qty__input' );
 			var max = parseInt( input.max || '0', 10 );
 			var min = parseInt( input.min || '1', 10 );
-			var next = ( parseInt( input.value, 10 ) || 0 ) + parseInt( step.dataset.scQty, 10 );
+			var size = Math.max( 1, parseInt( input.step || '1', 10 ) || 1 );
+			var next = ( parseInt( input.value, 10 ) || 0 ) + parseInt( step.dataset.scQty, 10 ) * size;
 			input.value = Math.max( min, max > 0 ? Math.min( max, next ) : next );
 			input.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 			return;

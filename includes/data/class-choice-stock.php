@@ -68,7 +68,7 @@ class Choice_Stock {
 	/**
 	 * Tracked choices among a selection, and the combination they make when it
 	 * has its own stock (see Variants): "group|choice" or "variant|key" =>
-	 * [ group, choice, label, left, meta_key ].
+	 * [ group, choice, label, left, stock_key ].
 	 *
 	 * @param int   $product_id Product.
 	 * @param array $groups     Product's groups (normalized).
@@ -90,7 +90,7 @@ class Choice_Stock {
 						'choice'   => (string) $cid,
 						'label'    => $group['label'] . ': ' . ( $labels[ $cid ] ?? $cid ),
 						'left'     => $left,
-						'meta_key' => self::meta_key( $group['id'], (string) $cid ),
+						'stock_key' => self::meta_key( $group['id'], (string) $cid ),
 					);
 				}
 			}
@@ -110,7 +110,7 @@ class Choice_Stock {
 					'choice'   => $combo,
 					'label'    => $names ? $names[0] : $combo,
 					'left'     => $left,
-					'meta_key' => Variants::stock_key( $combo ),
+					'stock_key' => Variants::stock_key( $combo ),
 				);
 			}
 		}
@@ -203,7 +203,7 @@ class Choice_Stock {
 			$product = Product::get( $product_id );
 			$keys    = array();
 			foreach ( self::tracked_in( $product_id, $product ? $product->get_options() : array(), $item['selection'] ) as $row ) {
-				$key = $row['meta_key'];
+				$key = $row['stock_key'];
 				if ( ! self::adjust( $product_id, $key, -1 * $qty ) ) {
 					self::give_back( $taken );
 					foreach ( $keys as $done ) {

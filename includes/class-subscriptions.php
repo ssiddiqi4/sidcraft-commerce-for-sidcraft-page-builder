@@ -770,6 +770,8 @@ class Subscriptions {
 		$item     = $sub->get_item();
 		$qty      = max( 1, (int) $item['quantity'] );
 		$total    = $sub->get_recurring_subtotal();
+		// A credit from switching plans (see the Subscription extras): used once, on the next renewal.
+		$credit   = min( $total, max( 0.0, (float) get_post_meta( $sub->get_id(), '_sidccofo_sub_credit', true ) ) );
 		$billing  = $sub->get_billing();
 		$location = array(
 			'country' => (string) ( $billing['country'] ?? '' ),
@@ -785,7 +787,7 @@ class Subscriptions {
 				$zone     = (string) $quote['zone'];
 			}
 		}
-		$tax       = Tax::calculate( array( $total ), $shipping, $location, array( $product ? $product->get_tax_class() : '' ) );
+		$tax       = Tax::calculate( array( max( 0.0, $total - $credit ) ), $shipping, $location, array( $product ? $product->get_tax_class() : '' ) );
 		$inclusive = Tax::prices_include_tax();
 		// Created as the customer (also when the store clicks "renew now").
 		$admin = get_current_user_id();
@@ -805,13 +807,14 @@ class Subscriptions {
 					),
 				),
 				'subtotal'       => $total,
+				'discount'       => $credit,
 				'shipping'       => $shipping,
 				'shipping_zone'  => $zone,
 				'tax'            => (float) $tax['total'],
 				'tax_label'      => (string) $tax['label'],
 				'tax_rate'       => (float) $tax['rate'],
 				'tax_inclusive'  => $inclusive,
-				'total'          => round_amount( $total + $shipping + ( $inclusive ? 0.0 : (float) $tax['total'] ) ),
+				'total'          => round_amount( $total - $credit + $shipping + ( $inclusive ? 0.0 : (float) $tax['total'] ) ),
 				'currency'       => $sub->get_currency(),
 				'billing'        => $billing,
 				'payment_method' => '',
@@ -823,6 +826,9 @@ class Subscriptions {
 			return $order;
 		}
 		update_post_meta( $order->get_id(), '_sidccofo_renewal_of', $sub->get_id() );
+		if ( $credit > 0 ) {
+			delete_post_meta( $sub->get_id(), '_sidccofo_sub_credit' );
+		}
 		$sub->add_renewal( $order->get_id() );
 		$sub->set( '_sidccofo_sub_renewal', $order->get_id() );
 		/* translators: %d: subscription number. */

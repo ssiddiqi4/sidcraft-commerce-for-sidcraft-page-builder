@@ -370,7 +370,29 @@ class Cart {
 	 *
 	 * @return array[]
 	 */
+	/**
+	 * True while the cart is pricing its lines (so a price filter can tell the
+	 * cart from a product page: pay-what-you-want prices apply only here).
+	 *
+	 * @var bool
+	 */
+	public static $building = false;
+
 	protected function build_items() {
+		self::$building = true;
+		try {
+			return $this->build_items_inner();
+		} finally {
+			self::$building = false;
+		}
+	}
+
+	/**
+	 * See build_items().
+	 *
+	 * @return array
+	 */
+	protected function build_items_inner() {
 		$lines = array();
 		$this->prime_products();
 		// Quantity discounts count every unit of a product that is really in
@@ -527,7 +549,7 @@ class Cart {
 		} elseif ( ! $product->is_in_stock() ) {
 			/* translators: %s: product name. */
 			$error = new \WP_Error( 'sidccofo_out_of_stock', sprintf( __( '“%s” is out of stock.', 'sidcraft-commerce-for-sidcraft-page-builder' ), $product->get_name() ) );
-		} elseif ( $product->managing_stock() && $quantity > $product->get_stock_quantity() ) {
+		} elseif ( $product->managing_stock() && ! $product->allows_backorders() && $quantity > $product->get_stock_quantity() ) {
 			$error = new \WP_Error(
 				'sidccofo_not_enough_stock',
 				/* translators: 1: product name, 2: units left. */
@@ -986,7 +1008,7 @@ class Cart {
 	 * @return array [ shipping (quote), tax (Tax::calculate result) ].
 	 */
 	protected function totals() {
-		$key = md5( wp_json_encode( array( $this->raw(), $this->gift_raw(), $this->session->get( 'location', array() ), $this->get_coupon_code(), \SidcraftCommerce\currency() ) ) );
+		$key = md5( wp_json_encode( array( $this->raw(), $this->gift_raw(), $this->session->get( 'location', array() ), $this->get_coupon_code(), \SidcraftCommerce\currency(), $this->session->get( 'extras', array() ) ) ) );
 		if ( null !== $this->totals && $this->totals['key'] === $key ) {
 			return $this->totals;
 		}
@@ -1098,8 +1120,73 @@ class Cart {
 	 * @return float
 	 */
 	public function get_total_before_gift_cards() {
-		$tax = $this->prices_include_tax() ? 0.0 : $this->get_tax();
-		return round_amount( apply_filters( 'sidcraft_commerce_cart_total', max( 0.0, $this->get_subtotal() - $this->get_discount() ) + $this->get_shipping() + $tax, $this ) );
+		$tax  = $this->prices_include_tax() ? 0.0 : $this->get_tax();
+		$fees = array_sum( wp_list_pluck( $this->get_fees(), 'amount' ) );
+		return round_amount( max( 0.0, apply_filters( 'sidcraft_commerce_cart_total', max( 0.0, $this->get_subtotal() - $this->get_discount() ) + $this->get_shipping() + $tax, $this ) + $fees ) );
+	}
+
+	/**
+	 * Extra charges and credits added by features and add-ons (a delivery
+	 * slot, a donation, a deposit's "due later" credit). Each row is
+	 * [ id, label, amount ] in the shopper's currency; a negative amount is a
+	 * credit. Fees are not taxed.
+	 *
+	 * @return array[]
+	 */
+	public function get_fees() {
+		$out = array();
+		/**
+		 * Add fees to the cart.
+		 *
+		 *     add_filter( 'sidcraft_commerce_cart_fees', function ( $fees, $cart ) {
+		 *         $fees[] = array( 'id' => 'wrap', 'label' => 'Gift wrap', 'amount' => 3.5 );
+		 *         return $fees;
+		 *     }, 10, 2 );
+		 *
+		 * @param array $fees Fees.
+		 * @param Cart  $cart Cart.
+		 */
+		foreach ( (array) apply_filters( 'sidcraft_commerce_cart_fees', array(), $this ) as $fee ) {
+			if ( empty( $fee['id'] ) || ! isset( $fee['amount'] ) || 0.0 === round_amount( (float) $fee['amount'] ) ) {
+				continue;
+			}
+			$out[] = array(
+				'id'     => sanitize_key( $fee['id'] ),
+				'label'  => sanitize_text_field( (string) ( $fee['label'] ?? $fee['id'] ) ),
+				'amount' => round_amount( (float) $fee['amount'] ),
+			);
+		}
+		return $out;
+	}
+
+	/**
+	 * Read a value an extra feature stored in the cart session.
+	 *
+	 * @param string $key      Key.
+	 * @param mixed  $fallback Default.
+	 * @return mixed
+	 */
+	public function extra( $key, $fallback = '' ) {
+		$all = (array) $this->session->get( 'extras', array() );
+		return array_key_exists( $key, $all ) ? $all[ $key ] : $fallback;
+	}
+
+	/**
+	 * Store a value for an extra feature (empty removes it).
+	 *
+	 * @param string $key   Key.
+	 * @param mixed  $value Value (scalar or array).
+	 */
+	public function set_extra( $key, $value ) {
+		$all = (array) $this->session->get( 'extras', array() );
+		if ( '' === $value || null === $value || array() === $value ) {
+			unset( $all[ sanitize_key( $key ) ] );
+		} else {
+			$all[ sanitize_key( $key ) ] = $value;
+		}
+		$this->session->set( 'extras', $all );
+		$this->totals = null;
+		$this->items  = null;
 	}
 
 	/*

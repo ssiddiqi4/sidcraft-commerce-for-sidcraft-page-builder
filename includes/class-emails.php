@@ -191,13 +191,13 @@ class Emails {
 		/**
 		 * Filter an email before sending; return false to skip it.
 		 *
-		 * @param array|false $mail      [ to, subject, body, headers ].
+		 * @param array|false $mail      [ to, subject, body, headers, attachments (optional file paths) ].
 		 * @param Order       $order     Order.
 		 * @param string      $recipient customer|admin.
 		 */
 		$mail = apply_filters( 'sidcraft_commerce_email', array( $to, $subject, $body, $headers ), $order, $recipient );
 		if ( $mail ) {
-			wp_mail( $mail[0], $mail[1], $mail[2], $mail[3] );
+			wp_mail( $mail[0], $mail[1], $mail[2], $mail[3], isset( $mail[4] ) ? (array) $mail[4] : array() );
 		}
 	}
 }

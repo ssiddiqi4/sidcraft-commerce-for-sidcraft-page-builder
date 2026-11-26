@@ -81,6 +81,14 @@ use SidcraftCommerce\Subscriptions;
 									</form>
 								<?php endif; ?>
 							<?php endforeach; ?>
+							<?php
+							/**
+							 * More buttons for a subscription in My Subscriptions (pause, switch plan…).
+							 *
+							 * @param \SidcraftCommerce\Data\Subscription $sub Subscription.
+							 */
+							do_action( 'sidcraft_commerce_subscription_actions', $sidcraft_commerce_sub );
+							?>
 						</td>
 					</tr>
 				<?php endforeach; ?>

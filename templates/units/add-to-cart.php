@@ -41,7 +41,17 @@ if ( ! $sidcraft_commerce_can ) {
 }
 
 $sidcraft_commerce_max  = $product->get_max_purchase_quantity(); // -1 = unlimited.
-$sidcraft_commerce_text = $settings['button_text'] ? $settings['button_text'] : __( 'Add to cart', 'sidcraft-commerce-for-sidcraft-page-builder' );
+/**
+ * Quantity limits for the product page's quantity box: min, max (0 = none) and step.
+ *
+ * @param array   $rules   [ min, max, step ].
+ * @param Product $product Product.
+ */
+$sidcraft_commerce_rules = (array) apply_filters( 'sidcraft_commerce_quantity_rules', array( 'min' => 1, 'max' => max( 0, $sidcraft_commerce_max ), 'step' => 1 ), $product );
+$sidcraft_commerce_min   = max( 1, (int) ( $sidcraft_commerce_rules['min'] ?? 1 ) );
+$sidcraft_commerce_max   = (int) ( $sidcraft_commerce_rules['max'] ?? 0 );
+$sidcraft_commerce_step  = max( 1, (int) ( $sidcraft_commerce_rules['step'] ?? 1 ) );
+$sidcraft_commerce_text = $settings['button_text'] ? $settings['button_text'] : (string) apply_filters( 'sidcraft_commerce_button_text', __( 'Add to cart', 'sidcraft-commerce-for-sidcraft-page-builder' ), $product );
 ?>
 <form class="sc-atc<?php echo $settings['full_width'] ? ' sc-atc--full' : ''; ?><?php echo $sidcraft_commerce_groups ? ' sc-atc--options' : ''; ?>" data-sc-atc-form action="<?php echo esc_url( \SidcraftCommerce\page_url( 'cart' ) ); ?>" method="post">
 	<?php
@@ -62,11 +72,11 @@ $sidcraft_commerce_text = $settings['button_text'] ? $settings['button_text'] : 
 	<?php if ( $settings['show_quantity'] ) : ?>
 		<div class="sc-qty">
 			<button type="button" class="sc-qty__step" data-sc-qty="-1" aria-label="<?php esc_attr_e( 'Decrease quantity', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>">−</button>
-			<input class="sc-qty__input" type="number" name="quantity" value="1" min="1" <?php echo $sidcraft_commerce_max > 0 ? 'max="' . esc_attr( $sidcraft_commerce_max ) . '"' : ''; ?> step="1" inputmode="numeric" aria-label="<?php esc_attr_e( 'Quantity', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>">
+			<input class="sc-qty__input" type="number" name="quantity" value="<?php echo esc_attr( $sidcraft_commerce_min ); ?>" min="<?php echo esc_attr( $sidcraft_commerce_min ); ?>" <?php echo $sidcraft_commerce_max > 0 ? 'max="' . esc_attr( $sidcraft_commerce_max ) . '"' : ''; ?> step="<?php echo esc_attr( $sidcraft_commerce_step ); ?>" inputmode="numeric" aria-label="<?php esc_attr_e( 'Quantity', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>">
 			<button type="button" class="sc-qty__step" data-sc-qty="1" aria-label="<?php esc_attr_e( 'Increase quantity', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>">+</button>
 		</div>
 	<?php else : ?>
-		<input type="hidden" name="quantity" value="1">
+		<input type="hidden" name="quantity" value="<?php echo esc_attr( $sidcraft_commerce_min ); ?>">
 	<?php endif; ?>
 
 	<!-- Without JS this posts to the cart page, which adds and shows the cart. -->

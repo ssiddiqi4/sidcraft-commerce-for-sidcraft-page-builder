@@ -83,6 +83,14 @@ $sidcraft_commerce_avg   = $product->get_average_rating();
 						<span class="sc-review__date"><?php echo esc_html( $sidcraft_commerce_r['date'] ); ?></span>
 					</div>
 					<div class="sc-review__text"><?php echo wp_kses_post( wpautop( esc_html( $sidcraft_commerce_r['text'] ) ) ); ?></div>
+					<?php
+					/**
+					 * After a review's text (photos).
+					 *
+					 * @param array $review Review: id, rating, name, date, text, verified.
+					 */
+					do_action( 'sidcraft_commerce_review_after_text', $sidcraft_commerce_r );
+					?>
 				</li>
 			<?php endforeach; ?>
 		</ol>
@@ -132,6 +140,14 @@ $sidcraft_commerce_avg   = $product->get_average_rating();
 					<label for="sc-rv-name"><?php esc_html_e( 'Name shown with your review (optional)', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?></label>
 					<input type="text" id="sc-rv-name" name="name" maxlength="60" autocomplete="nickname" placeholder="<?php esc_attr_e( 'Defaults to your first name and last initial', 'sidcraft-commerce-for-sidcraft-page-builder' ); ?>">
 				</p>
+				<?php
+				/**
+				 * More fields in the review form (photo upload).
+				 *
+				 * @param \SidcraftCommerce\Data\Product $product Product.
+				 */
+				do_action( 'sidcraft_commerce_review_form_fields', $product );
+				?>
 				<p class="sc-rv-hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></p>
 			</div>
 

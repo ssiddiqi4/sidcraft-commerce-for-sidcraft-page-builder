@@ -316,7 +316,7 @@ class Network {
 						'offset'           => $offset,
 						'orderby'          => 'ID',
 						'order'            => 'ASC',
-						'suppress_filters' => true, // Every language, untouched by translation plugins.
+						'lang'             => '', // Every language (Polylang); other plugins leave the query alone.
 						'no_found_rows'    => true,
 						// Not the hidden products behind event tickets: they belong to this store's events.
 						'meta_query'       => Post_Types::PRODUCT === $type ? array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Batched admin copy.
@@ -629,7 +629,6 @@ class Network {
 				'post_status'      => 'any',
 				'posts_per_page'   => 1,
 				'fields'           => 'ids',
-				'suppress_filters' => true,
 				'meta_key'         => self::SOURCE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_value'       => $item['source'], // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			)
@@ -648,7 +647,6 @@ class Network {
 				'post_status'      => 'any',
 				'posts_per_page'   => 1,
 				'fields'           => 'ids',
-				'suppress_filters' => true,
 				'meta_key'         => $key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_value'       => $value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			)
@@ -672,7 +670,6 @@ class Network {
 				'post_status'      => 'inherit',
 				'posts_per_page'   => 1,
 				'fields'           => 'ids',
-				'suppress_filters' => true,
 				'meta_key'         => self::SOURCE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_value'       => $source, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			)

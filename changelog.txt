@@ -1,5 +1,13 @@
 === Sidcraft Commerce for Sidcraft Page Builder: full changelog ===
 
+= 2.1.0 =
+* New: Store tools framework (includes/extras/). Each tool is switched on or off under Store → Settings → Store tools and loads nothing when off.
+* New tools: offline payments; local pickup, rate tables, handling fee; EU VAT, reverse charge, tax exemptions, tax report; PDF invoices and packing slips; CSV import/export; reports; stock alerts, backorders, pre-orders, quantity rules; cart drawer, sticky add-to-cart; live search and filters; wishlist, compare, recently viewed; bundles and order bump; bookings; memberships; licence keys and activation API; checkout field editor; deposits; pay what you want, donations, quotes; delivery slots; GA4/Meta/TikTok events, product feeds, schema; REST API and webhooks; social proof; questions and photo reviews; personalisation; subscription pause, switch, reminders; suppliers and dropshipping; vendors and payouts; point of sale.
+* New: cart fees and credits (Cart::get_fees(), order meta _sidccofo_fees), Cart::extra()/set_extra(), POST /extras/cart, Cart::$building, Product::allows_backorders().
+* New hooks: sidcraft_commerce_cart_fees, sidcraft_commerce_extra_keys, sidcraft_commerce_checkout_input, sidcraft_commerce_quantity_rules, sidcraft_commerce_button_text, sidcraft_commerce_subscription_actions, sidcraft_commerce_review_form_fields, sidcraft_commerce_review_after_text, sidcraft_commerce_tool_enabled. The order email filter accepts a fifth item: attachments.
+* Changed: subscription renewals use a one-time credit (_sidccofo_sub_credit) when a plan was switched.
+* Templates: units/add-to-cart.php, units/subscriptions.php, single/reviews.php.
+
 = 2.0.1 =
 * Fixed: WordPress Plugin Check reports. Mailing-list, campaign-statistics and network-report queries use fixed SQL with placeholders only; links on the subscribe and unsubscribe pages are escaped; translator notes fixed.
 * Fixed: the “has tag” mailing-list segment missed subscribers whose tag contains an underscore.
