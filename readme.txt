@@ -66,6 +66,7 @@ Extend `\SidcraftCommerce\Payments\Gateway` (the equivalent of WooCommerce's WC_
 * [Sidcraft Page Builder](https://wordpress.org/plugins/sidcraft-page-builder)
 * [Sidcraft Restaurant](https://wordpress.org/plugins/sidcraft-restaurant-for-sidcraft-commerce)
 * [VidCellar](https://wordpress.org/plugins/vidcellar-lite)
+* [Canvasly Web Studio](https://canvasly.pro)
 
 == Installation ==
 
