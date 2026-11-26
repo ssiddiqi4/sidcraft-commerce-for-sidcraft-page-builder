@@ -3,9 +3,9 @@ Contributors: ssiddiqi4
 Donate link: https://paypal.me/SSiddiqi275
 Tags: e-commerce, shop, checkout, cart, digital-products
 Requires at least: 6.3
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 7.4
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,7 +47,7 @@ Sidcraft Commerce turns [Sidcraft Page Builder](https://canvasly.pro) into a com
 * Several currencies: list more currencies with your rates (Store → Settings → Currencies). Shoppers pick one with the Currency Switcher Unit, or get the one for their country or language; prices, options, shipping, coupons, gift cards and reward points are shown and charged in it, and each order keeps its currency and rate. A product can have its own price per currency.
 * Translated stores with WPML or Polylang: products, categories, brands and events can be translated. Every language sells the same stock, shares reviews and fills the same cart line; shop pages open in the shopper's language and order emails go out in it.
 * Several stores on WordPress Multisite: network-activate it and each site is its own store, with its own cookies. Network Admin → Stores shows every store's orders and sales, the latest orders across stores, and copies settings, products (with images and downloadable files) and coupons between stores. WP-CLI: `wp sidcraft-commerce stores` and `wp sidcraft-commerce copy`.
-* Email marketing (new in 2.0.0): a mailing list with the Newsletter Signup Unit (`[sidccofo_newsletter]`) and an opt-in box at checkout, double opt-in, tags, CSV import and export. Email campaigns written in the WordPress editor go to everyone or to a group (customers, not yet customers, spent more than, no order for N days, ordered recently, tagged), now or at a set time, in batches. Automatic emails: welcome, abandoned cart (with a button that puts the cart back), order follow-up asking for a review, and win-back. Every email has an unsubscribe link and one-click unsubscribe headers; opens and clicks are counted. Only people who agreed get marketing email.
+* Email marketing (new in 2.0.0): a mailing list with the Newsletter Signup Unit (`[sidccofo_newsletter]`) and an opt-in box at checkout, double opt-in, tags, CSV import and export. Email campaigns written in the WordPress editor go to everyone or to a group (customers, not yet customers, spent more than, no order for N days, ordered recently, tagged), now or at a set time, in batches. Automatic emails: welcome, abandoned cart (with a button that puts the cart back), order follow-up asking for a review, and win-back. Every email has an unsubscribe link and one-click unsubscribe headers; opens and clicks are counted. Only people who agreed get marketing email. With Sidcraft Page Builder 2.4.1 or later, new subscribers can also be added to Mailchimp, Kit, MailerLite, Brevo, ActiveCampaign, Klaviyo, Beehiiv, FluentCRM, MailPoet or Listmonk (Page Builder → Settings → Email services).
 * Live chat (new in 2.0.0): a chat button on your store pages and an inbox under Store → Live chat with unread counts, the visitor's account, orders and the page they started on. While nobody has the inbox open, visitors leave a message that is emailed to you, and you can answer by email too. Light: nothing loads from the server until a visitor opens the chat.
 * Subscriptions: bill any product every day, week, month or year, for a set number of payments or until cancelled, with an optional free trial and sign-up fee. Each renewal is an order. With Stripe in Sidcraft Pro the saved card is charged automatically; otherwise (or when a card is declined) the customer is emailed a link to pay with any payment method. Customers see, cancel and keep their subscriptions on a My subscriptions page (My Subscriptions Unit or `[sidccofo_subscriptions]`); Store → Subscriptions lists them, with the orders, history, next payment date and price of each.
 
@@ -179,6 +179,10 @@ Yes. Checkout has “Create an account with this email”. WordPress emails a li
 
 Only people who agreed get marketing email: the checkout box is never ticked in advance, signup forms ask for consent and (by default) a confirmation click, and imports never re-subscribe someone who left. Every email carries an unsubscribe link, one-click unsubscribe headers and, when you enter it under Store → Settings → Marketing, your postal address. The list is included in WordPress's personal data export and erase tools. Mention open and click counting in your privacy policy, or turn it off.
 
+= Can people who join the mailing list also be added to Mailchimp or another service? =
+
+Yes, with Sidcraft Page Builder 2.4.1 or later. Under Page Builder → Settings → Email services, connect the service and choose it as the "Default newsletter service" in the Sidcraft Commerce newsletter section. People who join through the Newsletter Signup Unit or the checkout box are added after they confirm, so the service does not ask them again. Your list in Sidcraft Commerce stays the main list: campaigns and automatic emails here still go out from it. Unsubscribes here are not copied to the other service.
+
 = Will campaigns reach the inbox? =
 
 Emails go out through WordPress (wp_mail), so use an SMTP or email-sending plugin and a "From" address on your own domain for good delivery. Campaigns send in batches every minute (50 by default) through WP-Cron; on a quiet site, set up a real server cron for steady sending.
@@ -211,6 +215,9 @@ Settings, sessions, temporary data, chats, the email log and remembered carts ar
 8. Sidcraft Commerce in action.
 
 == Changelog ==
+
+= 2.0.2 =
+* Works with Sidcraft Page Builder 2.4.1: people who join through the Newsletter Signup Unit or the checkout box can also be added to Mailchimp, Kit, MailerLite, Brevo, ActiveCampaign, Klaviyo, Beehiiv, FluentCRM, MailPoet or Listmonk, after they confirm. Set it up under Page Builder → Settings → Email services. No change to how the plugin itself works.
 
 = 2.0.1 =
 * Fixed: WordPress Plugin Check reports. Mailing-list, campaign-statistics and network-report queries use fixed SQL with placeholders only; links on the subscribe and unsubscribe pages are escaped; translator notes fixed.
@@ -251,6 +258,9 @@ Settings, sessions, temporary data, chats, the email log and remembered carts ar
 Older versions and full details: see changelog.txt.
 
 == Upgrade Notice ==
+
+= 2.0.2 =
+Documentation only: mailing-list sign-ups can now also go to Mailchimp and other services through Page Builder 2.4.1. No template changes.
 
 = 2.0.1 =
 Plugin Check fixes and a mailing-list segment fix. No template changes.

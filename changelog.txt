@@ -1,5 +1,9 @@
 === Sidcraft Commerce for Sidcraft Page Builder: full changelog ===
 
+= 2.0.2 =
+* Works with Sidcraft Page Builder 2.4.1: mailing-list sign-ups (Newsletter Signup Unit and checkout box) can also be added to Mailchimp, Kit, MailerLite, Brevo, ActiveCampaign, Klaviyo, Beehiiv, FluentCRM, MailPoet or Listmonk after they confirm. No change to how this plugin works; the action it already fires, sidcraft_commerce_subscriber_confirmed, is what Page Builder listens for.
+* Readme: Tested up to 7.2.
+
 = 2.0.1 =
 * Fixed: WordPress Plugin Check reports. Mailing-list, campaign-statistics and network-report queries use fixed SQL with placeholders only; links on the subscribe and unsubscribe pages are escaped; translator notes fixed.
 * Fixed: the “has tag” mailing-list segment missed subscribers whose tag contains an underscore.
