@@ -3,9 +3,9 @@ Contributors: ssiddiqi4
 Donate link: https://paypal.me/SSiddiqi275
 Tags: e-commerce, shop, checkout, cart, digital-products
 Requires at least: 6.3
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 7.4
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -156,6 +156,10 @@ Yes. Checkout has “Create an account with this email”. WordPress emails a li
 
 Only people who agreed get marketing email: the checkout box is never ticked in advance, signup forms ask for consent and (by default) a confirmation click, and imports never re-subscribe someone who left. Every email carries an unsubscribe link, one-click unsubscribe headers and, when you enter it under Store → Settings → Marketing, your postal address. The list is included in WordPress's personal data export and erase tools. Mention open and click counting in your privacy policy, or turn it off.
 
+= Can people who join the mailing list also be added to Mailchimp or another service? =
+
+Yes, with Sidcraft Page Builder 2.4.1 or later. Under Page Builder → Settings → Email services, connect Mailchimp, Kit, MailerLite, Brevo, ActiveCampaign, Klaviyo, Beehiiv, FluentCRM, MailPoet or Listmonk and choose it as the "Default newsletter service" in the Sidcraft Commerce newsletter section. People who join through the Newsletter Signup Unit or the checkout box are added after they confirm, so the service does not ask them again. Your list here stays the main list: campaigns and automatic emails still go out from it, and unsubscribes here are not copied to the other service.
+
 = Will campaigns reach the inbox? =
 
 Emails go out through WordPress (wp_mail), so use an SMTP or email-sending plugin and a "From" address on your own domain for good delivery. Campaigns send in batches every minute (50 by default) through WP-Cron; on a quiet site, set up a real server cron for steady sending.
@@ -279,6 +283,9 @@ Store → API & webhooks: create an API key (read or read and write) and add a w
 
 == Changelog ==
 
+= 2.1.1 =
+* Works with Sidcraft Page Builder 2.4.1: people who join through the Newsletter Signup Unit or the checkout box can also be added to Mailchimp, Kit, MailerLite, Brevo, ActiveCampaign, Klaviyo, Beehiiv, FluentCRM, MailPoet or Listmonk, after they confirm (Page Builder → Settings → Email services). No change to how this plugin works.
+
 = 2.1.0 =
 * New: Store tools (Store → Settings → Store tools): bank transfer, cheque and cash on delivery; local pickup, rate tables and handling fee; EU VAT numbers, reverse charge, tax-exempt customers and a tax report; PDF invoices and packing slips; CSV import and export; sales reports; low-stock emails, back-in-stock notifications, backorders, pre-orders and quantity rules; cart drawer and sticky add-to-cart; live search and product filters; wishlist, compare and recently viewed; bundles and an order bump; bookings; memberships; licence keys; checkout field editor; deposits; pay what you want, donations and quote requests; delivery slots; analytics events, product feeds and structured data; REST API and webhooks; social-proof popups; product questions and photo reviews; personalisation; subscription pause, plan switch and reminders; suppliers and dropshipping; multi-vendor marketplace; point of sale.
 * New: fees and credits in the cart and on orders (`sidcraft_commerce_cart_fees`), a cart-extras route for checkout choices, and the hooks `sidcraft_commerce_checkout_input`, `sidcraft_commerce_quantity_rules`, `sidcraft_commerce_button_text`, `sidcraft_commerce_subscription_actions`, `sidcraft_commerce_review_form_fields` and `sidcraft_commerce_review_after_text`.
@@ -323,6 +330,9 @@ Store → API & webhooks: create an API key (read or read and write) and add a w
 Older versions and full details: see changelog.txt.
 
 == Upgrade Notice ==
+
+= 2.1.1 =
+Documentation only: mailing-list sign-ups can also go to Mailchimp and other services through Page Builder 2.4.1. No template changes.
 
 = 2.1.0 =
 Adds 27 optional store tools (off or inert until enabled under Store → Settings → Store tools). Templates changed: units/add-to-cart.php, units/subscriptions.php, single/reviews.php; compare theme overrides.
